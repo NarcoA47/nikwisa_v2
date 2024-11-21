@@ -1,101 +1,146 @@
-import Image from "next/image";
+"use client"
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
+import 'swiper/css/effect-fade';
+import Header from '../components/home/Header';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Pagination, Navigation, EffectFade } from 'swiper/modules';
+import { useState } from 'react';
 
-export default function Home() {
+const Home: React.FC = () => {
+  const [searchLocation, setSearchLocation] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearch = () => {
+    // Implement search functionality here
+    console.log(`Searching for ${searchQuery} in ${searchLocation}`);
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div>
+      <Header />
+      {/* Hero Section */}
+      <section className="p-8">
+        <div className="flex items-center space-x-4">
+          <input
+            type="text"
+            placeholder="Lusaka"
+            value={searchLocation}
+            onChange={(e) => setSearchLocation(e.target.value)}
+            className="border rounded-md px-4 py-2 w-1/4"
+          />
+          <input
+            type="text"
+            placeholder="Search in Lusaka"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="border rounded-md px-4 py-2 w-1/2"
+          />
+          <button
+            onClick={handleSearch}
+            className="bg-yellow-600 text-white px-6 py-2 rounded-lg"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            Search
+          </button>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        <div className="mt-8">
+          <Swiper
+            modules={[Pagination, Navigation, EffectFade]}
+            pagination={{ clickable: true }}
+            navigation
+            spaceBetween={50}
+            slidesPerView={1}
+            effect="fade"
+          >
+            <SwiperSlide>
+              <div className="bg-gray-100 p-4 flex flex-col justify-center items-center">
+                <img src="/assets/home/1.png" alt="Event" className="h-24 w-24 mb-4" />
+                <h2 className="font-bold text-xl text-black text-center">Planning an Event/Wedding?</h2>
+                <button className="mt-4 bg-yellow-600 text-white px-4 py-2 rounded-lg">
+                  See More
+                </button>
+              </div>
+            </SwiperSlide>
+            <SwiperSlide>
+              <div className="bg-gray-200 p-4 flex flex-col justify-center items-center">
+                <img src="/assets/home/1.png" alt="Slide 2" className="h-24 w-24 mb-4" />
+                <h2 className="font-bold text-xl text-black text-center">Slide 2</h2>
+              </div>
+            </SwiperSlide>
+            <SwiperSlide>
+              <div className="bg-gray-200 p-4 flex flex-col justify-center items-center">
+                <img src="/assets/home/1.png" alt="Slide 3" className="h-24 w-24 mb-4" />
+                <h2 className="font-bold text-xl text-black text-center">Slide 3</h2>
+              </div>
+            </SwiperSlide>
+            <SwiperSlide>
+              <div className="bg-gray-200 p-4 flex flex-col justify-center items-center">
+                <img src="/assets/home/1.png" alt="Slide 4" className="h-24 w-24 mb-4" />
+                <h2 className="font-bold text-xl text-black text-center">Slide 4</h2>
+              </div>
+            </SwiperSlide>
+          </Swiper>
+        </div>
+      </section>
+
+      {/* Categories Section */}
+      <section className="p-8">
+        <h2 className="text-xl font-bold mb-4 text-black">Categories</h2>
+        <div className="grid grid-cols-6 gap-4">
+          {[
+            { name: 'Alternative Energy', img: '/assets/home/1.png' },
+            { name: 'Wedding/Event Planning', img: '/assets/home/2.png' },
+            { name: 'Restaurant', img: '/assets/home/3.png' },
+            { name: 'Rent & Hire', img: '/assets/home/4.png' },
+            { name: 'Gym', img: '/assets/home/5.png' },
+            { name: 'Automobile', img: '/assets/home/6.png' },
+            { name: 'Contractors', img: '/assets/home/6.png' }
+          ].map((category) => (
+            <div key={category.name} className=" text-black text-center">
+              <img src={category.img} alt={category.name} className="h-24 w-24 mx-auto" />
+              <p className="mt-2">{category.name}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Popular Searches */}
+      <section className="p-8 bg-gray-50">
+        <h2 className="text-xl font-bold mb-4 text-black">Popular Searches</h2>
+        <div className="grid grid-cols-4 gap-4">
+          {['Construction Companies', 'Car Rental', 'Beauty Parlours', 'Mobile Phone Dealers'].map(
+            (item) => (
+              <div key={item} className="bg-white border rounded-md p-4 text-center text-black">
+                <p>{item}</p>
+                <button className="mt-4 bg-yellow-600 text-white px-4 py-2 rounded-lg">
+                  Enquire Now
+                </button>
+              </div>
+            )
+          )}
+        </div>
+      </section>
+
+      {/* Explore Cities */}
+      <section className="p-8">
+        <h2 className="text-xl font-bold mb-4 text-black">Explore Top Cities</h2>
+        <div className="grid grid-cols-3 gap-4">
+          {['Lusaka', 'Kitwe', 'Livingstone'].map((city) => (
+            <div
+              key={city}
+              className="border rounded-md p-4 text-center text-black bg-gray-100"
+            >
+              <h3 className="font-bold">{city.toUpperCase()}</h3>
+              <button className="mt-4 bg-yellow-600 text-white px-4 py-2 rounded-lg">
+                Explore
+              </button>
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   );
-}
+};
+
+export default Home;
