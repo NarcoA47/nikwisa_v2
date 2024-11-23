@@ -87,7 +87,7 @@ const Home: React.FC = () => {
       {/* Categories Section */}
       <section className="p-8">
         <h2 className="text-xl font-bold mb-4 text-black">Categories</h2>
-        <div className="grid grid-cols-6 gap-4">
+        <div className="grid grid-cols-8 gap-4">
           {[
             { name: 'Alternative Energy', img: '/assets/home/1.png' },
             { name: 'Wedding/Event Planning', img: '/assets/home/2.png' },
@@ -98,7 +98,7 @@ const Home: React.FC = () => {
             { name: 'Contractors', img: '/assets/home/6.png' }
           ].map((category) => (
             <div key={category.name} className=" text-black text-center">
-              <img src={category.img} alt={category.name} className="h-24 w-24 mx-auto" />
+              <img src={category.img} alt={category.name} className="h-18 w-18 mx-auto" />
               <p className="mt-2">{category.name}</p>
             </div>
           ))}
