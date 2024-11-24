@@ -12,7 +12,7 @@ const categories = [
   {
     name: "Wedding/Event Planning",
     img: "/assets/home/wedding.png",
-    url: "/wedding-event-planning",
+    url: "/event-planning",
   },
   {
     name: "Restaurant",
