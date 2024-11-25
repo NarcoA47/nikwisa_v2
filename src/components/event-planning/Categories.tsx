@@ -2,6 +2,7 @@
 
 import { events } from "@/data";
 import React from "react";
+import Link from "next/link"; // Import Link for better routing in Next.js
 
 interface EventCategory {
   id: number;
@@ -27,8 +28,10 @@ const Categories = () => {
       {/* Grid Container */}
       <div className="grid grid-cols-5 sm:grid-cols-6 lg:grid-cols-10 gap-4 mt-4 px-4 md:px-0">
         {events.map((category: EventCategory) => (
-          <a
-            href={`/categories/${category.name.toLowerCase()}`}
+          <Link
+            href={`/event-planning/${category.name
+              .toLowerCase()
+              .replace(/ /g, "-")}`}
             key={category.id}
             className="flex flex-col items-center text-center"
           >
@@ -44,7 +47,7 @@ const Categories = () => {
             <span className="mt-2 text-[8px] sm:text-[10px] lg:text-sm text-gray-700">
               {category.name}
             </span>
-          </a>
+          </Link>
         ))}
       </div>
     </section>

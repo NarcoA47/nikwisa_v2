@@ -8,3 +8,20 @@ export interface Product {
   rating: number;
   category: string;
 }
+
+export interface ServiceItem {
+  id: string; // Add this if not already present
+  name: string;
+  rating: number;
+  reviews: number;
+  location: string;
+  image: string;
+  services: string[];
+  phoneNumber?: string;
+  whatsappNumber?: string;
+}
+
+export interface CategoryData {
+  category: string;
+  items: ServiceItem[];
+}
