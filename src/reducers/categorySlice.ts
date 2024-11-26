@@ -20,7 +20,7 @@ const initialState: CategoryState = {
   error: null,
 };
 
-export const fetchCategories = createAsyncThunk('categories/fetchWeddingCategories', async () => {
+export const fetchCategories = createAsyncThunk('weddingscategory/fetchWeddingCategories', async () => {
   try {
     const response = await axios.get(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/weddingscategory/`);
     return response.data;
