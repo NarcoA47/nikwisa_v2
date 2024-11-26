@@ -5,7 +5,7 @@ import taskReducer from "./taskersSlice";
 import companyReducer from "./companySlice";
 import storeReducer from "./storeSlice";
 import weddingProductReducer from './weddingSlice';
-import categoryReducer from './categorySlice';
+import weddingcategoryReducer from './categorySlice';
 
 export const store = configureStore({
   reducer: {
@@ -15,7 +15,7 @@ export const store = configureStore({
     company: companyReducer,
     store: storeReducer,
     weddingProduct: weddingProductReducer,
-    categories: categoryReducer,
+    categories: weddingcategoryReducer,
   },
 });
 

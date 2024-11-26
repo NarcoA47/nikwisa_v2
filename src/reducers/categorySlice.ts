@@ -1,39 +1,48 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-interface Category {
+interface WeddingCategory {
   id: number;
   name: string;
   slug: string;
   image: string;
 }
 
-interface CategoryState {
-  categories: Category[];
+interface WeddingCategoryState {
+  weddingCategories: string[];
+  categories: WeddingCategory[];
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
 }
 
-const initialState: CategoryState = {
+const initialState: WeddingCategoryState = {
+  weddingCategories: [],
   categories: [],
   status: 'idle',
   error: null,
 };
 
-export const fetchCategories = createAsyncThunk('weddingscategory/fetchWeddingCategories', async () => {
-  try {
-    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/weddingscategory/`);
-    return response.data;
+export const fetchCategories = createAsyncThunk(
+  'weddingscategory/fetchWeddingCategories',
+  async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/weddingscategory/`
+      );
+      console.log('API response:', response.data); // Log the response
+      return response.data; // Assuming response.data is an array of categories
     } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      throw new Error(error.response.data?.message || 'Failed to fetch categories');
-    } else {
-      throw new Error('Failed to fetch category');
+      console.error('Error fetching categories:', error); // Log the error
+      if (axios.isAxiosError(error) && error.response) {
+        throw new Error(error.response.data?.message || 'Failed to fetch categories');
+      } else {
+        throw new Error('Failed to fetch categories');
+      }
     }
   }
-});
+);
 
-const categorySlice = createSlice({
+const weddingcategorySlice = createSlice({
   name: 'weddingCategories',
   initialState,
   reducers: {},
@@ -53,4 +62,4 @@ const categorySlice = createSlice({
   },
 });
 
-export default categorySlice.reducer;
+export default weddingcategorySlice.reducer;

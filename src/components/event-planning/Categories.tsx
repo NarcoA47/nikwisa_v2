@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Link from "next/link";
+import Image from "next/image";
 import { fetchCategories } from "../../reducers/categorySlice";
-import { RootState } from "../../reducers/store";
-import { AppDispatch } from "../../reducers/store";
+import { RootState, AppDispatch } from "../../reducers/store";
 
 interface EventCategory {
   id: number;
@@ -14,16 +14,20 @@ interface EventCategory {
 }
 
 const Categories = () => {
-
-  
   const dispatch: AppDispatch = useDispatch();
   const categories = useSelector((state: RootState) => state.categories.categories);
   const categoryStatus = useSelector((state: RootState) => state.categories.status);
   const error = useSelector((state: RootState) => state.categories.error);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
     dispatch(fetchCategories());
   }, [dispatch]);
+
+  if (!isClient) {
+    return null; // Render nothing on the server
+  }
 
   if (categoryStatus === 'loading') {
     return <div>Loading...</div>;
@@ -58,10 +62,13 @@ const Categories = () => {
           >
             {/* Image */}
             <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 xl:w-20 xl:h-20 bg-gray-200 rounded-full flex items-center justify-center">
-              <img
+              <Image
                 src={category.image}
                 alt={category.name}
                 className="w-full h-full object-cover rounded-full"
+                width={80} // Adjust width as needed
+                height={80} // Adjust height as needed
+                
               />
             </div>
             {/* Name */}
