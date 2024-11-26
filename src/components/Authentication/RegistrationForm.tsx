@@ -105,6 +105,7 @@ export default function RegistrationForm() {
           onChange={handleChange}
           className="form-input"
           required
+          placeholder={`Enter ${field.replace("_", " ")}`}
         />
       </div>
     ));
@@ -160,6 +161,8 @@ export default function RegistrationForm() {
             onChange={handleChange}
             className="form-input"
             required
+            title={field}
+            placeholder={`Enter ${field.replace("_", " ")}`}
           />
         </div>
       ))}

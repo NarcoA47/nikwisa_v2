@@ -1,8 +1,11 @@
 "use client";
 
-import { events } from "@/data";
-import React from "react";
-import Link from "next/link"; // Import Link for better routing in Next.js
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import Link from "next/link";
+import { fetchCategories } from "../../reducers/categorySlice";
+import { RootState } from "../../reducers/store";
+import { AppDispatch } from "../../reducers/store";
 
 interface EventCategory {
   id: number;
@@ -11,8 +14,26 @@ interface EventCategory {
 }
 
 const Categories = () => {
-  // Handle empty categories
-  if (events.length === 0) {
+
+  
+  const dispatch: AppDispatch = useDispatch();
+  const categories = useSelector((state: RootState) => state.categories.categories);
+  const categoryStatus = useSelector((state: RootState) => state.categories.status);
+  const error = useSelector((state: RootState) => state.categories.error);
+
+  useEffect(() => {
+    dispatch(fetchCategories());
+  }, [dispatch]);
+
+  if (categoryStatus === 'loading') {
+    return <div>Loading...</div>;
+  }
+
+  if (categoryStatus === 'failed') {
+    return <div>Error: {error}</div>;
+  }
+
+  if (categories.length === 0) {
     return <div>No categories available.</div>;
   }
 
@@ -27,7 +48,7 @@ const Categories = () => {
 
       {/* Grid Container */}
       <div className="grid grid-cols-5 sm:grid-cols-6 lg:grid-cols-10 gap-4 mt-4 px-4 md:px-0">
-        {events.map((category: EventCategory) => (
+        {categories.map((category: EventCategory) => (
           <Link
             href={`/event-planning/${category.name
               .toLowerCase()
