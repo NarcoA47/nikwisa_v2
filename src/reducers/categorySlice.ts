@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 interface WeddingCategory {
+  [x: string]: unknown;
   id: number;
   name: string;
   slug: string;

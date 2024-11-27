@@ -28,9 +28,19 @@ const initialState: WeddingProductState = {
   error: null,
 };
 
-export const fetchWeddingProduct = createAsyncThunk('weddingProduct/fetchWeddingProduct', async (productId: number) => {
-  const response = await axios.get(`/api/products/${productId}`);
-  return response.data;
+export const fetchWeddingProduct = createAsyncThunk('weddingProduct/fetchWeddingProduct', async (categoryId: number) => {
+  try {
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_ENDPOINT}/weddings/category/${categoryId}/`
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data?.message || 'Failed to fetch product');
+    } else {
+      throw new Error('Failed to fetch product');
+    }
+  }
 });
 
 const weddingProductSlice = createSlice({
