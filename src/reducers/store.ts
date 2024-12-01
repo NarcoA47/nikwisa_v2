@@ -3,9 +3,11 @@ import authReducer from "./authSlice";
 import { productReducer } from "./productSlice";
 import taskReducer from "./taskersSlice";
 import companyReducer from "./companySlice";
-import storeReducer from "./storeSlice";
-import weddingProductReducer from './weddingSlice';
-import weddingcategoryReducer from './categorySlice';
+import weddingProductReducer from "./weddingSlice";
+import weddingcategoryReducer from "./categorySlice";
+import uiReducer from "./uiSlice";
+import sidebarReducer from "./sidebarSlice";
+import { storeReducer } from "./storeSlice";
 
 export const store = configureStore({
   reducer: {
@@ -13,9 +15,11 @@ export const store = configureStore({
     product: productReducer,
     taskers: taskReducer,
     company: companyReducer,
-    store: storeReducer,
     weddingProduct: weddingProductReducer,
     categories: weddingcategoryReducer,
+    store: storeReducer,
+    ui: uiReducer,
+    sidebar: sidebarReducer,
   },
 });
 
