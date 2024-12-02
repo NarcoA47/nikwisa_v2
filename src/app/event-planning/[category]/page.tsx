@@ -21,9 +21,9 @@ const CategoryPage = ({ params }: { params: Params }) => {
 
   useEffect(() => {
     setIsClient(true);
-    const productId = parseInt(category, 4);
-    if (!isNaN(productId)) {
-      dispatch(fetchWeddingProduct(productId));
+    const categoryId = parseInt(category, 10);
+    if (!isNaN(categoryId)) {
+      dispatch(fetchWeddingProduct(categoryId));
     }
   }, [dispatch, category]);
 

@@ -30,11 +30,14 @@ const initialState: WeddingProductState = {
 
 export const fetchWeddingProduct = createAsyncThunk('weddingProduct/fetchWeddingProduct', async (categoryId: number) => {
   try {
+    console.log(`Fetching product for category ID: ${categoryId}`);
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_API_ENDPOINT}/weddings/category/${categoryId}/`
     );
+    console.log('API response:', response.data);
     return response.data;
   } catch (error) {
+    console.error('Error fetching product:', error);
     if (axios.isAxiosError(error) && error.response) {
       throw new Error(error.response.data?.message || 'Failed to fetch product');
     } else {
