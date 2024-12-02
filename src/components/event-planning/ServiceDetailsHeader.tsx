@@ -34,6 +34,7 @@ export default function ServiceDetailsHeader({
           </span>
         </div>
         <p className="text-gray-600">{service.location}</p>
+
         <button className="w-full md:w-1/2 bg-amber-600 text-white py-2.5 rounded-md font-medium hover:bg-amber-700 transition">
           Check Availability
         </button>

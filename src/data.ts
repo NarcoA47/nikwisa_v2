@@ -465,7 +465,31 @@ export const mockData = [
         reviews: 120,
         location: "Downtown, City",
         image: "/assets/home/hall.png",
-        services: ["Indoor Seating", "Catering Services", "Decoration"],
+        services: [
+          {
+            id: "service-1",
+            name: "Indoor Seating",
+            description:
+              "Spacious and comfortable seating arrangements for your guests.",
+            price: 500,
+            image: "/assets/home/hall.png",
+          },
+          {
+            id: "service-2",
+            name: "Catering Services",
+            description:
+              "Customized menus and professional catering for all events.",
+            price: 1500,
+            image: "/assets/home/decor.png",
+          },
+          {
+            id: "service-3",
+            name: "Decoration",
+            description: "Beautiful decor tailored to your event theme.",
+            price: 800,
+            image: "/assets/home/decor.png",
+          },
+        ],
         phoneNumber: "+260977123456",
         whatsappNumber: "+260977123456",
         overview:
@@ -502,7 +526,31 @@ export const mockData = [
         reviews: 90,
         location: "Uptown, City",
         image: "/assets/home/hall.png",
-        services: ["Outdoor Garden", "In-house Catering", "Parking"],
+        services: [
+          {
+            id: "service-4",
+            name: "Outdoor Garden",
+            description:
+              "A beautifully landscaped outdoor garden for your events.",
+            price: 700,
+            image: "/assets/services/outdoor-garden.png",
+          },
+          {
+            id: "service-5",
+            name: "In-house Catering",
+            description:
+              "Professional chefs offering high-quality food and service.",
+            price: 1200,
+            image: "/assets/home/decor.png",
+          },
+          {
+            id: "service-6",
+            name: "Parking",
+            description: "Ample parking space for your guests.",
+            price: 200,
+            image: "/assets/home/hall.png",
+          },
+        ],
         phoneNumber: "+260977654321",
         whatsappNumber: "+260977654321",
         overview:
@@ -545,9 +593,30 @@ export const mockData = [
         location: "Central City",
         image: "/assets/home/event.png",
         services: [
-          "Full Event Planning",
-          "Budget Management",
-          "Vendor Coordination",
+          {
+            id: "service-7",
+            name: "Full Event Planning",
+            description:
+              "Comprehensive planning services from start to finish.",
+            price: 2500,
+            image: "/assets/services/full-event-planning.png",
+          },
+          {
+            id: "service-8",
+            name: "Budget Management",
+            description:
+              "Effective cost management to match your vision and budget.",
+            price: 400,
+            image: "/assets/services/budget-management.png",
+          },
+          {
+            id: "service-9",
+            name: "Vendor Coordination",
+            description:
+              "Seamless coordination with all vendors involved in your event.",
+            price: 800,
+            image: "/assets/services/vendor-coordination.png",
+          },
         ],
         phoneNumber: "+260955112233",
         whatsappNumber: "+260955112233",
@@ -577,46 +646,6 @@ export const mockData = [
           },
         ],
       },
-      {
-        id: "wedding-planner-2",
-        name: "Forever Together Planners",
-        rating: 4.7,
-        reviews: 150,
-        location: "South City",
-        image: "/assets/home/event.png",
-        services: [
-          "Destination Weddings",
-          "Day-of Coordination",
-          "Theme Design",
-        ],
-        phoneNumber: "+260955223344",
-        whatsappNumber: "+260955223344",
-        overview:
-          "Forever Together Planners specialize in creating personalized and memorable weddings. Their destination wedding services are top-notch.",
-        photos: [
-          "/assets/home/event.png",
-          "/assets/home/decor.png",
-          "/assets/home/bridesmaids.png",
-        ],
-        reviewDetails: [
-          {
-            name: "Laura Wilson",
-            image: "/assets/home/person-7.png",
-            rating: 5,
-            reviewCount: 18,
-            reviewText:
-              "Their day-of coordination was a lifesaver! Everything went smoothly and on time.",
-          },
-          {
-            name: "Robert Green",
-            image: "/assets/home/person-8.png",
-            rating: 4.6,
-            reviewCount: 22,
-            reviewText:
-              "We loved how they personalized our wedding theme. Would definitely hire them again.",
-          },
-        ],
-      },
     ],
   },
   {
@@ -630,9 +659,28 @@ export const mockData = [
         location: "East City",
         image: "/assets/home/cateres.png",
         services: [
-          "Buffet Catering",
-          "Live Cooking Stations",
-          "Beverage Services",
+          {
+            id: "service-1",
+            name: "Buffet Catering",
+            description: "A variety of delicious dishes served buffet-style.",
+            price: "$500",
+            image: "/assets/home/buffet.png",
+          },
+          {
+            id: "service-2",
+            name: "Live Cooking Stations",
+            description: "Watch chefs prepare meals in front of your guests.",
+            price: "$700",
+            image: "/assets/home/live_cooking.png",
+          },
+          {
+            id: "service-3",
+            name: "Beverage Services",
+            description:
+              "Full beverage catering including soft drinks and cocktails.",
+            price: "$300",
+            image: "/assets/home/beverages.png",
+          },
         ],
         phoneNumber: "+260977334455",
         whatsappNumber: "+260977334455",
@@ -658,38 +706,6 @@ export const mockData = [
           },
         ],
       },
-      {
-        id: "wedding-caterer-2",
-        name: "Savory Feasts",
-        rating: 4.8,
-        reviews: 95,
-        location: "West City",
-        image: "/assets/home/cateres.png",
-        services: ["Custom Menus", "Wedding Cakes", "Cocktail Bars"],
-        phoneNumber: "+260977445566",
-        whatsappNumber: "+260977445566",
-        overview:
-          "Savory Feasts focuses on custom menus and creating signature cocktail bars that elevate every celebration.",
-        photos: ["/assets/home/cateres.png", "/assets/home/decor.png"],
-        reviewDetails: [
-          {
-            name: "Liam Thompson",
-            image: "/assets/home/person-11.png",
-            rating: 5,
-            reviewCount: 16,
-            reviewText:
-              "Their wedding cakes are stunning, and the cocktails were a big crowd favorite!",
-          },
-          {
-            name: "Sophia Martinez",
-            image: "/assets/home/person-12.png",
-            rating: 4.7,
-            reviewCount: 20,
-            reviewText:
-              "I loved how they crafted a personalized menu for us. Highly professional team.",
-          },
-        ],
-      },
     ],
   },
   {
@@ -702,7 +718,31 @@ export const mockData = [
         reviews: 140,
         location: "North City",
         image: "/assets/home/photographer.png",
-        services: ["Wedding Photography", "Photo Albums", "Drone Photography"],
+        services: [
+          {
+            id: "service-1",
+            name: "Wedding Photography",
+            description: "Capturing every precious moment of your wedding day.",
+            price: "$1500",
+            image: "/assets/home/wedding_photography.png",
+          },
+          {
+            id: "service-2",
+            name: "Photo Albums",
+            description:
+              "Custom photo albums to preserve your wedding memories.",
+            price: "$200",
+            image: "/assets/home/photo_album.png",
+          },
+          {
+            id: "service-3",
+            name: "Drone Photography",
+            description:
+              "Aerial shots of your event for a stunning perspective.",
+            price: "$600",
+            image: "/assets/home/drone_photography.png",
+          },
+        ],
         phoneNumber: "+260955556677",
         whatsappNumber: "+260955556677",
         overview:
@@ -732,42 +772,6 @@ export const mockData = [
           },
         ],
       },
-      {
-        id: "wedding-photographer-2",
-        name: "Shutter Bliss Photography",
-        rating: 4.7,
-        reviews: 125,
-        location: "Central City",
-        image: "/assets/home/photographer.png",
-        services: ["Candid Shots", "Engagement Shoots", "Custom Editing"],
-        phoneNumber: "+260955667788",
-        whatsappNumber: "+260955667788",
-        overview:
-          "Shutter Bliss Photography focuses on capturing raw emotions and candid moments that tell the unique story of your wedding day. With customizable editing options, we ensure every shot is picture-perfect.",
-        photos: [
-          "/assets/home/engagement_shoot.png",
-          "/assets/home/candid_shot.png",
-          "/assets/home/group_shot.png",
-        ],
-        reviewDetails: [
-          {
-            name: "Emily Carter",
-            image: "/assets/home/person-5.png",
-            rating: 4.9,
-            reviewCount: 25,
-            reviewText:
-              "Absolutely loved their candid shots! They made us feel so comfortable and natural.",
-          },
-          {
-            name: "James Patel",
-            image: "/assets/home/person-6.png",
-            rating: 4.6,
-            reviewCount: 18,
-            reviewText:
-              "Great service and friendly team. They made our pre-wedding shoot extra special!",
-          },
-        ],
-      },
     ],
   },
   {
@@ -781,10 +785,36 @@ export const mockData = [
         location: "East City",
         image: "/assets/home/dj.png",
         services: [
-          "Wedding DJ",
-          "Corporate Events",
-          "Birthday Parties",
-          "Custom Playlists",
+          {
+            id: "service-1",
+            name: "Wedding DJ",
+            description: "Providing music for your wedding celebration.",
+            price: "$1000",
+            image: "/assets/home/wedding_dj.png",
+          },
+          {
+            id: "service-2",
+            name: "Corporate Events",
+            description:
+              "Creating a lively atmosphere for your corporate events.",
+            price: "$1200",
+            image: "/assets/home/corporate_event.png",
+          },
+          {
+            id: "service-3",
+            name: "Birthday Parties",
+            description:
+              "Custom playlists and high-energy music for your party.",
+            price: "$800",
+            image: "/assets/home/birthday_party.png",
+          },
+          {
+            id: "service-4",
+            name: "Custom Playlists",
+            description: "Personalized playlists tailored to your event theme.",
+            price: "$200",
+            image: "/assets/home/custom_playlist.png",
+          },
         ],
         phoneNumber: "+260977123456",
         whatsappNumber: "+260977123456",
@@ -814,47 +844,6 @@ export const mockData = [
           },
         ],
       },
-      {
-        id: "dj-vibe-master",
-        name: "DJ Vibe Master",
-        rating: 4.6,
-        reviews: 92,
-        location: "South City",
-        image: "/assets/home/dj.png",
-        services: [
-          "Club DJ",
-          "Private Parties",
-          "Live Remixes",
-          "Sound Equipment Rental",
-        ],
-        phoneNumber: "+260977987654",
-        whatsappNumber: "+260977987654",
-        overview:
-          "DJ Vibe Master specializes in high-energy club mixes and private parties. With professional-grade sound equipment and a talent for live remixes, they bring the party wherever they go.",
-        photos: [
-          "/assets/home/dj_live_remix.png",
-          "/assets/home/party_crowd.png",
-          "/assets/home/sound_setup.png",
-        ],
-        reviewDetails: [
-          {
-            name: "Rachel Mwale",
-            image: "/assets/home/person-9.png",
-            rating: 4.8,
-            reviewCount: 22,
-            reviewText:
-              "Their live remixes are insane! We booked them for a club event, and they didn’t disappoint.",
-          },
-          {
-            name: "Eddie Chanda",
-            image: "/assets/home/person-10.png",
-            rating: 4.5,
-            reviewCount: 18,
-            reviewText:
-              "The sound quality was excellent, and their professionalism stood out. Highly recommend them!",
-          },
-        ],
-      },
     ],
   },
   {
@@ -868,10 +857,35 @@ export const mockData = [
         location: "Central City",
         image: "/assets/home/makeup_artist.png",
         services: [
-          "Bridal Makeup",
-          "Special Effects Makeup",
-          "Party Glam",
-          "Makeup Lessons",
+          {
+            id: "bridal-makeup",
+            serviceName: "Bridal Makeup",
+            description: "Professional makeup for brides on their wedding day.",
+            price: 150,
+            image: "/assets/home/bridal_makeup.png",
+          },
+          {
+            id: "special-effects-makeup",
+            serviceName: "Special Effects Makeup",
+            description: "Creative makeup for theatrical or costume events.",
+            price: 200,
+            image: "/assets/home/special_effects_makeup.png",
+          },
+          {
+            id: "party-glam",
+            serviceName: "Party Glam",
+            description: "Glamorous makeup for parties and night outs.",
+            price: 100,
+            image: "/assets/home/party_makeup.png",
+          },
+          {
+            id: "makeup-lessons",
+            serviceName: "Makeup Lessons",
+            description:
+              "Learn how to do your own makeup with expert guidance.",
+            price: 75,
+            image: "/assets/home/makeup_lessons.png",
+          },
         ],
         phoneNumber: "+260955445566",
         whatsappNumber: "+260955445566",
@@ -901,47 +915,6 @@ export const mockData = [
           },
         ],
       },
-      {
-        id: "beauty-by-ella",
-        name: "Beauty by Ella",
-        rating: 4.7,
-        reviews: 89,
-        location: "West City",
-        image: "/assets/home/makeup_artist.png",
-        services: [
-          "Bridal Makeup",
-          "Editorial Makeup",
-          "Makeup Consultations",
-          "Eyebrow Shaping",
-        ],
-        phoneNumber: "+260955112233",
-        whatsappNumber: "+260955112233",
-        overview:
-          "Beauty by Ella is known for her transformative makeup skills and personalized consultations. Whether you're walking down the aisle or prepping for a photoshoot, Ella ensures a flawless finish every time.",
-        photos: [
-          "/assets/home/editorial_makeup.png",
-          "/assets/home/eyebrow_shaping.png",
-          "/assets/home/makeup_palette.png",
-        ],
-        reviewDetails: [
-          {
-            name: "Chipo Lungu",
-            image: "/assets/home/person-13.png",
-            rating: 4.9,
-            reviewCount: 15,
-            reviewText:
-              "Ella’s skills are unmatched! My makeup looked amazing in all my photos.",
-          },
-          {
-            name: "Mary Zulu",
-            image: "/assets/home/person-14.png",
-            rating: 4.6,
-            reviewCount: 18,
-            reviewText:
-              "She gave me the perfect natural look I wanted for my event. Will definitely book again!",
-          },
-        ],
-      },
     ],
   },
   {
@@ -956,7 +929,32 @@ export const mockData = [
         reviews: 100,
         location: "Downtown",
         image: "/assets/home/suit.png",
-        services: ["Custom Wedding Dresses", "Alterations", "Veil Matching"],
+        services: [
+          {
+            id: "custom-dresses",
+            serviceName: "Custom Wedding Dresses",
+            description:
+              "Tailored wedding dresses designed to fit your exact measurements and style.",
+            price: 800,
+            image: "/assets/home/custom_wedding_dress.png",
+          },
+          {
+            id: "alterations",
+            serviceName: "Alterations",
+            description:
+              "Expert alterations for the perfect fit of your bridal dress.",
+            price: 100,
+            image: "/assets/home/alteration.png",
+          },
+          {
+            id: "veil-matching",
+            serviceName: "Veil Matching",
+            description:
+              "Choosing the perfect veil to complement your wedding dress.",
+            price: 50,
+            image: "/assets/home/veil_matching.png",
+          },
+        ],
         photos: [
           "/assets/home/hall.png",
           "/assets/home/decor.png",
@@ -981,42 +979,6 @@ export const mockData = [
           },
         ],
       },
-      {
-        id: "wedding-suits-2",
-        name: "Forever in White",
-        overview:
-          "A luxurious bridal boutique known for its exceptional customer service and exquisite range of ready-to-wear wedding dresses for brides of all styles.",
-        rating: 4.7,
-        reviews: 75,
-        location: "Uptown",
-        image: "/assets/home/suit.png",
-        services: ["Ready-to-Wear Dresses", "Sizing Assistance", "Accessories"],
-        phoneNumber: "+260955667788",
-        whatsappNumber: "+260955667788",
-        photos: [
-          "/assets/home/hall.png",
-          "/assets/home/decor.png",
-          "/assets/home/bridesmaids.png",
-        ],
-        reviewDetails: [
-          {
-            name: "Sarah Wilson",
-            image: "/assets/home/person-4.png",
-            rating: 5,
-            reviewCount: 11,
-            reviewText:
-              "Great customer service, and the dress was exactly what I was looking for.",
-          },
-          {
-            name: "David Brown",
-            image: "/assets/home/person-3.png",
-            rating: 4,
-            reviewCount: 12,
-            reviewText:
-              "The dress was lovely, but the fitting took a bit longer than expected.",
-          },
-        ],
-      },
     ],
   },
   {
@@ -1031,7 +993,32 @@ export const mockData = [
         reviews: 65,
         location: "East City",
         image: "/assets/home/cake.png",
-        services: ["Custom Wedding Cakes", "Cupcake Towers", "Dessert Buffets"],
+        services: [
+          {
+            id: "custom-wedding-cakes",
+            serviceName: "Custom Wedding Cakes",
+            description:
+              "Handcrafted cakes designed to match the theme of your wedding.",
+            price: 250,
+            image: "/assets/home/custom_wedding_cake.png",
+          },
+          {
+            id: "cupcake-towers",
+            serviceName: "Cupcake Towers",
+            description:
+              "Unique cupcake towers for a stylish and delicious alternative to a traditional wedding cake.",
+            price: 180,
+            image: "/assets/home/cupcake_tower.png",
+          },
+          {
+            id: "dessert-buffets",
+            serviceName: "Dessert Buffets",
+            description:
+              "A variety of delectable desserts for your wedding guests to enjoy.",
+            price: 300,
+            image: "/assets/home/dessert_buffet.png",
+          },
+        ],
         phoneNumber: "+260955667788",
         whatsappNumber: "+260955667788",
         photos: [
@@ -1058,46 +1045,6 @@ export const mockData = [
           },
         ],
       },
-      {
-        id: "wedding-cakes-2",
-        name: "Heavenly Layers Bakery",
-        overview:
-          "A renowned bakery specializing in stunning wedding cakes that are as beautiful as they are delicious. We bring your dream cake to life.",
-        rating: 4.9,
-        reviews: 85,
-        location: "South City",
-        image: "/assets/home/cake.png",
-        services: [
-          "Fondant Cakes",
-          "Flavor Customization",
-          "Anniversary Cakes",
-        ],
-        phoneNumber: "+260955667788",
-        whatsappNumber: "+260955667788",
-        photos: [
-          "/assets/home/hall.png",
-          "/assets/home/decor.png",
-          "/assets/home/bridesmaids.png",
-        ],
-        reviewDetails: [
-          {
-            name: "Sarah Wilson",
-            image: "/assets/home/person-4.png",
-            rating: 5,
-            reviewCount: 19,
-            reviewText:
-              "Best cake I've ever tasted! The fondant was smooth, and the filling was rich.",
-          },
-          {
-            name: "David Brown",
-            image: "/assets/home/person-3.png",
-            rating: 4.8,
-            reviewCount: 18,
-            reviewText:
-              "Fantastic service and beautiful cake design. Will definitely recommend.",
-          },
-        ],
-      },
     ],
   },
   {
@@ -1112,7 +1059,32 @@ export const mockData = [
         reviews: 40,
         location: "Downtown",
         image: "/assets/home/limo.png",
-        services: ["Luxury Cars", "Chauffeur Service", "Group Transport"],
+        services: [
+          {
+            id: "luxury-cars",
+            serviceName: "Luxury Cars",
+            description:
+              "Elegant luxury cars for weddings and other special occasions.",
+            price: 500,
+            image: "/assets/home/luxury_cars.png",
+          },
+          {
+            id: "chauffeur-service",
+            serviceName: "Chauffeur Service",
+            description:
+              "Professional chauffeur services for a comfortable and safe ride.",
+            price: 100,
+            image: "/assets/home/chauffeur_service.png",
+          },
+          {
+            id: "group-transport",
+            serviceName: "Group Transport",
+            description:
+              "Transporting large groups of guests in style and comfort.",
+            price: 300,
+            image: "/assets/home/group_transport.png",
+          },
+        ],
         phoneNumber: "+260955667788",
         whatsappNumber: "+260955667788",
         photos: [
@@ -1136,42 +1108,6 @@ export const mockData = [
             reviewCount: 18,
             reviewText:
               "Great service, though the vehicle was slightly delayed during pickup.",
-          },
-        ],
-      },
-      {
-        id: "wedding-transportation-2",
-        name: "Elegant Limo Service",
-        overview:
-          "Elegant Limo Service specializes in providing top-notch wedding transportation, offering a fleet of high-end limousines for a grand wedding day experience.",
-        rating: 4.7,
-        reviews: 50,
-        location: "North City",
-        image: "/assets/home/limo.png",
-        services: ["Limousine Rentals", "Event Transfers", "VIP Packages"],
-        phoneNumber: "+260955667788",
-        whatsappNumber: "+260955667788",
-        photos: [
-          "/assets/home/hall.png",
-          "/assets/home/decor.png",
-          "/assets/home/bridesmaids.png",
-        ],
-        reviewDetails: [
-          {
-            name: "Sarah Wilson",
-            image: "/assets/home/person-4.png",
-            rating: 5,
-            reviewCount: 18,
-            reviewText:
-              "Excellent service, and the limo was very comfortable for our guests.",
-          },
-          {
-            name: "David Brown",
-            image: "/assets/home/person-3.png",
-            rating: 4.5,
-            reviewCount: 18,
-            reviewText:
-              "The limousine was clean and spacious. A good choice for our wedding day.",
           },
         ],
       },
