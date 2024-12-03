@@ -9,6 +9,9 @@ import Categories from "@/components/Categories";
 import MiniCategories from "@/components/MiniCategories";
 import PopularSearches from "@/components/PopularSearches";
 import ExploreCities from "@/components/ExploreCities";
+import MobileCategories from "@/components/MobileCategories";
+import Services from "@/components/Services";
+import ExploreCitiesMobile from "@/components/ExploreCitiesMobile";
 
 const Home: React.FC = () => {
   // const [searchLocation, ] = useState("");
@@ -25,8 +28,10 @@ const Home: React.FC = () => {
       <HeroFilter />
       <Categories />
       <MiniCategories />
+      <MobileCategories />
       <PopularSearches />
       <ExploreCities />
+      <ExploreCitiesMobile />
     </div>
   );
 };
