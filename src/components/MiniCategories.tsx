@@ -1,8 +1,20 @@
 "use client";
+
 import Image from "next/image";
 import React from "react";
 
-const miniCategories = [
+// Data and Types
+interface CategoryItem {
+  name: string;
+  img: string;
+}
+
+interface Category {
+  title: string;
+  items: CategoryItem[];
+}
+
+const miniCategories: Category[] = [
   {
     title: "Wedding Requisites",
     items: [
@@ -22,8 +34,8 @@ const miniCategories = [
   {
     title: "Rent & Hire",
     items: [
-      { name: "Car Rental ", img: "/assets/home/car rental.png" },
-      { name: "constume Rental ", img: "/assets/home/costume hire.png" },
+      { name: "Car Rental", img: "/assets/home/car rental.png" },
+      { name: "Costume Rental", img: "/assets/home/costume hire.png" },
       { name: "Room Rental", img: "/assets/home/room hire.png" },
     ],
   },
@@ -39,45 +51,30 @@ const miniCategories = [
 
 function MiniCategories() {
   return (
-    <section className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+    <section className="hidden md:grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
       {miniCategories.map((category, index) => (
         <div
           key={index}
-          className="border border-gray-300 rounded-lg p-4 shadow-sm"
+          className="border border-gray-300 rounded-lg p-6 shadow-sm"
         >
-          {/* Title */}
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">
+          <h2 className="text-lg font-semibold text-gray-800 mb-6">
             {category.title}
           </h2>
 
-          {/* Horizontal Scrollable Section */}
-          <div className="relative">
-            <div className="flex gap-4 overflow-x-auto scrollbar-hide">
-              {category.items.map((item, i) => (
-                <div
-                  key={i}
-                  className="flex flex-col items-center text-center  md:w-24 shrink-0"
-                >
-                  <div className="relative w-20 h-20">
-                    {/* Next.js Image Component */}
-                    <Image
-                      src={item.img}
-                      alt={item.name}
-                      fill
-                      className="object-cover rounded-lg"
-                    />
-                  </div>
-                  <p className="text-sm text-gray-700 mt-2">{item.name}</p>
+          <div className="grid grid-cols-3 gap-4">
+            {category.items.map((item, i) => (
+              <div key={i} className="flex flex-col items-center text-center">
+                <div className="relative w-32 h-32 lg:w-40 lg:h-40">
+                  <Image
+                    src={item.img}
+                    alt={item.name}
+                    fill
+                    className="object-cover rounded-lg"
+                  />
                 </div>
-              ))}
-            </div>
-
-            {/* Scroll Indicator for Mobile */}
-            <div className="mt-2 flex justify-center items-center gap-1 md:hidden">
-              {category.items.map((_, i) => (
-                <div key={i} className="w-2 h-2 bg-gray-400 rounded-full"></div>
-              ))}
-            </div>
+                <p className="text-sm text-gray-700 mt-2">{item.name}</p>
+              </div>
+            ))}
           </div>
         </div>
       ))}
@@ -86,96 +83,3 @@ function MiniCategories() {
 }
 
 export default MiniCategories;
-
-// function MiniCategories() {
-//   return (
-//     <section className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
-//       {miniCategories.map((category, index) => (
-//         <div
-//           key={index}
-//           className="border border-gray-300 rounded-lg p-4 shadow-sm"
-//         >
-//           {/* Title */}
-//           <h2 className="text-lg font-semibold text-gray-800 mb-4">
-//             {category.title}
-//           </h2>
-
-//           {/* Horizontal Scrollable Section */}
-//           <div className="flex gap-4 overflow-x-auto scrollbar-hide">
-//             {category.items.map((item, i) => (
-//               <div
-//                 key={i}
-//                 className="flex flex-col items-center text-center w-32 md:w-24 shrink-0"
-//               >
-//                 <div className="relative w-20 h-20">
-//                   {/* Next.js Image Component */}
-//                   <Image
-//                     src={item.img}
-//                     alt={item.name}
-//                     fill
-//                     className="object-cover rounded-lg"
-//                   />
-//                 </div>
-//                 <p className="text-sm text-gray-700 mt-2">{item.name}</p>
-//               </div>
-//             ))}
-//           </div>
-//         </div>
-//       ))}
-//     </section>
-//   );
-// }
-
-// export default MiniCategories;
-
-// function MiniCategories() {
-//   return (
-//     <section className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
-//       {miniCategories.map((category, index) => (
-//         <div
-//           key={index}
-//           className="border border-gray-300 rounded-lg p-4 shadow-sm"
-//         >
-//           {/* Title */}
-//           <h2 className="text-lg font-semibold text-gray-800 mb-4">
-//             {category.title}
-//           </h2>
-
-//           {/* Horizontal Scrollable Section */}
-//           <div className="flex gap-4 overflow-x-auto scrollbar-hide">
-//             {category.items.map((item, i) => (
-//               <div
-//                 key={i}
-//                 className="flex flex-col items-center text-center w-32 md:w-24 shrink-0"
-//               >
-//                 <img
-//                   src={item.img}
-//                   alt={item.name}
-//                   className="w-20 h-20 object-cover rounded-lg mb-2"
-//                 />
-//                 <p className="text-sm text-gray-700">{item.name}</p>
-//               </div>
-//             ))}
-//           </div>
-//         </div>
-//       ))}
-//     </section>
-//   );
-// }
-
-// export default MiniCategories;
-
-// import React from "react";
-
-// function MiniCategories() {
-//   return (
-//     <section className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8 ">
-//       <div className="border border-black rounded h-40 md:h-64">1</div>
-//       <div className="border border-black rounded h-40 md:h-64">2</div>
-//       <div className="border border-black rounded h-40 md:h-64">3</div>
-//       <div className="border border-black rounded h-40 md:h-64">4</div>
-//     </section>
-//   );
-// }
-
-// export default MiniCategories;
