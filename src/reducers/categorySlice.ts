@@ -1,34 +1,31 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-interface WeddingCategory {
-  [x: string]: unknown;
+interface Category {
   id: number;
   name: string;
   slug: string;
   image: string;
 }
 
-interface WeddingCategoryState {
-  weddingCategories: string[];
-  categories: WeddingCategory[];
+interface CategoryState {
+  categories: Category[];
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
 }
 
-const initialState: WeddingCategoryState = {
-  weddingCategories: [],
+const initialState: CategoryState = {
   categories: [],
   status: 'idle',
   error: null,
 };
 
 export const fetchCategories = createAsyncThunk(
-  'weddingscategory/fetchWeddingCategories',
+  'categories/fetchCategories',
   async () => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/weddingscategory/`
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/categories/`
       );
       console.log('API response:', response.data); // Log the response
       return response.data; // Assuming response.data is an array of categories
@@ -43,8 +40,8 @@ export const fetchCategories = createAsyncThunk(
   }
 );
 
-const weddingcategorySlice = createSlice({
-  name: 'weddingCategories',
+const categorySlice = createSlice({
+  name: 'categories',
   initialState,
   reducers: {},
   extraReducers: (builder) => {
@@ -63,4 +60,4 @@ const weddingcategorySlice = createSlice({
   },
 });
 
-export default weddingcategorySlice.reducer;
+export default categorySlice.reducer;

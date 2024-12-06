@@ -4,8 +4,8 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Link from "next/link";
 import Image from "next/image";
-import { fetchCategories } from "../../reducers/categorySlice";
-import { RootState, AppDispatch } from "../../reducers/store";
+import { fetchCategories } from "@/reducers/categorySlice";
+import { RootState, AppDispatch } from "@/reducers/store";
 
 interface EventCategory {
   id: number;
@@ -55,8 +55,8 @@ const Categories = () => {
         {categories.map((category: EventCategory) => (
           <Link
             href={`/event-planning/${category.name
-              .toLowerCase()
-              .replace(/ /g, "-")}`}
+              ? category.name.toLowerCase().replace(/ /g, "-")
+              : ""}`}
             key={category.id}
             className="flex flex-col items-center text-center"
           >
@@ -68,7 +68,6 @@ const Categories = () => {
                 className="w-full h-full object-cover rounded-full"
                 width={80} // Adjust width as needed
                 height={80} // Adjust height as needed
-                
               />
             </div>
             {/* Name */}

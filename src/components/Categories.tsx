@@ -1,144 +1,83 @@
 "use client";
-import React from "react";
-import Image from "next/image";
-import Link from "next/link"; // Import Next.js Link component
 
-const categories = [
-  {
-    name: "Alternative Energy",
-    img: "/assets/home/solar-energy.png",
-    url: "/energy",
-  },
-  {
-    name: "Wedding/Event Planning",
-    img: "/assets/home/wedding.png",
-    url: "/event-planning",
-  },
-  {
-    name: "Restaurant",
-    img: "/assets/home/restuarant.png",
-    url: "/restaurant",
-  },
-  {
-    name: "Rent & Hire",
-    img: "/assets/home/rental-car.png",
-    url: "/rent-hire",
-  },
-  { name: "Gym", img: "/assets/home/workout.png", url: "/gym" },
-  { name: "Automobile", img: "/assets/home/mechanic.png", url: "/automobile" },
-  {
-    name: "Contractors",
-    img: "/assets/home/contractor.png",
-    url: "/contractors",
-  },
-];
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import Link from "next/link";
+import Image from "next/image";
+import { fetchCategories } from "@/reducers/categorySlice";
+import { RootState, AppDispatch } from "@/reducers/store";
+
+interface EventCategory {
+  id: number;
+  name: string;
+  slug: string;
+  image: string;
+}
 
 const Categories = () => {
-  return (
-    <div className="grid grid-cols-4 lg:grid-cols-10 gap-1 sm:gap-4 mt-8 md:mt-16">
-      {categories.map((category, index) => (
-        <div
-          key={index}
-          className="flex flex-col items-center text-center rounded-lg p-4 mb-0"
-        >
-          {/* Wrap the category in a Link component */}
-          <Link href={category.url} className="flex flex-col items-center">
-            {/* Outer container with defined size */}
-            <div className="w-16 md:w-24 h-16 md:h-24 flex items-center justify-center bg-gray-100 border border-gray-300 rounded-md overflow-hidden">
-              {/* Inner div to handle image size */}
-              <div className="relative w-full h-full">
-                <Image
-                  src={category.img}
-                  alt={category.name}
-                  layout="fill" // Ensures the image takes up the full width and height of the parent
-                  objectFit="cover" // Crops the image to maintain aspect ratio
-                  className="rounded-md"
-                  sizes="100vw"
-                />
-              </div>
-            </div>
+  const dispatch: AppDispatch = useDispatch();
+  const categories = useSelector((state: RootState) => state.categories.categories);
+  const categoryStatus = useSelector((state: RootState) => state.categories.status);
+  const error = useSelector((state: RootState) => state.categories.error);
+  const [isClient, setIsClient] = useState(false);
 
-            {/* Text under the photo/icon */}
-            <p className="mt-2 text-[10px] sm:text-xs lg:text-sm text-gray-800">
+  useEffect(() => {
+    setIsClient(true);
+    dispatch(fetchCategories());
+  }, [dispatch]);
+
+  if (!isClient) {
+    return null; // Render nothing on the server
+  }
+
+  if (categoryStatus === 'loading') {
+    return <div>Loading...</div>;
+  }
+
+  if (categoryStatus === 'failed') {
+    return <div>Error: {error}</div>;
+  }
+
+  if (categories.length === 0) {
+    return <div>No categories available.</div>;
+  }
+
+  return (
+    <section className="my-12">
+      {/* Header */}
+      <div className="flex justify-between items-center px-4 md:px-0">
+        <h3 className="text-xl font-semibold text-gray-800">
+          Wedding Planning
+        </h3>
+      </div>
+
+      {/* Grid Container */}
+      <div className="grid grid-cols-5 sm:grid-cols-6 lg:grid-cols-10 gap-4 mt-4 px-4 md:px-0">
+        {categories.map((category: EventCategory) => (
+          <Link
+            href={`/${category.slug}`}
+            key={category.id}
+            className="flex flex-col items-center text-center"
+          >
+            {/* Image */}
+            <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 xl:w-20 xl:h-20 bg-gray-200 rounded-full flex items-center justify-center">
+              <Image
+                src={category.image}
+                alt={category.name}
+                className="w-full h-full object-cover rounded-full"
+                width={80} // Adjust width as needed
+                height={80} // Adjust height as needed
+              />
+            </div>
+            {/* Name */}
+            <span className="mt-2 text-[8px] sm:text-[10px] lg:text-sm text-gray-700">
               {category.name}
-            </p>
+            </span>
           </Link>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+    </section>
   );
 };
 
 export default Categories;
-
-// "use client";
-// import React from "react";
-// import Image from "next/image";
-// import Link from "next/link"; // Import Next.js Link component
-
-// const categories = [
-//   {
-//     name: "Alternative Energy",
-//     img: "/assets/home/solar-energy.png",
-//     url: "/energy",
-//   },
-//   {
-//     name: "Wedding/Event Planning",
-//     img: "/assets/home/wedding.png",
-//     url: "/wedding-event-planning",
-//   },
-//   {
-//     name: "Restaurant",
-//     img: "/assets/home/restuarant.png",
-//     url: "/restaurant",
-//   },
-//   {
-//     name: "Rent & Hire",
-//     img: "/assets/home/rental-car.png",
-//     url: "/rent-hire",
-//   },
-//   { name: "Gym", img: "/assets/home/workout.png", url: "/gym" },
-//   { name: "Automobile", img: "/assets/home/mechanic.png", url: "/automobile" },
-//   {
-//     name: "Contractors",
-//     img: "/assets/home/contractor.png",
-//     url: "/contractors",
-//   },
-// ];
-
-// const Categories = () => {
-//   return (
-//     <div className="grid grid-cols-4 lg:grid-cols-10 gap-1 sm-gap-4 mt-8 md:mt-16">
-//       {categories.map((category, index) => (
-//         <div
-//           key={index}
-//           className="flex flex-col items-center text-center rounded-lg p-4 mb-0"
-//         >
-//           {/* Wrap the category in a Link component */}
-//           <Link href={category.url} className="flex flex-col items-center">
-//             {/* Square container for photo or icon */}
-//             <div className=" w-20 md:w-32 h-20 md:h-32 flex items-center justify-center bg-gray-100 border border-gray-300 rounded-md">
-//               <div className="relative w-15 md:w-25 h-15 md:h-25 flex items-center ">
-//                 <Image
-//                   src={category.img}
-//                   alt={category.name}
-//                   layout="fill" // Ensures the image takes up the full width and height of the parent
-//                   objectFit="cover" // Crops the image to maintain aspect ratio
-//                   className="rounded-md"
-//                   sizes="100vw"
-//                 />
-//               </div>
-//             </div>
-
-//             {/* Text under the photo/icon */}
-//             <p className="mt-2 text-[10px] sm:text-xs lg:text-sm text-gray-800">
-//               {category.name}
-//             </p>
-//           </Link>
-//         </div>
-//       ))}
-//     </div>
-//   );
-// };
-
-// export default Categories;
