@@ -9,7 +9,7 @@ import { RootState, AppDispatch } from "@/reducers/store";
 
 interface EventCategory {
   id: number;
-  name: string;
+  title: string;
   slug: string;
   image: string;
 }
@@ -63,7 +63,7 @@ const Categories = () => {
             <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 xl:w-20 xl:h-20 bg-gray-200 rounded-full flex items-center justify-center">
               <Image
                 src={category.image}
-                alt={category.name}
+                alt={category.title}
                 className="w-full h-full object-cover rounded-full"
                 width={80} // Adjust width as needed
                 height={80} // Adjust height as needed
@@ -71,7 +71,7 @@ const Categories = () => {
             </div>
             {/* Name */}
             <span className="mt-2 text-[8px] sm:text-[10px] lg:text-sm text-gray-700">
-              {category.name}
+              {category.title}
             </span>
           </Link>
         ))}

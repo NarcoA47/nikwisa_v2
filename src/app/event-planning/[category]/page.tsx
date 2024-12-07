@@ -1,41 +1,31 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useRouter } from "next/router";
+import Link from "next/link";
 import { fetchWeddingProduct } from "@/reducers/weddingSlice";
 import { RootState, AppDispatch } from "@/reducers/store";
-// import Category from "@/components/event-planning/Category";
 
-type Params = {
-  category: string;
-};
-
-const CategoryPage = ({ params }: { params: Params }) => {
+const CategoryPage = () => {
   const dispatch: AppDispatch = useDispatch();
-  const { category } = params;
-
+  const router = useRouter(); // Use useRouter instead of useNavigation
+  const { id } = router.query; // Access query parameters
   const product = useSelector((state: RootState) => state.weddingProduct.product);
   const productStatus = useSelector((state: RootState) => state.weddingProduct.status);
   const error = useSelector((state: RootState) => state.weddingProduct.error);
-  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setIsClient(true);
-    const categoryId = parseInt(category, 10);
-    if (!isNaN(categoryId)) {
-      dispatch(fetchWeddingProduct(categoryId));
+    if (id) {
+      dispatch(fetchWeddingProduct(Number(id)));
     }
-  }, [dispatch, category]);
+  }, [dispatch, id]);
 
-  if (!isClient) {
-    return null; // Render nothing on the server
-  }
-
-  if (productStatus === 'loading') {
+  if (productStatus === "loading") {
     return <div>Loading...</div>;
   }
 
-  if (productStatus === 'failed') {
+  if (productStatus === "failed") {
     return <div>Error: {error}</div>;
   }
 
@@ -50,18 +40,20 @@ const CategoryPage = ({ params }: { params: Params }) => {
   return (
     <div className="p-1 md:p-6 bg-gray-50 my-8">
       {/* Page Title */}
-      <h1 className="text-2xl font-bold text-gray-700">
-        {product.product_title.replace("-", " ").toUpperCase()}
+      {/* <h1 className="text-2xl font-bold text-gray-700">
+        {product.title.replace("-", " ").toUpperCase()}
       </h1>
 
-      {/* Product Details */}
       <div className="mt-6">
         <p>Location: {product.location}</p>
         <p>Contact: {product.contact}</p>
         <p>Services: {product.services}</p>
         <p>Rating: {product.rating}</p>
-        {/* Add more product details as needed */}
       </div>
+
+      <Link href="/categories">
+        <span className="text-blue-500 hover:underline">Back to Categories</span>
+      </Link> */}
     </div>
   );
 };

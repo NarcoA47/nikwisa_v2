@@ -4,25 +4,26 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Link from "next/link";
 import Image from "next/image";
-import { fetchCategories } from "@/reducers/categorySlice";
+import { fetchWeddingCategories } from "@/reducers/weddingSlice";
 import { RootState, AppDispatch } from "@/reducers/store";
 
 interface EventCategory {
+  slug: string;
   id: number;
-  name: string;
+  title: string;
   image: string;
 }
 
 const Categories = () => {
   const dispatch: AppDispatch = useDispatch();
-  const categories = useSelector((state: RootState) => state.categories.categories);
-  const categoryStatus = useSelector((state: RootState) => state.categories.status);
-  const error = useSelector((state: RootState) => state.categories.error);
+  const categories = useSelector((state: RootState) => state.weddingProduct.categories);
+  const categoryStatus = useSelector((state: RootState) => state.weddingProduct.status);
+  const error = useSelector((state: RootState) => state.weddingProduct.error);
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
-    dispatch(fetchCategories());
+    dispatch(fetchWeddingCategories());
   }, [dispatch]);
 
   if (!isClient) {
@@ -54,17 +55,22 @@ const Categories = () => {
       <div className="grid grid-cols-5 sm:grid-cols-6 lg:grid-cols-10 gap-4 mt-4 px-4 md:px-0">
         {categories.map((category: EventCategory) => (
           <Link
-            href={`/event-planning/${category.name
-              ? category.name.toLowerCase().replace(/ /g, "-")
-              : ""}`}
-            key={category.id}
-            className="flex flex-col items-center text-center"
-          >
+          href={
+            category.slug
+              ? `/event-planning/${category.slug.toLowerCase().replace(/ /g, "-")}`
+              : "#"
+          }
+          key={category.id}
+          className={`flex flex-col items-center text-center ${
+            !category.slug ? "cursor-not-allowed opacity-50" : ""
+          }`}
+          aria-disabled={!category.slug} // Optional: Accessibility
+        >
             {/* Image */}
             <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 xl:w-20 xl:h-20 bg-gray-200 rounded-full flex items-center justify-center">
               <Image
                 src={category.image}
-                alt={category.name}
+                alt={category.title}
                 className="w-full h-full object-cover rounded-full"
                 width={80} // Adjust width as needed
                 height={80} // Adjust height as needed
@@ -72,7 +78,7 @@ const Categories = () => {
             </div>
             {/* Name */}
             <span className="mt-2 text-[8px] sm:text-[10px] lg:text-sm text-gray-700">
-              {category.name}
+              {category.title}
             </span>
           </Link>
         ))}
