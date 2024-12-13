@@ -8,6 +8,7 @@ import BottomNavigation from "@/components/BottomNavigation";
 import SearchBar from "@/components/SearchBar";
 import { Provider } from "react-redux";
 import { store } from "@/reducers/store";
+import { BrowserRouter } from "react-router-dom";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -50,12 +51,27 @@ export default function RootLayout({
           >
             {children}
           </div>
+<<<<<<< Updated upstream
           {!isDashboardRoute && <BottomNavigation />}
         </Provider>
+=======
+        )}
+        <div
+          className={`${
+            isDashboardRoute ? "w-full h-full" : "w-11/12 lg:w-10/12 mx-auto"
+          }`}
+        >
+          <Provider store={store}>
+            <BrowserRouter>{children}</BrowserRouter>
+          </Provider>
+        </div>
+        {!isDashboardRoute && <BottomNavigation />}
+>>>>>>> Stashed changes
       </body>
     </html>
   );
 }
+<<<<<<< Updated upstream
 
 // "use client";
 
@@ -274,3 +290,5 @@ export default function RootLayout({
 //     </html>
 //   );
 // }
+=======
+>>>>>>> Stashed changes

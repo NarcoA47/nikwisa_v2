@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useRouter } from "next/router";
-import Link from "next/link";
+import { useNavigate } from "react-router-dom";
 import { fetchWeddingProduct } from "@/reducers/weddingSlice";
 import { RootState, AppDispatch } from "@/reducers/store";
 
 const CategoryPage = () => {
   const dispatch: AppDispatch = useDispatch();
+<<<<<<< Updated upstream
   const router = useRouter(); // Use useRouter instead of useNavigation
   const { id } = router.query; // Access query parameters
   const product = useSelector(
@@ -17,19 +17,35 @@ const CategoryPage = () => {
   const productStatus = useSelector(
     (state: RootState) => state.weddingProduct.status
   );
+=======
+  const navigate = useNavigate();
+  const product = useSelector((state: RootState) => state.weddingProduct.product);
+  const productStatus = useSelector((state: RootState) => state.weddingProduct.status);
+>>>>>>> Stashed changes
   const error = useSelector((state: RootState) => state.weddingProduct.error);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    if (id) {
-      dispatch(fetchWeddingProduct(Number(id)));
+    if (typeof window !== 'undefined') {
+      setIsClient(true);
     }
-  }, [dispatch, id]);
+  }, []);
 
-  if (productStatus === "loading") {
+  useEffect(() => {
+    if (isClient) {
+      dispatch(fetchWeddingProduct());
+    }
+  }, [dispatch, isClient]);
+
+  if (!isClient) {
+    return null; // Render nothing on the server
+  }
+
+  if (productStatus === 'loading') {
     return <div>Loading...</div>;
   }
 
-  if (productStatus === "failed") {
+  if (productStatus === 'failed') {
     return <div>Error: {error}</div>;
   }
 
@@ -37,6 +53,9 @@ const CategoryPage = () => {
     return (
       <div className="p-4">
         <h1 className="text-xl font-bold text-red-500">Product not found</h1>
+        <button onClick={() => navigate('/categories')} className="text-blue-500 hover:underline">
+          Back to Categories
+        </button>
       </div>
     );
   }
@@ -44,20 +63,23 @@ const CategoryPage = () => {
   return (
     <div className="p-1 md:p-6 bg-gray-50 my-8">
       {/* Page Title */}
-      {/* <h1 className="text-2xl font-bold text-gray-700">
-        {product.title.replace("-", " ").toUpperCase()}
+      <h1 className="text-2xl font-bold text-gray-700">
+        {product.title ? product.title.replace("-", " ").toUpperCase() : "No Title"}
       </h1>
 
+      {/* Product Details */}
       <div className="mt-6">
         <p>Location: {product.location}</p>
         <p>Contact: {product.contact}</p>
         <p>Services: {product.services}</p>
         <p>Rating: {product.rating}</p>
+        {/* Add more product details as needed */}
       </div>
 
-      <Link href="/categories">
-        <span className="text-blue-500 hover:underline">Back to Categories</span>
-      </Link> */}
+      {/* Back to Categories Link */}
+      <button onClick={() => navigate('/categories')} className="text-blue-500 hover:underline">
+        Back to Categories
+      </button>
     </div>
   );
 };

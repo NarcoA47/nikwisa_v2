@@ -57,7 +57,7 @@ const Categories = () => {
           <Link
           href={
             category.slug
-              ? `/event-planning/${category.slug.toLowerCase().replace(/ /g, "-")}`
+              ? `/event-planning/${category.slug.toLowerCase().replace(/ /g, "-")}/`
               : "#"
           }
           key={category.id}

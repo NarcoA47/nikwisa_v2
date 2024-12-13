@@ -39,18 +39,18 @@ const initialState: WeddingProductState = {
   error: null,
 };
 
-export const fetchWeddingProduct = createAsyncThunk('weddingProduct/fetchWeddingProduct', async (categoryId: number) => {
+export const fetchWeddingProduct = createAsyncThunk('weddingProduct/fetchWeddingProduct', async () => {
   try {
-    console.log(`Fetching product for category ID: ${categoryId}`);
+    console.log('Fetching all wedding products');
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_API_ENDPOINT}/weddings/`
     );
     console.log('API response:', response.data);
     return response.data;
   } catch (error) {
-    console.error('Error fetching product:', error);
+    console.error('Error fetching products:', error);
     if (axios.isAxiosError(error) && error.response) {
-      throw Error(error.response.data.message || 'Failed to fetch wedding product');
+      throw Error(error.response.data.message || 'Failed to fetch wedding products');
     }
     throw error;
   }
