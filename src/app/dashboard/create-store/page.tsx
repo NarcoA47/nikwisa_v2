@@ -1,211 +1,304 @@
 "use client";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/reducers/store";
+import { addStore, fetchStoreById, updateStore } from "@/reducers/storeSlice";
+import dynamic from "next/dynamic";
+import { FormRow } from "@/components/FormRow";
 
-import React, { useState } from "react";
+// Lazy load useRouter to avoid server-side rendering issues
+const DynamicRouter = dynamic(
+  () => import("next/router").then((mod) => mod.useRouter),
+  { ssr: false }
+);
 
-type Service = {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  image: string;
-};
+interface StoreOnboardingProps {
+  storeId?: string; // Optional for update, required for creating new store
+}
 
-type StoreData = {
-  name: string;
-  location: string;
-  phoneNumber: string;
-  whatsappNumber: string;
-  overview: string;
-  image: string;
-  photos: File[];
-  services: Service[];
-};
+const StoreOnboarding: React.FC<StoreOnboardingProps> = ({ storeId }) => {
+  const dispatch = useDispatch();
+  const router = DynamicRouter ? DynamicRouter() : null;
 
-const StoreOnboarding = () => {
+  // Select the store and loading state from Redux store
+  const store = useSelector((state: RootState) => state.stores.selectedStore);
+  const loading = useSelector((state: RootState) => state.stores.loading);
+  const error = useSelector((state: RootState) => state.stores.error);
+
+  // Form state for each step
   const [step, setStep] = useState(1);
-  const [storeData, setStoreData] = useState<StoreData>({
-    name: "",
-    location: "",
-    phoneNumber: "",
-    whatsappNumber: "",
-    overview: "",
-    image: "",
-    photos: [],
-    services: [],
-  });
+  const [name, setName] = useState("");
+  const [overview, setOverview] = useState("");
+  const [location, setLocation] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [whatsappNumber, setWhatsappNumber] = useState("");
+  const [image, setImage] = useState<File | null>(null);
+  const [services, setServices] = useState([
+    { name: "", description: "", price: 0, image: null },
+  ]);
+  const [photos, setPhotos] = useState<File[]>([]);
 
-  const handleNext = () => setStep((prev) => prev + 1);
-  const handlePrevious = () => setStep((prev) => prev - 1);
+  // Load store data if updating
+  useEffect(() => {
+    if (storeId) {
+      dispatch(fetchStoreById(storeId));
+    }
+  }, [storeId, dispatch]);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setStoreData((prev) => ({ ...prev, [name]: value }));
+  // Populate form with existing data if store is loaded
+  useEffect(() => {
+    if (store && storeId) {
+      setName(store.name);
+      setOverview(store.overview);
+      setLocation(store.location);
+      setPhoneNumber(store.phoneNumber || "");
+      setWhatsappNumber(store.whatsappNumber || "");
+      setServices(store.services || []);
+      setPhotos(store.photos || []);
+    }
+  }, [store, storeId]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const storeData = {
+      name,
+      overview,
+      location,
+      phoneNumber,
+      whatsappNumber,
+      image: image ? URL.createObjectURL(image) : "",
+      services,
+      photos: photos.map((photo) => URL.createObjectURL(photo)),
+      rating: 0, // Default rating
+      reviewDetails: [], // Empty review details
+    };
+
+    if (storeId) {
+      dispatch(updateStore({ storeId, storeData }));
+    } else {
+      dispatch(addStore(storeData));
+    }
   };
 
-  const addService = () => {
-    setStoreData((prev) => ({
-      ...prev,
-      services: [
-        ...prev.services,
-        { id: Date.now(), name: "", description: "", price: 0, image: "" },
-      ],
-    }));
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setImage(e.target.files[0]);
+    }
   };
 
-  const removeService = (id: number) => {
-    setStoreData((prev) => ({
-      ...prev,
-      services: prev.services.filter((service) => service.id !== id),
-    }));
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setPhotos([...photos, ...Array.from(e.target.files)]);
+    }
   };
 
   return (
     <div className="max-w-3xl mx-auto mt-8">
-      {/* Step Navigation */}
       <div className="flex justify-between mb-4">
         <button
           className="bg-gray-300 py-2 px-4 rounded disabled:opacity-50"
-          onClick={handlePrevious}
+          onClick={() => setStep(step - 1)}
           disabled={step === 1}
         >
           Previous
         </button>
         <button
           className="bg-[#B8902E] text-white py-2 px-4 rounded"
-          onClick={handleNext}
+          onClick={() => setStep(step + 1)}
           disabled={step === 4}
         >
           Next
         </button>
       </div>
 
-      {/* Steps */}
-      {step === 1 && (
-        <div>
-          <h2 className="text-lg font-bold mb-4">Store Information</h2>
-          <input
-            type="text"
-            name="name"
-            placeholder="Store Name"
-            className="w-full mb-4 p-2 border"
-            value={storeData.name}
-            onChange={handleChange}
-          />
-          <input
-            type="text"
-            name="location"
-            placeholder="Location"
-            className="w-full mb-4 p-2 border"
-            value={storeData.location}
-            onChange={handleChange}
-          />
-          <input
-            type="text"
-            name="phoneNumber"
-            placeholder="Phone Number"
-            className="w-full mb-4 p-2 border"
-            value={storeData.phoneNumber}
-            onChange={handleChange}
-          />
-          <textarea
-            name="overview"
-            placeholder="Store Overview"
-            className="w-full mb-4 p-2 border"
-            value={storeData.overview}
-            onChange={handleChange}
-          />
-        </div>
-      )}
-
-      {step === 2 && (
-        <div>
-          <h2 className="text-lg font-bold mb-4">Photos</h2>
-          <input
-            type="file"
-            multiple
-            onChange={(e) =>
-              setStoreData((prev) => ({
-                ...prev,
-                photos: Array.from(e.target.files || []),
-              }))
-            }
-          />
-        </div>
-      )}
-
-      {step === 3 && (
-        <div>
-          <h2 className="text-lg font-bold mb-4">Services</h2>
-          {storeData.services.map((service, index) => (
-            <div key={service.id} className="mb-4 border p-2 rounded">
+      <form onSubmit={handleSubmit}>
+        {/* Step 1: Store Information */}
+        {step === 1 && (
+          <div>
+            <h2 className="text-lg font-bold mb-4">Store Information</h2>
+            <FormRow
+              type="text"
+              name="name"
+              value={name}
+              handleChange={(e) => setName(e.target.value)}
+              labelText="Store Name"
+              placeholder="Enter store name"
+            />
+            <FormRow
+              type="textarea"
+              name="overview"
+              value={overview}
+              handleChange={(e) => setOverview(e.target.value)}
+              labelText="Store Overview"
+              placeholder="Enter a brief description"
+            />
+            <FormRow
+              type="text"
+              name="location"
+              value={location}
+              handleChange={(e) => setLocation(e.target.value)}
+              labelText="Location"
+              placeholder="Enter location"
+            />
+            <FormRow
+              type="text"
+              name="phoneNumber"
+              value={phoneNumber}
+              handleChange={(e) => setPhoneNumber(e.target.value)}
+              labelText="Phone Number"
+              placeholder="Enter phone number"
+            />
+            <FormRow
+              type="text"
+              name="whatsappNumber"
+              value={whatsappNumber}
+              handleChange={(e) => setWhatsappNumber(e.target.value)}
+              labelText="WhatsApp Number"
+              placeholder="Enter WhatsApp number"
+            />
+            <div className="form-row">
+              <label htmlFor="image" className="form-label">
+                Store Image
+              </label>
               <input
-                type="text"
-                placeholder="Service Name"
-                value={service.name}
-                className="w-full mb-2 p-2 border"
-                onChange={(e) =>
-                  setStoreData((prev) => {
-                    const updatedServices = [...prev.services];
-                    updatedServices[index].name = e.target.value;
-                    return { ...prev, services: updatedServices };
-                  })
-                }
+                type="file"
+                id="image"
+                className="form-input"
+                onChange={handleImageChange}
               />
-              <textarea
-                placeholder="Description"
-                value={service.description}
-                className="w-full mb-2 p-2 border"
-                onChange={(e) =>
-                  setStoreData((prev) => {
-                    const updatedServices = [...prev.services];
-                    updatedServices[index].description = e.target.value;
-                    return { ...prev, services: updatedServices };
-                  })
-                }
-              />
-              <input
-                type="number"
-                placeholder="Price"
-                value={service.price}
-                className="w-full mb-2 p-2 border"
-                onChange={(e) =>
-                  setStoreData((prev) => {
-                    const updatedServices = [...prev.services];
-                    updatedServices[index].price = parseFloat(e.target.value);
-                    return { ...prev, services: updatedServices };
-                  })
-                }
-              />
-              <button
-                className="bg-red-500 text-white py-1 px-2 rounded"
-                onClick={() => removeService(service.id)}
-              >
-                Remove Service
-              </button>
             </div>
-          ))}
-          <button
-            className="bg-green-500 text-white py-2 px-4 rounded"
-            onClick={addService}
-          >
-            Add Service
-          </button>
-        </div>
-      )}
+          </div>
+        )}
 
-      {step === 4 && (
-        <div>
-          <h2 className="text-lg font-bold mb-4">Preview</h2>
-          <pre className="bg-gray-100 p-4 rounded">
-            {JSON.stringify(storeData, null, 2)}
-          </pre>
-          <button className="bg-[#B8902E] text-white py-2 px-4 rounded mt-4">
-            Submit
-          </button>
-        </div>
-      )}
+        {/* Step 2: Photos */}
+        {step === 2 && (
+          <div>
+            <h2 className="text-lg font-bold mb-4">Store Photos</h2>
+            <input type="file" multiple onChange={handlePhotoChange} />
+            <div className="flex mt-2">
+              {photos.map((photo, index) => (
+                <img
+                  key={index}
+                  src={URL.createObjectURL(photo)}
+                  alt={`Store photo ${index}`}
+                  className="w-24 h-24 object-cover mr-2"
+                />
+              ))}
+            </div>
+          </div>
+        )}
+        {/* Step 3: Services */}
+        {step === 3 && (
+          <div>
+            <h2 className="text-lg font-bold mb-4">Services</h2>
+            {services.map((service, index) => (
+              <div key={index} className="border p-4 mb-4 rounded">
+                <FormRow
+                  type="text"
+                  name={`service-name-${index}`}
+                  value={service.name}
+                  handleChange={(e) =>
+                    handleServiceChange(index, "name", e.target.value)
+                  }
+                  labelText="Service Name"
+                  placeholder="Enter service name"
+                />
+                <FormRow
+                  type="textarea"
+                  name={`service-description-${index}`}
+                  value={service.description}
+                  handleChange={(e) =>
+                    handleServiceChange(index, "description", e.target.value)
+                  }
+                  labelText="Service Description"
+                  placeholder="Enter service description"
+                />
+                <FormRow
+                  type="number"
+                  name={`service-price-${index}`}
+                  value={service.price}
+                  handleChange={(e) =>
+                    handleServiceChange(
+                      index,
+                      "price",
+                      parseFloat(e.target.value)
+                    )
+                  }
+                  labelText="Price"
+                  placeholder="Enter service price"
+                />
+                <div className="form-row mb-4">
+                  <label
+                    htmlFor={`service-image-${index}`}
+                    className="form-label block text-gray-700 font-bold mb-2"
+                  >
+                    Service Image
+                  </label>
+                  <input
+                    type="file"
+                    id={`service-image-${index}`}
+                    className="form-input w-full p-2 border rounded"
+                    onChange={(e) =>
+                      handleServiceChange(
+                        index,
+                        "image",
+                        e.target.files?.[0] || null
+                      )
+                    }
+                  />
+                </div>
+                <button
+                  type="button"
+                  className="bg-red-500 text-white py-1 px-2 rounded"
+                  onClick={() => removeService(index)}
+                >
+                  Remove Service
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              className="bg-green-500 text-white py-2 px-4 rounded"
+              onClick={addService}
+            >
+              Add Service
+            </button>
+          </div>
+        )}
+
+        {/* Step 4: Preview and Submit */}
+        {step === 4 && (
+          <div>
+            <h2 className="text-lg font-bold mb-4">Preview</h2>
+            <pre className="bg-gray-100 p-4 rounded">
+              {JSON.stringify(
+                {
+                  name,
+                  overview,
+                  location,
+                  phoneNumber,
+                  whatsappNumber,
+                  services,
+                  photos,
+                },
+                null,
+                2
+              )}
+            </pre>
+            <button
+              type="submit"
+              className="bg-[#B8902E] text-white py-2 px-4 rounded mt-4"
+            >
+              {loading
+                ? "Saving..."
+                : storeId
+                ? "Update Store"
+                : "Create Store"}
+            </button>
+          </div>
+        )}
+      </form>
     </div>
   );
 };

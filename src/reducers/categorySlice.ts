@@ -1,5 +1,5 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
 
 interface Category {
   id: number;
@@ -10,52 +10,54 @@ interface Category {
 
 interface CategoryState {
   categories: Category[];
-  status: 'idle' | 'loading' | 'succeeded' | 'failed';
+  status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
 }
 
 const initialState: CategoryState = {
   categories: [],
-  status: 'idle',
+  status: "idle",
   error: null,
 };
 
 export const fetchCategories = createAsyncThunk(
-  'categories/fetchCategories',
+  "categories/fetchCategories",
   async () => {
     try {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_API_ENDPOINT}/categories/`
       );
-      console.log('API response:', response.data); // Log the response
+
       return response.data; // Assuming response.data is an array of categories
     } catch (error) {
-      console.error('Error fetching categories:', error); // Log the error
+      console.error("Error fetching categories:", error); // Log the error
       if (axios.isAxiosError(error) && error.response) {
-        throw new Error(error.response.data?.message || 'Failed to fetch categories');
+        throw new Error(
+          error.response.data?.message || "Failed to fetch categories"
+        );
       } else {
-        throw new Error('Failed to fetch categories');
+        throw new Error("Failed to fetch categories");
       }
     }
   }
 );
 
 const categorySlice = createSlice({
-  name: 'categories',
+  name: "categories",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchCategories.pending, (state) => {
-        state.status = 'loading';
+        state.status = "loading";
       })
       .addCase(fetchCategories.fulfilled, (state, action) => {
-        state.status = 'succeeded';
+        state.status = "succeeded";
         state.categories = action.payload;
       })
       .addCase(fetchCategories.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.error.message || 'Something went wrong';
+        state.status = "failed";
+        state.error = action.error.message || "Something went wrong";
       });
   },
 });

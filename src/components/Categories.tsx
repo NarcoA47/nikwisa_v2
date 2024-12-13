@@ -1,6 +1,4 @@
-"use client";
-
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Link from "next/link";
 import Image from "next/image";
@@ -16,29 +14,27 @@ interface EventCategory {
 
 const Categories = () => {
   const dispatch: AppDispatch = useDispatch();
-  const categories = useSelector((state: RootState) => state.categories.categories);
-  const categoryStatus = useSelector((state: RootState) => state.categories.status);
+  const categories = useSelector(
+    (state: RootState) => state.categories.categories
+  );
+  const categoryStatus = useSelector(
+    (state: RootState) => state.categories.status
+  );
   const error = useSelector((state: RootState) => state.categories.error);
-  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setIsClient(true);
     dispatch(fetchCategories());
   }, [dispatch]);
 
-  if (!isClient) {
-    return null; // Render nothing on the server
-  }
-
-  if (categoryStatus === 'loading') {
+  if (categoryStatus === "loading") {
     return <div>Loading...</div>;
   }
 
-  if (categoryStatus === 'failed') {
+  if (categoryStatus === "failed") {
     return <div>Error: {error}</div>;
   }
 
-  if (categories.length === 0) {
+  if (!categories || categories.length === 0) {
     return <div>No categories available.</div>;
   }
 
@@ -60,11 +56,16 @@ const Categories = () => {
             className="flex flex-col items-center text-center"
           >
             {/* Image */}
-            <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 xl:w-20 xl:h-20 bg-gray-200 rounded-full flex items-center justify-center">
+            <div
+              className={`w-8 h-8 sm:w-24 sm:h-24 flex items-center justify-center overflow-hidden
+      rounded-lg bg-gray-100 sm:rounded-md sm:border sm:border-gray-300 sm:hover:scale-105 sm:transition sm:duration-300`}
+            >
+              {/* <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 xl:w-20 xl:h-20 bg-gray-200 rounded-full flex items-center justify-center"> */}
               <Image
-                src={category.image}
+                src={`${category.image}`}
                 alt={category.title}
-                className="w-full h-full object-cover rounded-full"
+                // className="w-full h-full object-cover rounded-full"
+                className="object-cover"
                 width={80} // Adjust width as needed
                 height={80} // Adjust height as needed
               />

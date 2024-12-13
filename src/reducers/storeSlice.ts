@@ -118,6 +118,44 @@ export const addStore = createAsyncThunk(
   }
 );
 
+export const updateStore = createAsyncThunk(
+  "stores/updateStore",
+  async (
+    { storeId, storeData }: { storeId: string; storeData: Store },
+    thunkAPI
+  ) => {
+    try {
+      const response = await axios.put(
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/stores/${storeId}`,
+        storeData
+      );
+      return response.data as Store;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        return thunkAPI.rejectWithValue(error.response.data.message);
+      }
+      return thunkAPI.rejectWithValue("An unknown error occurred");
+    }
+  }
+);
+
+export const deleteStore = createAsyncThunk(
+  "stores/deleteStore",
+  async (storeId: string, thunkAPI) => {
+    try {
+      await axios.delete(
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/stores/${storeId}`
+      );
+      return storeId; // Return store ID to be deleted for state updates
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        return thunkAPI.rejectWithValue(error.response.data.message);
+      }
+      return thunkAPI.rejectWithValue("An unknown error occurred");
+    }
+  }
+);
+
 // Slice
 const storeSlice = createSlice({
   name: "stores",
@@ -193,65 +231,49 @@ const storeSlice = createSlice({
       state.loading = false;
       state.error = action.payload as string;
     });
+
+    // Update Store
+    builder.addCase(updateStore.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(
+      updateStore.fulfilled,
+      (state, action: PayloadAction<Store>) => {
+        state.loading = false;
+        const index = state.stores.findIndex(
+          (store) => store.id === action.payload.id
+        );
+        if (index !== -1) {
+          state.stores[index] = action.payload; // Update the store in the list
+        }
+      }
+    );
+    builder.addCase(updateStore.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string;
+    });
+
+    // Delete Store
+    builder.addCase(deleteStore.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(
+      deleteStore.fulfilled,
+      (state, action: PayloadAction<string>) => {
+        state.loading = false;
+        state.stores = state.stores.filter(
+          (store) => store.id !== action.payload
+        ); // Remove the deleted store from the list
+      }
+    );
+    builder.addCase(deleteStore.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string;
+    });
   },
 });
 
-// const storeSlice = createSlice({
-//   name: "stores",
-//   initialState,
-//   reducers: {},
-//   extraReducers: (builder) => {
-//     builder.addCase(fetchStoresWithServices.pending, (state) => {
-//       state.loading = true;
-//       state.error = null;
-//     });
-//     builder.addCase(
-//       fetchStoresWithServices.fulfilled,
-//       (state, action: PayloadAction<Store[]>) => {
-//         state.loading = false;
-//         state.stores = action.payload;
-//       }
-//     );
-//     builder.addCase(fetchStoresWithServices.rejected, (state, action) => {
-//       state.loading = false;
-//       state.error = action.payload as string;
-//     });
-
-//     builder.addCase(fetchStoreById.pending, (state) => {
-//       state.loading = true;
-//       state.error = null;
-//     });
-//     builder.addCase(
-//       fetchStoreById.fulfilled,
-//       (state, action: PayloadAction<Store>) => {
-//         state.loading = false;
-//         state.selectedStore = action.payload;
-//       }
-//     );
-//     builder.addCase(fetchStoreById.rejected, (state, action) => {
-//       state.loading = false;
-//       state.error = action.payload as string;
-//     });
-
-//     builder.addCase(fetchServicesByStoreId.pending, (state) => {
-//       state.loading = true;
-//       state.error = null;
-//     });
-//     builder.addCase(
-//       fetchServicesByStoreId.fulfilled,
-//       (state, action: PayloadAction<Service[]>) => {
-//         if (state.selectedStore) {
-//           state.selectedStore.services = action.payload;
-//         }
-//         state.loading = false;
-//       }
-//     );
-//     builder.addCase(fetchServicesByStoreId.rejected, (state, action) => {
-//       state.loading = false;
-//       state.error = action.payload as string;
-//     });
-//   },
-// });
-
-// Export the reducer
+// export default storeSlice.reducer;
 export const storeReducer = storeSlice.reducer;

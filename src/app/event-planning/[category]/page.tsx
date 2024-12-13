@@ -11,8 +11,12 @@ const CategoryPage = () => {
   const dispatch: AppDispatch = useDispatch();
   const router = useRouter(); // Use useRouter instead of useNavigation
   const { id } = router.query; // Access query parameters
-  const product = useSelector((state: RootState) => state.weddingProduct.product);
-  const productStatus = useSelector((state: RootState) => state.weddingProduct.status);
+  const product = useSelector(
+    (state: RootState) => state.weddingProduct.product
+  );
+  const productStatus = useSelector(
+    (state: RootState) => state.weddingProduct.status
+  );
   const error = useSelector((state: RootState) => state.weddingProduct.error);
 
   useEffect(() => {

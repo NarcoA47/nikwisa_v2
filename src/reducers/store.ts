@@ -8,6 +8,7 @@ import weddingcategoryReducer from "./categorySlice";
 import uiReducer from "./uiSlice";
 import sidebarReducer from "./sidebarSlice";
 import { storeReducer } from "./storeSlice";
+import { searchReducer } from "./searchSlice";
 
 export const store = configureStore({
   reducer: {
@@ -17,9 +18,10 @@ export const store = configureStore({
     company: companyReducer,
     weddingProduct: weddingProductReducer,
     categories: weddingcategoryReducer,
-    store: storeReducer,
+    stores: storeReducer,
     ui: uiReducer,
     sidebar: sidebarReducer,
+    search: searchReducer,
   },
 });
 
