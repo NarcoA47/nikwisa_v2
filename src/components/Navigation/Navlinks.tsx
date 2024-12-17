@@ -50,6 +50,13 @@ export const links = [
   },
   {
     id: 5,
+    text: "All Offerings",
+    path: "/dashboard/all-offerings",
+    icon: <MdQueryStats />,
+  },
+
+  {
+    id: 6,
     text: "Edit Store",
     path: "/dashboard/edit-store",
     icon: <FiSettings />,

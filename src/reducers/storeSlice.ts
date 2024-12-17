@@ -1,8 +1,9 @@
+import Offerings from "@/components/event-planning/tabs/Offerings";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 
 // Interfaces
-interface Service {
+interface Offering {
   id: string;
   name: string;
   description: string;
@@ -30,7 +31,7 @@ export interface Store {
   overview: string;
   photos: string[];
   reviewDetails: Review[];
-  services: Service[];
+  Offerings: Offering[];
 }
 
 interface StoreState {
@@ -49,8 +50,8 @@ const initialState: StoreState = {
 };
 
 // Async thunks
-export const fetchStoresWithServices = createAsyncThunk(
-  "stores/fetchStoresWithServices",
+export const fetchStoresWithOfferings = createAsyncThunk(
+  "stores/fetchStoresWithOfferings",
   async (_, thunkAPI) => {
     try {
       const response = await axios.get(
@@ -83,14 +84,14 @@ export const fetchStoreById = createAsyncThunk(
   }
 );
 
-export const fetchServicesByStoreId = createAsyncThunk(
-  "stores/fetchServicesByStoreId",
+export const fetchOfferingsByStoreId = createAsyncThunk(
+  "stores/fetchOfferingsByStoreId",
   async (storeId: string, thunkAPI) => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/stores/${storeId}/services`
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/stores/${storeId}/offerings`
       );
-      return response.data as Service[];
+      return response.data as Offering[];
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         return thunkAPI.rejectWithValue(error.response.data.message);
@@ -163,18 +164,18 @@ const storeSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     // Fetch Stores
-    builder.addCase(fetchStoresWithServices.pending, (state) => {
+    builder.addCase(fetchStoresWithOfferings.pending, (state) => {
       state.loading = true;
       state.error = null;
     });
     builder.addCase(
-      fetchStoresWithServices.fulfilled,
+      fetchStoresWithOfferings.fulfilled,
       (state, action: PayloadAction<Store[]>) => {
         state.loading = false;
         state.stores = action.payload;
       }
     );
-    builder.addCase(fetchStoresWithServices.rejected, (state, action) => {
+    builder.addCase(fetchStoresWithOfferings.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
     });
@@ -197,20 +198,20 @@ const storeSlice = createSlice({
     });
 
     // Fetch Services By Store ID
-    builder.addCase(fetchServicesByStoreId.pending, (state) => {
+    builder.addCase(fetchOfferingsByStoreId.pending, (state) => {
       state.loading = true;
       state.error = null;
     });
     builder.addCase(
-      fetchServicesByStoreId.fulfilled,
-      (state, action: PayloadAction<Service[]>) => {
+      fetchOfferingsByStoreId.fulfilled,
+      (state, action: PayloadAction<Offering[]>) => {
         if (state.selectedStore) {
-          state.selectedStore.services = action.payload;
+          state.selectedStore.Offerings = action.payload;
         }
         state.loading = false;
       }
     );
-    builder.addCase(fetchServicesByStoreId.rejected, (state, action) => {
+    builder.addCase(fetchOfferingsByStoreId.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
     });

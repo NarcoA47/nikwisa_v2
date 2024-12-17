@@ -2,40 +2,40 @@ import React from "react";
 import { FaPhone, FaWhatsapp, FaMapMarkerAlt, FaShare } from "react-icons/fa";
 import ImageSlider from "./ImageSlider";
 
-interface ServiceDetailsHeaderProps {
-  service: {
+interface StoreDetailsHeaderProps {
+  store: {
+    id: string;
     name: string;
     rating: number;
-    reviews: number;
+    reviewsCount: number;
     location: string;
     overview: string;
     image: string;
     phoneNumber?: string;
     whatsappNumber?: string;
     photos: string[]; // Array of photo URLs
+    reviewDetails?: { id: string; reviewText: string }[];
   };
 }
 
-export default function ServiceDetailsHeader({
-  service,
-}: ServiceDetailsHeaderProps) {
+export default function StoreDetailsHeader({ store }: StoreDetailsHeaderProps) {
   return (
     <div className="flex flex-col-reverse md:flex-row md:space-x-8 mb-8">
       {/* Left Section */}
       <div className="md:w-1/2">
         <h1 className="text-2xl md:text-6xl font-bold text-gray-900 mb-2.5">
-          {service.name}
+          {store.name}
         </h1>
         <div className="flex items-center gap-2 mb-2">
           <span className="bg-green-800 text-white px-3 py-1 rounded-md text-base md:text-lg">
-            {service.rating} ★
+            {store.rating.toFixed(1)} ★
           </span>
           <span className="text-base md:text-lg text-gray-600">
-            {service.reviews} Reviews
+            {store.reviewsCount} Reviews
           </span>
         </div>
-        <p className="text-gray-600 mb-0.5">{service.location}</p>
-        <p className="mb-0.5 text-sm">{service.overview}</p>
+        <p className="text-gray-600 mb-0.5">{store.location}</p>
+        <p className="mb-0.5 text-sm">{store.overview}</p>
         <div className="flex flex-col md:flex-row-reverse items-center md:space-x-4 ">
           {/* Check Availability Button */}
           <button className="w-full md:w-[33%] bg-amber-600 text-white py-2.5 rounded-md font-medium hover:bg-amber-700 transition">
@@ -48,14 +48,14 @@ export default function ServiceDetailsHeader({
               icon={FaPhone}
               label="Call"
               onClick={() =>
-                (window.location.href = `tel:${service.phoneNumber}`)
+                (window.location.href = `tel:${store.phoneNumber}`)
               }
             />
             <ContactButton
               icon={FaWhatsapp}
               label="WhatsApp"
               onClick={() => {
-                const cleanNumber = service.whatsappNumber?.replace(/\D/g, "");
+                const cleanNumber = store.whatsappNumber?.replace(/\D/g, "");
                 window.open(
                   `https://wa.me/${cleanNumber}?text=Hi,%20I'm%20interested%20in%20your%20services`,
                   "_blank"
@@ -68,7 +68,7 @@ export default function ServiceDetailsHeader({
               onClick={() =>
                 window.open(
                   `https://maps.google.com/?q=${encodeURIComponent(
-                    service.location
+                    store.location
                   )}`,
                   "_blank"
                 )
@@ -79,8 +79,8 @@ export default function ServiceDetailsHeader({
               label="Share"
               onClick={() =>
                 navigator.share?.({
-                  title: service.name,
-                  text: service.name,
+                  title: store.name,
+                  text: store.name,
                   url: window.location.href,
                 })
               }
@@ -90,7 +90,7 @@ export default function ServiceDetailsHeader({
       </div>
 
       {/* Image Section */}
-      <ImageSlider photos={service.photos} />
+      <ImageSlider photos={store.photos} />
     </div>
   );
 }
