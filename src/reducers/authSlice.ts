@@ -68,7 +68,7 @@ export const loginUser = createAsyncThunk(
   ) => {
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/auth/login/`,
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/token/`,
         {
           username,
           password,

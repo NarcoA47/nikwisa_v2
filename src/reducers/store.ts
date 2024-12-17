@@ -2,7 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./authSlice";
 import { productReducer } from "./productSlice";
 import taskReducer from "./taskersSlice";
-import companyReducer from "./companySlice";
+// import companyReducer from "./companySlice";
 import weddingProductReducer from "./weddingSlice";
 import weddingcategoryReducer from "./categorySlice";
 import uiReducer from "./uiSlice";
@@ -15,7 +15,7 @@ export const store = configureStore({
     auth: authReducer,
     product: productReducer,
     taskers: taskReducer,
-    company: companyReducer,
+    // company: companyReducer,
     weddingProduct: weddingProductReducer,
     categories: weddingcategoryReducer,
     stores: storeReducer,

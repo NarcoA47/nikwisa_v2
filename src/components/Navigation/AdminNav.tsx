@@ -4,16 +4,23 @@ import { FaAlignLeft, FaUserCircle, FaCaretDown } from "react-icons/fa";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleSidebar } from "@/reducers/sidebarSlice";
+import { logout } from "@/reducers/authSlice";
 import { RootState } from "@/reducers/store";
+import { useRouter } from "next/navigation";
 
 const AdminNav = () => {
   const dispatch = useDispatch();
+  const router = useRouter(); // For navigation after logout
   const [showLogout, setShowLogout] = useState(false);
 
-  // Get sidebar state
-  const showSidebar = useSelector(
-    (state: RootState) => state.sidebar.showSidebar
-  );
+  // Access user data from the Redux store
+  const user = useSelector((state: RootState) => state.auth.user);
+
+  // Handle logout
+  const handleLogout = () => {
+    dispatch(logout()); // Dispatch logout action
+    router.push("/signin"); // Redirect to the login page
+  };
 
   return (
     <nav className="h-16 bg-white shadow-md flex items-center justify-between transition-all duration-300">
@@ -38,14 +45,17 @@ const AdminNav = () => {
             onClick={() => setShowLogout(!showLogout)}
           >
             <FaUserCircle />
-            John Doe {/* Placeholder for user's name */}
+            {user?.username || "Guest"} {/* Display username */}
             <FaCaretDown />
           </button>
 
           {/* Dropdown Menu */}
           {showLogout && (
             <div className="absolute left-0 top-full mt-2 w-full bg-blue-100 shadow-lg text-center rounded-md py-2">
-              <button className="text-[#B8902E] capitalize px-4 py-2 w-full text-sm hover:bg-blue-200 rounded-md">
+              <button
+                className="text-[#B8902E] capitalize px-4 py-2 w-full text-sm hover:bg-blue-200 rounded-md"
+                onClick={handleLogout}
+              >
                 Logout
               </button>
             </div>

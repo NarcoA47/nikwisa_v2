@@ -6,8 +6,12 @@ import Prewedding from "@/components/event-planning/Prewedding";
 import HairAdd from "@/components/event-planning/HairAdd";
 import PhotographyAd from "@/components/event-planning/PhotographyAdd";
 import TheBigDay from "@/components/event-planning/TheBigDay";
+// import { useNavigate } from "react-router-dom";
 
 const page = () => {
+
+  // const navigate = useNavigate();
+
   return (
     <div>
       <Categories />

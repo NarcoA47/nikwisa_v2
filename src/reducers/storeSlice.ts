@@ -55,7 +55,7 @@ export const fetchStoresWithOfferings = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/stores`
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list`
       );
       return response.data as Store[];
     } catch (error) {
@@ -72,7 +72,7 @@ export const fetchStoreById = createAsyncThunk(
   async (storeId: string, thunkAPI) => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/stores/${storeId}`
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/${storeId}`
       );
       return response.data as Store;
     } catch (error) {
@@ -89,7 +89,11 @@ export const fetchOfferingsByStoreId = createAsyncThunk(
   async (storeId: string, thunkAPI) => {
     try {
       const response = await axios.get(
+<<<<<<< Updated upstream
         `${process.env.NEXT_PUBLIC_API_ENDPOINT}/stores/${storeId}/offerings`
+=======
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/${storeId}/`
+>>>>>>> Stashed changes
       );
       return response.data as Offering[];
     } catch (error) {
@@ -106,7 +110,7 @@ export const addStore = createAsyncThunk(
   async (storeData: Store, thunkAPI) => {
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/stores`,
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/`,
         storeData
       );
       return response.data as Store;
@@ -127,7 +131,7 @@ export const updateStore = createAsyncThunk(
   ) => {
     try {
       const response = await axios.put(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/stores/${storeId}`,
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/${storeId}`,
         storeData
       );
       return response.data as Store;
@@ -145,7 +149,7 @@ export const deleteStore = createAsyncThunk(
   async (storeId: string, thunkAPI) => {
     try {
       await axios.delete(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/stores/${storeId}`
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/${storeId}`
       );
       return storeId; // Return store ID to be deleted for state updates
     } catch (error) {
