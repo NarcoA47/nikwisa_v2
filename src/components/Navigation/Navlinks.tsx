@@ -14,10 +14,16 @@ export const links = [
   },
   {
     id: 3,
-    text: "Create Store",
-    path: "/dashboard/create-store",
+    text: "My Stores",
+    path: "/dashboard/stores-lists",
     icon: <RiStore2Fill />,
   },
+  // {
+  //   id: 3,
+  //   text: "Create Store",
+  //   path: "/dashboard/create-store",
+  //   icon: <RiStore2Fill />,
+  // },
   {
     id: 4,
     text: "Create Product",

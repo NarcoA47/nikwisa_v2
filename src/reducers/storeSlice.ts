@@ -1,4 +1,4 @@
-import Offerings from "@/components/event-planning/tabs/Offerings";
+// import Offerings from "@/components/event-planning/tabs/Offerings";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 
