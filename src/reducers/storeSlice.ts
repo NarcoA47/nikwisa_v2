@@ -89,11 +89,7 @@ export const fetchOfferingsByStoreId = createAsyncThunk(
   async (storeId: string, thunkAPI) => {
     try {
       const response = await axios.get(
-<<<<<<< Updated upstream
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/stores/${storeId}/offerings`
-=======
         `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/${storeId}/`
->>>>>>> Stashed changes
       );
       return response.data as Offering[];
     } catch (error) {

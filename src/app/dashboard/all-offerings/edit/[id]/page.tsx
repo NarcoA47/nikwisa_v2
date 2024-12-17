@@ -2,7 +2,6 @@
 import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
-// Simulated offering data (you may replace this with an API call)
 const offeringsData = [
   {
     id: "1",

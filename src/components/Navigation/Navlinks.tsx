@@ -1,30 +1,6 @@
-// import { links } from "@/data";
-// import Link from "next/link";
-
-// const Navlinks = ({ toggleSidebar }: { toggleSidebar?: () => void }) => {
-//   return (
-//     <nav className="flex flex-col space-y-4">
-//       {links.map(({ text, path, id }) => (
-//         <Link
-//           key={id}
-//           href={path}
-//           onClick={toggleSidebar}
-//           className="text-gray-700 hover:text-gray-900 transition"
-//         >
-//           {text}
-//         </Link>
-//       ))}
-//     </nav>
-//   );
-// };
-
-// export default Navlinks;
-
-// import { links } from "@/data"; // Importing links array
 import Link from "next/link";
 import { usePathname } from "next/navigation"; // To track the active route
 import { AiOutlineHome } from "react-icons/ai";
-import { FiSettings } from "react-icons/fi";
 import { MdQueryStats } from "react-icons/md";
 import { RiGitClosePullRequestFill, RiStore2Fill } from "react-icons/ri";
 
@@ -53,13 +29,6 @@ export const links = [
     text: "All Offerings",
     path: "/dashboard/all-offerings",
     icon: <MdQueryStats />,
-  },
-
-  {
-    id: 6,
-    text: "Edit Store",
-    path: "/dashboard/edit-store",
-    icon: <FiSettings />,
   },
 ];
 
