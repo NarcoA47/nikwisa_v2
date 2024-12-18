@@ -2,13 +2,13 @@
 
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { fetchWeddingProduct } from "@/reducers/weddingSlice";
 import { RootState, AppDispatch } from "@/reducers/store";
 
 const CategoryPage = () => {
   const dispatch: AppDispatch = useDispatch();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const product = useSelector(
     (state: RootState) => state.weddingProduct.product
   );
@@ -76,7 +76,7 @@ const CategoryPage = () => {
 
       {/* Back to Categories Link */}
       <button
-        onClick={() => navigate("/categories")}
+        // onClick={() => navigate("/categories")}
         className="text-blue-500 hover:underline"
       >
         Back to Categories
