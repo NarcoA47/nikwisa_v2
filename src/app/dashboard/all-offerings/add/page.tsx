@@ -1,5 +1,5 @@
 "use client";
-import ServiceForm from "@/components/ServiceForm";
+import OfferingForm from "@/components/OfferingForm";
 
 export default function AddServicePage() {
   const handleSubmit = async (serviceData: any) => {
@@ -9,7 +9,7 @@ export default function AddServicePage() {
 
   return (
     <div>
-      <ServiceForm onSubmit={handleSubmit} />
+      <OfferingForm onSubmit={handleSubmit} />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
+import StoreCard from "@/components/StoreCard"; // Adjust the import path if needed
 import { useDispatch, useSelector } from "react-redux";
 // import { useNavigate } from "react-router-dom";
 import { fetchWeddingProduct } from "@/reducers/weddingSlice";
@@ -12,66 +13,41 @@ const CategoryPage = () => {
   const product = useSelector(
     (state: RootState) => state.weddingProduct.product
   );
-  const productStatus = useSelector(
-    (state: RootState) => state.weddingProduct.status
-  );
-  const error = useSelector((state: RootState) => state.weddingProduct.error);
-  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      setIsClient(true);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (isClient) {
-      dispatch(fetchWeddingProduct());
-    }
-  }, [dispatch, isClient]);
-
-  if (!isClient) {
-    return null; 
-  }
-
-  if (productStatus === "loading") {
-    return <div>Loading...</div>;
-  }
-
-  if (productStatus === "failed") {
-    return <div>Error: {error}</div>;
-  }
-
-  if (!product) {
-    return (
-      <div className="p-4">
-        <h1 className="text-xl font-bold text-red-500">Product not found</h1>
-        <button
-          onClick={() => navigate("/categories")}
-          className="text-blue-500 hover:underline"
-        >
-          Back to Categories
-        </button>
-      </div>
-    );
-  }
+    // Fetch the stores on component mount
+    dispatch(fetchStoresWithOfferings());
+  }, [dispatch]);
 
   return (
-    <div className="p-1 md:p-6 bg-gray-50 my-8">
-      {/* Page Title */}
-      <h1 className="text-2xl font-bold text-gray-700">
-        {product.title
-          ? product.title.replace("-", " ").toUpperCase()
-          : "No Title"}
-      </h1>
+    <div className="p-4 md:p-6 my-4">
+      {/* Loading State */}
+      {loading && (
+        <p className="text-gray-500 text-center">Loading stores...</p>
+      )}
 
-      {/* Product Details */}
-      <div className="mt-6">
-        <p>Location: {product.location}</p>
-        <p>Contact: {product.contact}</p>
-        <p>Offerings: {product.offerings}</p>
-        <p>Rating: {product.rating}</p>
-        {/* Add more product details as needed */}
+      {/* Error State */}
+      {error && <p className="text-red-500 text-center">Error: {error}</p>}
+
+      {/* Store Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+        {stores.length > 0
+          ? stores.map((store) => (
+              <StoreCard
+                key={store.id}
+                id={store.id}
+                name={store.name}
+                image={store.image}
+                rating={store.rating}
+                reviews={store.reviews}
+                location={store.location}
+              />
+            ))
+          : !loading && (
+              <p className="text-center text-gray-600">
+                No stores available at the moment.
+              </p>
+            )}
       </div>
 
       {/* Back to Categories Link */}
