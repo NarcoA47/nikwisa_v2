@@ -1,34 +1,33 @@
 "use client";
 
+import { City } from "@/types/types";
 import React from "react";
-
-interface City {
-  id: number;
-  title: string;
-  image: string;
-}
 
 const ExploreCities: React.FC = () => {
   const TopCities: City[] = [
     {
       id: 1,
-      title: "Lusaka",
+      name: "Lusaka",
       image: "/assets/home/1.png",
+      url: "/banquet-hall",
     },
     {
       id: 2,
-      title: "Kitwe",
+      name: "Kitwe",
       image: "/assets/home/2.png",
+      url: "/banquet-hall",
     },
     {
       id: 3,
-      title: "Livingstone",
+      name: "Livingstone",
       image: "/assets/home/3.png",
+      url: "/banquet-hall",
     },
     {
       id: 4,
-      title: "Ndola",
+      name: "Ndola",
       image: "/assets/home/4.png",
+      url: "/banquet-hall",
     },
   ];
 
@@ -62,7 +61,7 @@ const ExploreCities: React.FC = () => {
               {/* City Title & Button */}
               <div className="p-4 w-3/5">
                 <h3 className="text-lg font-bold text-gray-800 mb-2">
-                  {city.title.toUpperCase()}
+                  {city.name.toUpperCase()}
                 </h3>
                 <button className="text-[#D1B898] font-semibold hover:underline">
                   Explore &rsaquo;

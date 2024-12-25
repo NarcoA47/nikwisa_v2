@@ -10,25 +10,25 @@ const miniCategories = [
       {
         id: 1,
         name: "Banquet Hall",
-        img: "/assets/home/hall.png",
+        image: "/assets/home/hall.png",
         url: "/banquet-hall",
       },
       {
         id: 2,
         name: "Wedding Rings",
-        img: "/assets/home/rings.png",
+        image: "/assets/home/rings.png",
         url: "/wedding-rings",
       },
       {
         id: 3,
         name: "Caterers",
-        img: "/assets/home/cateres.png",
+        image: "/assets/home/cateres.png",
         url: "/caterers",
       },
       {
         id: 4,
         name: "Florists",
-        img: "/assets/home/florist.png",
+        image: "/assets/home/florist.png",
         url: "/florists",
       },
     ],
@@ -39,25 +39,25 @@ const miniCategories = [
       {
         id: 5,
         name: "Plumber",
-        img: "/assets/home/plumber.png",
+        image: "/assets/home/plumber.png",
         url: "/plumber",
       },
       {
         id: 6,
         name: "Bricklayer",
-        img: "/assets/home/bricklayer.png",
+        image: "/assets/home/bricklayer.png",
         url: "/bricklayer",
       },
       {
         id: 7,
         name: "Electrician",
-        img: "/assets/home/electrician.png",
+        image: "/assets/home/electrician.png",
         url: "/electrician",
       },
       {
         id: 8,
         name: "Painter",
-        img: "/assets/home/painter.png",
+        image: "/assets/home/painter.png",
         url: "/painter",
       },
     ],
@@ -81,7 +81,7 @@ function MobileCategories() {
                 key={item.id}
                 id={item.id}
                 name={item.name}
-                img={item.img}
+                image={item.image}
                 url={item.url}
               />
             ))}

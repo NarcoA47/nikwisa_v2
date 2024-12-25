@@ -9,6 +9,8 @@ import uiReducer from "./uiSlice";
 import sidebarReducer from "./sidebarSlice";
 import { storeReducer } from "./storeSlice";
 import { searchReducer } from "./searchSlice";
+import { reviewsReducer } from "./reviewSlice";
+import { offeringsReducer } from "./offeringsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -22,6 +24,8 @@ export const store = configureStore({
     ui: uiReducer,
     sidebar: sidebarReducer,
     search: searchReducer,
+    reviews: reviewsReducer,
+    offerings: offeringsReducer,
   },
 });
 

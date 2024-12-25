@@ -6,7 +6,7 @@ import React from "react";
 // Data and Types
 interface CategoryItem {
   name: string;
-  img: string;
+  image: string;
 }
 
 interface Category {
@@ -18,33 +18,33 @@ const miniCategories: Category[] = [
   {
     title: "Wedding Requisites",
     items: [
-      { name: "Banquet Hall", img: "/assets/home/hall.png" },
-      { name: "Wedding Rings", img: "/assets/home/rings.png" },
-      { name: "Caterers", img: "/assets/home/cateres.png" },
+      { name: "Banquet Hall", image: "/assets/home/hall.png" },
+      { name: "Wedding Rings", image: "/assets/home/rings.png" },
+      { name: "Caterers", image: "/assets/home/cateres.png" },
     ],
   },
   {
     title: "Construction",
     items: [
-      { name: "Plumber", img: "/assets/home/plumber.png" },
-      { name: "Bricklayer", img: "/assets/home/bricklayer.png" },
-      { name: "Electrician", img: "/assets/home/electrician.png" },
+      { name: "Plumber", image: "/assets/home/plumber.png" },
+      { name: "Bricklayer", image: "/assets/home/bricklayer.png" },
+      { name: "Electrician", image: "/assets/home/electrician.png" },
     ],
   },
   {
     title: "Rent & Hire",
     items: [
-      { name: "Car Rental", img: "/assets/home/car rental.png" },
-      { name: "Costume Rental", img: "/assets/home/costume hire.png" },
-      { name: "Room Rental", img: "/assets/home/room hire.png" },
+      { name: "Car Rental", image: "/assets/home/car rental.png" },
+      { name: "Costume Rental", image: "/assets/home/costume hire.png" },
+      { name: "Room Rental", image: "/assets/home/room hire.png" },
     ],
   },
   {
     title: "Restaurant",
     items: [
-      { name: "Breakfast", img: "/assets/home/food 1.png" },
-      { name: "Chinese", img: "/assets/home/food 2.png" },
-      { name: "Italian", img: "/assets/home/food 3.png" },
+      { name: "Breakfast", image: "/assets/home/food 1.png" },
+      { name: "Chinese", image: "/assets/home/food 2.png" },
+      { name: "Italian", image: "/assets/home/food 3.png" },
     ],
   },
 ];
@@ -66,7 +66,7 @@ function MiniCategories() {
               <div key={i} className="flex flex-col items-center text-center">
                 <div className="relative w-32 h-32 lg:w-40 lg:h-40">
                   <Image
-                    src={item.img}
+                    src={item.image}
                     alt={item.name}
                     fill
                     className="object-cover rounded-lg"

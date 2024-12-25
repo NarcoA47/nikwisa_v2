@@ -1,8 +1,5 @@
+import { SidebarState } from "@/types/types";
 import { createSlice } from "@reduxjs/toolkit";
-
-interface SidebarState {
-  showSidebar: boolean;
-}
 
 const initialState: SidebarState = {
   showSidebar: false,

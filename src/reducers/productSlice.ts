@@ -1,44 +1,12 @@
+import {
+  FetchCategoriesPayload,
+  FetchProductsPayload,
+  Product,
+  ProductState,
+} from "@/types/types";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 // import { ReactNode } from 'react';
-
-// Interfaces
-export interface Product {
-  [x: string]: unknown;
-  title: string | undefined;
-  id: number;
-  name: string;
-  description: string;
-  price: string;
-  image: string;
-  stock: number;
-  rating: number;
-  category: string;
-}
-
-interface Category {
-  id: number;
-  name: string;
-  image: string;
-}
-
-interface FetchProductsPayload {
-  results: Product[];
-}
-
-interface FetchCategoriesPayload {
-  results: Category[];
-}
-
-interface ProductState {
-  selectedProduct: unknown;
-  products: Product[];
-  topSellingProducts: Product[];
-  categories: Category[];
-  loading: boolean;
-  error: string | null;
-  selectedStore: Store | null;
-}
 
 const initialState: ProductState = {
   products: [],
