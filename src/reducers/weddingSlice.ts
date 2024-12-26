@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { ReactNode } from 'react';
-import { Store } from './storeSlice';
+// import { Store } from './storeSlice';
 
 interface WeddingProduct {
   location: ReactNode;
@@ -42,7 +42,7 @@ const initialState: WeddingProductState = {
   status: "idle",
   error: null,
   loading: undefined,
-  stores: [] as Store[],
+  // stores: undefined,
 
 };
 
