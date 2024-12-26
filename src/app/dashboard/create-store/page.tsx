@@ -5,16 +5,13 @@ import { RootState } from "@/reducers/store";
 import { addStore, fetchStoreById, updateStore } from "@/reducers/storeSlice";
 import dynamic from "next/dynamic";
 import { FormRow } from "@/components/FormRow";
+// import { StoreOnboardingProps } from "@/types/types";
 
 // Lazy load useRouter to avoid server-side rendering issues
 const DynamicRouter = dynamic(
   () => import("next/router").then((mod) => mod.useRouter),
   { ssr: false }
 );
-
-interface StoreOnboardingProps {
-  storeId?: string; // Optional for update, required for creating new store
-}
 
 const StoreOnboarding: React.FC<StoreOnboardingProps> = ({ storeId }) => {
   const dispatch = useDispatch();

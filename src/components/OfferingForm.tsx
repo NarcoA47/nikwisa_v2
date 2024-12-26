@@ -2,17 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FormRow } from "./FormRow"; // Assuming FormRow is the same for both forms
-
-interface OfferingFormProps {
-  initialData?: {
-    id?: string;
-    name: string;
-    description: string;
-    price: number;
-    image: string;
-  };
-  isEdit?: boolean;
-}
+import { OfferingFormProps } from "@/types/types";
 
 export default function OfferingForm({
   initialData,

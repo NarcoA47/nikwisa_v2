@@ -1,18 +1,6 @@
+import { Category, CategoryState } from "@/types/types";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-
-interface Category {
-  id: number;
-  title: string;
-  slug: string;
-  image: string;
-}
-
-interface CategoryState {
-  categories: Category[];
-  status: "idle" | "loading" | "succeeded" | "failed";
-  error: string | null;
-}
 
 const initialState: CategoryState = {
   categories: [],

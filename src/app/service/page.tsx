@@ -1,17 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import { FaPhone, FaWhatsapp, FaMapMarkerAlt, FaShare } from "react-icons/fa";
-
-interface ServiceDetailProps {
-  name: string;
-  rating: number;
-  reviews: number;
-  location: string;
-  mainImage: string;
-  description: string;
-  phone?: string;
-  whatsapp?: string;
-}
+import { ServiceDetailProps } from "@/types/types";
 
 const ServiceDetail: React.FC<ServiceDetailProps> = ({
   name,

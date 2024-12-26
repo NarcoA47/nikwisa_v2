@@ -2,27 +2,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { RootState } from "./store";
-
-// Interfaces
-interface UserProfile {
-  id: string;
-  user_id: number;
-  username: string;
-  email: string;
-  role: string;
-  // Add other user profile fields as needed
-}
-
-interface AuthState {
-  initialState: { user_id: number; username: string; email: string };
-  role: string | null;
-  access: unknown;
-  user: UserProfile | null;
-  accessToken: string | null;
-  refreshToken: string | null;
-  loading: boolean;
-  error: string | null;
-}
+import { AuthState, UserProfile } from "@/types/types";
 
 const initialState: AuthState = {
   user: null,

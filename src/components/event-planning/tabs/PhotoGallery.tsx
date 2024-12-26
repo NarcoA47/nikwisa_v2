@@ -1,9 +1,6 @@
 "use client";
 
-interface PhotosTabProps {
-  serviceName: string;
-  photos: string[];
-}
+import { PhotosTabProps } from "@/types/types";
 
 export default function PhotosGallery({ serviceName, photos }: PhotosTabProps) {
   return (

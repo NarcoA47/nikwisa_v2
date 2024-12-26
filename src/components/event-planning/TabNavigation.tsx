@@ -1,10 +1,5 @@
+import { TabNavigationProps } from "@/types/types";
 import React from "react";
-
-interface TabNavigationProps {
-  tabs: string[];
-  activeTab: string;
-  onTabClick: (tab: string) => void;
-}
 
 export default function TabNavigation({
   tabs,

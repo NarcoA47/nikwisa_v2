@@ -1,10 +1,7 @@
 "use client";
 
+import { ImageSliderProps } from "@/types/types";
 import React, { useEffect, useState } from "react";
-
-interface ImageSliderProps {
-  photos: string[]; // This is an array of photo URLs
-}
 
 const HomeSlider: React.FC<ImageSliderProps> = ({ photos }) => {
   const [currentImage, setCurrentImage] = useState(0);

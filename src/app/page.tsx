@@ -6,11 +6,12 @@ import "swiper/css/effect-fade";
 // import { useState } from "react";
 import HeroFilter from "@/components/HeroFilter";
 import Categories from "@/components/Categories";
-import MiniCategories from "@/components/MiniCategories";
+
 import PopularSearches from "@/components/PopularSearches";
 import ExploreCities from "@/components/ExploreCities";
 import MobileCategories from "@/components/MobileCategories";
 import ExploreCitiesMobile from "@/components/ExploreCitiesMobile";
+import MiniCategories from "@/components/MiniCategories";
 
 const Home: React.FC = () => {
   // const [searchLocation, ] = useState("");

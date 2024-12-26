@@ -1,21 +1,6 @@
+import { SearchResult, SearchState } from "@/types/types";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
-
-// Interfaces
-interface SearchResult {
-  id: string;
-  name: string;
-  location: string;
-  rating: number;
-  services: string[];
-  image: string;
-}
-
-interface SearchState {
-  results: SearchResult[];
-  loading: boolean;
-  error: string | null;
-}
 
 // Initial state
 const initialState: SearchState = {

@@ -2,38 +2,32 @@
 
 import React from "react";
 import CategoryCard from "./CategoryCard";
-
-interface City {
-  id: number;
-  name: string;
-  img: string;
-  url: string;
-}
+import { City } from "@/types/types";
 
 const ExploreCitiesMobile: React.FC = () => {
   const TopCities: City[] = [
     {
       id: 1,
       name: "Lusaka",
-      img: "/assets/home/1.png",
+      image: "/assets/home/1.png",
       url: "/banquet-hall",
     },
     {
       id: 2,
       name: "Kitwe",
-      img: "/assets/home/2.png",
+      image: "/assets/home/2.png",
       url: "/banquet-hall",
     },
     {
       id: 3,
       name: "Livingstone",
-      img: "/assets/home/3.png",
+      image: "/assets/home/3.png",
       url: "/banquet-hall",
     },
     {
       id: 4,
       name: "Ndola",
-      img: "/assets/home/4.png",
+      image: "/assets/home/4.png",
       url: "/banquet-hall",
     },
   ];
@@ -51,7 +45,7 @@ const ExploreCitiesMobile: React.FC = () => {
             key={item.id}
             id={item.id}
             name={item.name}
-            img={item.img}
+            image={item.image}
             url={item.url}
           />
         ))}
