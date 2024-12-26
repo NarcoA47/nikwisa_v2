@@ -1,10 +1,10 @@
 import React from "react";
 
 interface StoreCardProps {
-  id: number;
+  id: string;
   name: string;
   image: string;
-  rating: string; // If you're using string for rating, keep it as string
+  rating: number; // If you're using string for rating, keep it as string
   review_count: number; // Use number for review count
   location: string;
 }

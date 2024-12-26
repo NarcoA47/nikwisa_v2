@@ -10,13 +10,22 @@ import { RootState, AppDispatch } from "@/reducers/store";
 const CategoryPage = () => {
   const dispatch: AppDispatch = useDispatch();
   // const navigate = useNavigate();
-  const product = useSelector(
-    (state: RootState) => state.weddingProduct.product
+  // const product = useSelector(
+  //   (state: RootState) => state.weddingProduct.product
+  // );
+  const loading = useSelector(
+    (state: RootState) => state.weddingProduct.loading
+  );
+  const error = useSelector(
+    (state: RootState) => state.weddingProduct.error
+  );
+  const stores = useSelector(
+    (state: RootState) => state.weddingProduct.stores
   );
 
   useEffect(() => {
     // Fetch the stores on component mount
-    dispatch(fetchStoresWithOfferings());
+    dispatch(fetchWeddingProduct());
   }, [dispatch]);
 
   return (
@@ -32,7 +41,7 @@ const CategoryPage = () => {
       {/* Store Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
         {stores.length > 0
-          ? stores.map((store) => (
+          ? stores.map((store: { id: string; name: string; image: string; rating: number; reviews: number; location: string }) => (
               <StoreCard
                 key={store.id}
                 id={store.id}

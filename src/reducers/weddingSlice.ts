@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { ReactNode } from 'react';
+import { Store } from './storeSlice';
 
 interface WeddingProduct {
   location: ReactNode;
@@ -26,6 +27,8 @@ interface Category {
 }
 
 interface WeddingProductState {
+  loading: unknown;
+  stores: unknown;
   product: WeddingProduct | null;
   categories: Category[];
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
@@ -37,6 +40,9 @@ const initialState: WeddingProductState = {
   categories: [],
   status: 'idle',
   error: null,
+  loading: undefined,
+  stores: [] as Store[],
+
 };
 
 export const fetchWeddingProduct = createAsyncThunk('weddingProduct/fetchWeddingProduct', async () => {
