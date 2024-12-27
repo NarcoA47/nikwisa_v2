@@ -1,6 +1,14 @@
-import { StoreCardProps } from "@/types/types";
+import React from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+
+interface StoreCardProps {
+  id: string;
+  name: string;
+  image: string;
+  rating: number; // If you're using string for rating, keep it as string
+  review_count: number; // Use number for review count
+  location: string;
+}
 
 const StoreCard: React.FC<StoreCardProps> = ({
   id,

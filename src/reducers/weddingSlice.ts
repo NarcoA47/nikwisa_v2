@@ -1,6 +1,39 @@
-import { Category, WeddingProduct, WeddingProductState } from "@/types/types";
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
+import { ReactNode } from 'react';
+// import { Store } from './storeSlice';
+
+interface WeddingProduct {
+  location: ReactNode;
+  contact: ReactNode;
+  id: number;
+  title: string;
+  description: string;
+  price: number;
+  reaction: string | null;
+  rating: string;
+  services: string;
+  send_inquiry: string | null;
+  category: number;
+  subcategory: string | null;
+  related_products: number[];
+}
+
+interface Category {
+  id: number;
+  title: string;
+  slug: string;
+  image: string;
+}
+
+interface WeddingProductState {
+  loading: unknown;
+  stores: unknown;
+  product: WeddingProduct | null;
+  categories: Category[];
+  status: 'idle' | 'loading' | 'succeeded' | 'failed';
+  error: string | null;
+}
 
 const initialState: WeddingProductState = {
   product: null,
@@ -8,6 +41,9 @@ const initialState: WeddingProductState = {
   stores: [], // Add stores to the state
   status: "idle",
   error: null,
+  loading: undefined,
+  // stores: undefined,
+
 };
 
 export const fetchWeddingProduct = createAsyncThunk(
