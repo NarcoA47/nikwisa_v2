@@ -4,7 +4,7 @@ import axios from "axios";
 
 const initialState: WeddingProductState = {
   product: null,
-  categories: [],
+  wedding_category: [],
   stores: [], // Add stores to the state
   status: "idle",
   error: null,
@@ -95,7 +95,7 @@ const weddingSlice = createSlice({
       })
       .addCase(fetchWeddingCategories.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.categories = action.payload;
+        state.wedding_category = action.payload;
       })
       .addCase(fetchWeddingCategories.rejected, (state, action) => {
         state.status = "failed";

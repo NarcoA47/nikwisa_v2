@@ -30,7 +30,7 @@ export default function Offerings({ storeId }: { storeId: number }) {
   return (
     <div>
       <h3 className="font-bold text-lg mb-4">Services Offered:</h3>
-      <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3  gap-6">
         {offerings.length === 0 ? (
           <div className="text-center text-lg">No products available</div>
         ) : (

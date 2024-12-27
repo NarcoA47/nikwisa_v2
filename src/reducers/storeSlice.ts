@@ -90,6 +90,25 @@ export const fetchOfferingsByStoreId = createAsyncThunk(
   }
 );
 
+// Fetch stores by user ID
+export const fetchStoresByUserId = createAsyncThunk(
+  "stores/fetchStoresByUserId",
+  async (userId: string, thunkAPI) => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/${userId}`
+      );
+      console.log("stores by user ID: ", response.data);
+      return response.data as Store[];
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        return thunkAPI.rejectWithValue(error.response.data.message);
+      }
+      return thunkAPI.rejectWithValue("An unknown error occurred");
+    }
+  }
+);
+
 // Add a new store
 export const addStore = createAsyncThunk(
   "stores/addStore",
@@ -122,6 +141,28 @@ export const updateStore = createAsyncThunk(
         storeData
       );
       return response.data as Store;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        return thunkAPI.rejectWithValue(error.response.data.message);
+      }
+      return thunkAPI.rejectWithValue("An unknown error occurred");
+    }
+  }
+);
+
+// Partial update a store
+export const partialUpdateStore = createAsyncThunk(
+  "stores/partialUpdateStore",
+  async (
+    { storeId, partialData }: { storeId: string; partialData: Partial<Store> },
+    thunkAPI
+  ) => {
+    try {
+      const response = await axios.patch(
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/${storeId}/`,
+        partialData
+      );
+      return response.data as Store; // Return the updated store
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         return thunkAPI.rejectWithValue(error.response.data.message);
@@ -279,6 +320,47 @@ const storeSlice = createSlice({
       }
     );
     builder.addCase(deleteStore.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string;
+    });
+    // Fetch stores by user ID
+    builder.addCase(fetchStoresByUserId.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(
+      fetchStoresByUserId.fulfilled,
+      (state, action: PayloadAction<Store[]>) => {
+        state.loading = false;
+        state.stores = action.payload; // Update stores with data fetched by user ID
+      }
+    );
+    builder.addCase(fetchStoresByUserId.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string;
+    });
+    builder.addCase(partialUpdateStore.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+
+    builder.addCase(
+      partialUpdateStore.fulfilled,
+      (state, action: PayloadAction<Store>) => {
+        state.loading = false;
+        const index = state.stores.findIndex(
+          (store) => store.id === action.payload.id
+        );
+        if (index !== -1) {
+          state.stores[index] = {
+            ...state.stores[index],
+            ...action.payload, // Merge the updated fields with the existing store data
+          };
+        }
+      }
+    );
+
+    builder.addCase(partialUpdateStore.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
     });

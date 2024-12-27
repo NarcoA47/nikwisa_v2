@@ -45,7 +45,7 @@ const OfferingCard = ({ offering }: OfferingCardProps) => {
       </div>
 
       {/* Content Section */}
-      <div className="ml-4 flex flex-col flex-grow w-3/5">
+      <div className="ml-4 flex flex-col flex-grow w-3/5 ">
         {/* Title */}
         <h3 className="text-base md:text-lg font-bold text-gray-800">
           {offering.name}
@@ -59,17 +59,15 @@ const OfferingCard = ({ offering }: OfferingCardProps) => {
 
         {/* Buttons Section */}
         <div className="flex gap-2">
-          {/* Call Button - only show if phoneNumber exists */}
           {offering.phone_number && (
             <a
               href={`tel:${offering.phone_number}`}
               className="flex items-center justify-center bg-blue-500 text-white text-sm p-2 rounded hover:bg-blue-600 transition"
             >
-              <FaPhoneAlt className="w-5 h-5" /> {/* Call Icon */}
+              <FaPhoneAlt className="w-5 h-5" />
             </a>
           )}
 
-          {/* WhatsApp Button - only show if whatsappNumber exists */}
           {offering.whatsapp_number && (
             <a
               href={`https://wa.me/${offering.whatsapp_number}`}
@@ -77,7 +75,7 @@ const OfferingCard = ({ offering }: OfferingCardProps) => {
               rel="noopener noreferrer"
               className="flex items-center justify-center bg-green-500 text-white text-sm p-2 rounded hover:bg-green-600 transition"
             >
-              <FaWhatsapp className="w-5 h-5" /> {/* WhatsApp Icon */}
+              <FaWhatsapp className="w-5 h-5" />
             </a>
           )}
         </div>
