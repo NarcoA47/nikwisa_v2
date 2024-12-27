@@ -252,7 +252,7 @@ export interface WeddingProduct {
 
 export interface WeddingProductState {
   product: WeddingProduct | null;
-  wedding_category: Category[];
+  wedding_categories: Category[];
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
 }

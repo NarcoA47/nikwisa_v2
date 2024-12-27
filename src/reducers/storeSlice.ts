@@ -12,6 +12,24 @@ const initialState: StoreState = {
 
 // Async thunks
 
+export const addStore = createAsyncThunk(
+  "stores/addStore",
+  async (storeData: Store, thunkAPI) => {
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/`,
+        storeData
+      );
+      return response.data as Store;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        return thunkAPI.rejectWithValue(error.response.data.message);
+      }
+      return thunkAPI.rejectWithValue("An unknown error occurred");
+    }
+  }
+);
+
 // Fetch stores by wedding category and store ID
 export const fetchStoresByWeddingCategory = createAsyncThunk(
   "stores/fetchStoresByWeddingCategory",
@@ -110,23 +128,23 @@ export const fetchStoresByUserId = createAsyncThunk(
 );
 
 // Add a new store
-export const addStore = createAsyncThunk(
-  "stores/addStore",
-  async (storeData: Store, thunkAPI) => {
-    try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/`,
-        storeData
-      );
-      return response.data as Store;
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        return thunkAPI.rejectWithValue(error.response.data.message);
-      }
-      return thunkAPI.rejectWithValue("An unknown error occurred");
-    }
-  }
-);
+// export const addStore = createAsyncThunk(
+//   "stores/addStore",
+//   async (storeData: Store, thunkAPI) => {
+//     try {
+//       const response = await axios.post(
+//         `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/`,
+//         storeData
+//       );
+//       return response.data as Store;
+//     } catch (error) {
+//       if (axios.isAxiosError(error) && error.response) {
+//         return thunkAPI.rejectWithValue(error.response.data.message);
+//       }
+//       return thunkAPI.rejectWithValue("An unknown error occurred");
+//     }
+//   }
+// );
 
 // Update an existing store
 export const updateStore = createAsyncThunk(
@@ -267,6 +285,7 @@ const storeSlice = createSlice({
     });
 
     // Add Store
+    // Fetch Stores and other actions (as already done in your slice)
     builder.addCase(addStore.pending, (state) => {
       state.loading = true;
       state.error = null;

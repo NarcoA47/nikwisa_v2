@@ -5,8 +5,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/reducers/store";
 import { fetchStoresByUserId } from "@/reducers/storeSlice";
 import StoreCardAdmin from "@/components/StoreCardAdmin";
+import { useRouter } from "next/navigation";
 
 const StorePage: React.FC = () => {
+  const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
 
   // Fetch stores and state from the Redux store
@@ -23,12 +25,19 @@ const StorePage: React.FC = () => {
       dispatch(fetchStoresByUserId(user.user_id.toString()));
     }
   }, [dispatch, user?.id]);
-  console.log("stores demo in admin", stores);
+
+  const handleAddStoreClick = () => {
+    router.push("/dashboard/create-store"); // Navigate to the dashboard/create-store page
+  };
+
   return (
     <div className="container mx-auto p-8">
       <div className="flex justify-between mb-4">
         <h1 className="text-2xl font-bold mb-4">My Stores</h1>
-        <button className="bg-[#B8902E] text-white py-2 px-4 rounded">
+        <button
+          className="bg-[#B8902E] text-white py-2 px-4 rounded"
+          onClick={handleAddStoreClick}
+        >
           Add Store
         </button>
       </div>

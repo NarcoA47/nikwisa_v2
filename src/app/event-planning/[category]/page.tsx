@@ -22,12 +22,15 @@ const CategoryPage = () => {
     dispatch(fetchStoresWithOfferings());
   }, [dispatch]);
 
-  // Filter stores based on the wedding_category from the URL
+  // console.log("Store testing:", filteredStores);
   const filteredStores = stores.filter(
-    (store) => store.wedding_category === category
+    (store) =>
+      store.wedding_category.toLowerCase().replace(/\s+/g, "-") ===
+      (Array.isArray(category) ? category[0] : category)?.toLowerCase()
   );
 
-  console.log("Store testing:", filteredStores);
+  console.log("Filtered stores:", filteredStores);
+
   // Loading and Error States
   if (loading)
     return <div className="text-center text-gray-500">Loading...</div>;
