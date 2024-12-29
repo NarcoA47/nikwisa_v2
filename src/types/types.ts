@@ -69,11 +69,11 @@ export interface Store {
   id: number;
   name: string;
   location: string;
-  phoneNumber?: string;
-  whatsappNumber?: string;
+  phone_number?: string;
+  whats_app?: string;
   overview: string;
   rating: number;
-  reviewsCount: number;
+  review_count: number;
   image: string;
   photos: string[];
   createdAt: string;
@@ -101,8 +101,8 @@ export interface StoreDetailsHeaderProps {
     location: string;
     overview: string;
     image: string;
-    phoneNumber?: string;
-    whatsappNumber?: string;
+    phone_number?: string;
+    whats_app?: string;
     photos: string[];
     reviews?: { id: string; reviewText: string }[];
   };
@@ -252,7 +252,7 @@ export interface WeddingProduct {
 
 export interface WeddingProductState {
   product: WeddingProduct | null;
-  categories: Category[];
+  wedding_categories: Category[];
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
 }
@@ -284,7 +284,7 @@ export interface StoreCardProps {
   id: number;
   name: string;
   image: string;
-  rating: string; // String rating format
+  rating: number; // String rating format
   review_count: number;
   location: string;
   wedding_category: string;

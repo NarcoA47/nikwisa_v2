@@ -10,9 +10,10 @@ import { EventCategory } from "@/types/types";
 
 const Categories = () => {
   const dispatch: AppDispatch = useDispatch();
-  const categories = useSelector(
-    (state: RootState) => state.weddingProduct.categories
+  const wedding_categories = useSelector(
+    (state: RootState) => state.weddingProduct.wedding_categories
   );
+  console.log("wedding_categories in front", wedding_categories);
   const categoryStatus = useSelector(
     (state: RootState) => state.weddingProduct.status
   );
@@ -36,7 +37,7 @@ const Categories = () => {
     return <div>Error: {error}</div>;
   }
 
-  if (categories.length === 0) {
+  if (wedding_categories.length === 0) {
     return <div>No categories available.</div>;
   }
 
@@ -51,7 +52,7 @@ const Categories = () => {
 
       {/* Grid Container */}
       <div className="grid grid-cols-5 sm:grid-cols-6 lg:grid-cols-10 gap-4 mt-4 px-4 md:px-0">
-        {categories.map((category: EventCategory) => (
+        {wedding_categories.map((category: EventCategory) => (
           <Link
             href={
               category.slug

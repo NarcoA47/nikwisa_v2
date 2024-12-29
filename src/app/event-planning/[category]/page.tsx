@@ -16,15 +16,20 @@ const CategoryPage = () => {
   // Extract the category from the URL using useParams
   const { category } = useParams();
 
+  console.log("Category testing:", category);
   useEffect(() => {
     // Fetch all stores with offerings when the component mounts
     dispatch(fetchStoresWithOfferings());
   }, [dispatch]);
 
-  // Filter stores based on the wedding_category from the URL
+  // console.log("Store testing:", filteredStores);
   const filteredStores = stores.filter(
-    (store) => store.wedding_category === category
+    (store) =>
+      store.wedding_category.toLowerCase().replace(/\s+/g, "-") ===
+      (Array.isArray(category) ? category[0] : category)?.toLowerCase()
   );
+
+  console.log("Filtered stores:", filteredStores);
 
   // Loading and Error States
   if (loading)
@@ -38,13 +43,13 @@ const CategoryPage = () => {
           {filteredStores.map((store) => (
             <StoreCard
               key={store.id}
-              id={Number(store.id)}
+              id={store.id}
               name={store.name}
               image={store.image}
-              rating={store.rating}
-              reviews={store.reviewsCount}
+              rating={store.rating || 0} // Default values if missing
+              review_count={store.review_count || 0}
               location={store.location}
-              wedding_category={store.wedding_category}
+              wedding_category={store.wedding_category || "N/A"} // Default value if missing
             />
           ))}
         </div>

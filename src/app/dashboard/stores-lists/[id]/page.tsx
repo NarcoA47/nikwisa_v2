@@ -7,7 +7,7 @@ import Overview from "@/components/event-planning/tabs/Overview";
 import PhotosGallery from "@/components/event-planning/tabs/PhotoGallery";
 import Reviews from "@/components/event-planning/tabs/Reviews";
 import { AppDispatch, RootState } from "@/reducers/store";
-import { fetchStoresWithOfferings } from "@/reducers/storeSlice";
+import { fetchStoresByUserId } from "@/reducers/storeSlice";
 import { fetchReviewsByStoreId } from "@/reducers/reviewSlice";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -21,71 +21,53 @@ const StoreDetailPage: React.FC = () => {
     (state: RootState) => state.stores
   );
 
-  const { reviews, loadingReviews, errorReviews } = useSelector(
-    (state: RootState) => state.reviews
-  );
+  const { reviews } = useSelector((state: RootState) => state.reviews);
 
   const { user } = useSelector((state: RootState) => state.auth); // Access logged-in user
 
   const [activeTab, setActiveTab] = useState("overview");
   const [showAddReviewForm, setShowAddReviewForm] = useState(false);
 
+  // Dispatch action to fetch stores by user ID
   useEffect(() => {
-    // Fetch all stores with offerings when the component mounts
-    dispatch(fetchStoresWithOfferings());
-  }, [dispatch]);
+    if (user?.user_id) {
+      dispatch(fetchStoresByUserId(user.user_id.toString())); // Make sure user.id is available
+    }
+  }, [dispatch, user]);
 
+  // Fetch reviews based on the store ID
   useEffect(() => {
     if (id) {
-      dispatch(fetchReviewsByStoreId(parseInt(id, 10))); // Fetch reviews for the selected store
+      dispatch(fetchReviewsByStoreId(parseInt(id as string, 10))); // Fetch reviews for the selected store
     }
   }, [dispatch, id]);
 
-  // Wait for category and id to be available before rendering the page
-  if (!category || !id) {
-    return <div>Loading store details...</div>;
+  // Handle loading and error states
+  if (loading) {
+    return <div>Loading store details and reviews...</div>;
   }
 
-  // Ensure id is a number
+  if (error) {
+    return <div>Something went wrong: {error}. Please try again later.</div>;
+  }
+
+  // Ensure id is a number and find the store based on the ID
   const storeId = parseInt(id as string, 10); // Convert id to a number
+  const store = stores.find((store) => store.id === storeId);
 
-  // Decode the category and trim any spaces to match the store data
-  const decodedCategory = decodeURIComponent(category).trim();
-
-  // Filter the store based on the wedding_category and id
-  const filteredStore = stores.find(
-    (store) =>
-      store.id === storeId && store.wedding_category.trim() === decodedCategory // Match with wedding_category
-  );
-
-  useEffect(() => {
-    if (filteredStore) {
-      console.log("Filtered store:", filteredStore); // Debugging: Show the filtered store
-    } else {
-      console.log("No store found for the given category and ID.");
-    }
-  }, [filteredStore]);
-
-  if (loading || loadingReviews) {
-    return <div>Loading...</div>;
+  if (!store) {
+    return <div>No store found for the given ID.</div>;
   }
 
-  if (error || errorReviews) {
-    return <div>{`Error: ${error || errorReviews}`}</div>;
-  }
-
-  if (!filteredStore) {
-    return <div>No store found for the given category and ID.</div>;
-  }
-
+  // Render tab content based on the active tab
   const renderTabContent = () => {
     switch (activeTab) {
       case "overview":
-        return <Overview overview={filteredStore.overview} />;
+        return <Overview overview={store.overview} />;
       case "reviews":
         return (
           <div>
-            <Reviews reviews={reviews} storeId={filteredStore.id} />
+            <Reviews reviews={reviews} storeId={store.id} />
             {/* Add Review Section */}
             {!showAddReviewForm ? (
               <button
@@ -97,7 +79,7 @@ const StoreDetailPage: React.FC = () => {
             ) : (
               // Pass user data to AddReview component
               <AddReview
-                storeId={filteredStore.id} // Pass storeId to AddReview
+                storeId={store.id} // Pass storeId to AddReview
                 user={
                   user
                     ? {
@@ -107,28 +89,26 @@ const StoreDetailPage: React.FC = () => {
                     : {}
                 }
                 onSubmit={(newReview) => {
-                  // Handle new review submission here (dispatch an action to add the review)
-                  console.log(newReview);
+                  // Dispatch action to add the review
+                  dispatch(fetchReviewsByStoreId(store.id)); // Refresh reviews after adding
                   setShowAddReviewForm(false); // Hide form after submission
-                  dispatch(fetchReviewsByStoreId(filteredStore.id)); // Refresh reviews after adding
                 }}
               />
             )}
           </div>
         );
       case "offerings":
-        return <Offerings storeId={filteredStore.id} />;
-
+        return <Offerings storeId={store.id} />;
       case "photos":
-        return <PhotosGallery photos={filteredStore.photos} />;
+        return <PhotosGallery photos={store.photos} />;
       default:
-        return <Overview store={filteredStore} />;
+        return <Overview store={store} />;
     }
   };
 
   return (
     <div className="p-4 md:p-6 bg-gray-50 my-8">
-      <StoreDetailsHeader store={filteredStore} />
+      <StoreDetailsHeader store={store} />
 
       {/* Tab Navigation */}
       <div className="mt-6 border-b">
@@ -153,6 +133,7 @@ const StoreDetailPage: React.FC = () => {
           ))}
         </nav>
       </div>
+
       {/* Tab Content */}
       <div className="mt-6">{renderTabContent()}</div>
     </div>
@@ -170,7 +151,7 @@ export default StoreDetailPage;
 // import PhotosGallery from "@/components/event-planning/tabs/PhotoGallery";
 // import Reviews from "@/components/event-planning/tabs/Reviews";
 // import { AppDispatch, RootState } from "@/reducers/store";
-// import { fetchStoresWithOfferings } from "@/reducers/storeSlice";
+// import { fetchStoresByUserId } from "@/reducers/storeSlice";
 // import { fetchReviewsByStoreId } from "@/reducers/reviewSlice";
 // import { useParams } from "next/navigation";
 // import React, { useEffect, useState } from "react";
@@ -194,36 +175,25 @@ export default StoreDetailPage;
 //   const [showAddReviewForm, setShowAddReviewForm] = useState(false);
 
 //   useEffect(() => {
-//     // Fetch all stores with offerings when the component mounts
-//     dispatch(fetchStoresWithOfferings());
-//   }, [dispatch]);
+//     // Dispatch action to fetch stores by user ID
+//     if (user?.user_id) {
+//       dispatch(fetchStoresByUserId(user.user_id)); // Make sure user.id is available
+//     }
+//   }, [dispatch, user]);
 
+//   console.log("Stores in dashboard", stores);
 //   useEffect(() => {
 //     if (id) {
 //       dispatch(fetchReviewsByStoreId(parseInt(id, 10))); // Fetch reviews for the selected store
 //     }
 //   }, [dispatch, id]);
 
-//   // Wait for category and id to be available before rendering the page
-//   if (!category || !id) {
+//   if (!user?.user_id) {
 //     return <div>Loading store details...</div>;
 //   }
 
 //   // Ensure id is a number
 //   const storeId = parseInt(id as string, 10); // Convert id to a number
-
-//   // Filter the store based on the wedding_category and id
-//   const filteredStore = stores.find(
-//     (store) => store.id === storeId && store.wedding_category === category // Match with wedding_category
-//   );
-
-//   useEffect(() => {
-//     if (filteredStore) {
-//       console.log("Filtered store:", filteredStore); // Debugging: Show the filtered store
-//     } else {
-//       console.log("No store found for the given category and ID.");
-//     }
-//   }, [filteredStore]);
 
 //   if (loading || loadingReviews) {
 //     return <div>Loading...</div>;
@@ -233,18 +203,18 @@ export default StoreDetailPage;
 //     return <div>{`Error: ${error || errorReviews}`}</div>;
 //   }
 
-//   if (!filteredStore) {
+//   if (!stores[0]) {
 //     return <div>No store found for the given category and ID.</div>;
 //   }
 
 //   const renderTabContent = () => {
 //     switch (activeTab) {
 //       case "overview":
-//         return <Overview overview={filteredStore.overview} />;
+//         return <Overview overview={stores[0].overview} />;
 //       case "reviews":
 //         return (
 //           <div>
-//             <Reviews reviews={reviews} storeId={filteredStore.id} />
+//             <Reviews reviews={reviews} storeId={stores[0].id} />
 //             {/* Add Review Section */}
 //             {!showAddReviewForm ? (
 //               <button
@@ -256,7 +226,7 @@ export default StoreDetailPage;
 //             ) : (
 //               // Pass user data to AddReview component
 //               <AddReview
-//                 storeId={filteredStore.id} // Pass storeId to AddReview
+//                 storeId={stores[0].id} // Pass storeId to AddReview
 //                 user={
 //                   user
 //                     ? {
@@ -269,25 +239,25 @@ export default StoreDetailPage;
 //                   // Handle new review submission here (dispatch an action to add the review)
 //                   console.log(newReview);
 //                   setShowAddReviewForm(false); // Hide form after submission
-//                   dispatch(fetchReviewsByStoreId(filteredStore.id)); // Refresh reviews after adding
+//                   dispatch(fetchReviewsByStoreId(stores[0].id)); // Refresh reviews after adding
 //                 }}
 //               />
 //             )}
 //           </div>
 //         );
 //       case "offerings":
-//         return <Offerings storeId={filteredStore.id} />;
+//         return <Offerings storeId={stores[0].id} />;
 
 //       case "photos":
-//         return <PhotosGallery photos={filteredStore.photos} />;
+//         return <PhotosGallery photos={stores[0].photos} />;
 //       default:
-//         return <Overview store={filteredStore} />;
+//         return <Overview store={stores[0]} />;
 //     }
 //   };
 
 //   return (
 //     <div className="p-4 md:p-6 bg-gray-50 my-8">
-//       <StoreDetailsHeader store={filteredStore} />
+//       <StoreDetailsHeader store={stores[0]} />
 
 //       {/* Tab Navigation */}
 //       <div className="mt-6 border-b">

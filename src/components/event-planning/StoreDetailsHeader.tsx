@@ -39,6 +39,7 @@ import ImageSlider from "./ImageSlider";
 import { StoreDetailsHeaderProps } from "@/types/types";
 
 export default function StoreDetailsHeader({ store }: StoreDetailsHeaderProps) {
+  console.log("StoreDetailsHeader", store.image);
   return (
     <div className="flex flex-col-reverse md:flex-row md:space-x-8 mb-8">
       {/* Left Section */}
