@@ -1,15 +1,29 @@
 import React from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 
 interface StoreCardProps {
-  id: string;
+
+  id: number;
+
   name: string;
+
   image: string;
+<<<<<<< HEAD
   rating: number; // If you're using string for rating, keep it as string
   reviews_count: number; // Use number for review count
+=======
+
+  rating: number;
+
+  reviews: number;
+
+>>>>>>> e64e388cc5ef3966bb6fa475703355b9d17e088b
   location: string;
+
   wedding_category: string;
+
 }
 
 const StoreCard: React.FC<StoreCardProps> = ({
@@ -17,7 +31,11 @@ const StoreCard: React.FC<StoreCardProps> = ({
   name,
   image,
   rating,
+<<<<<<< HEAD
   reviews_count,
+=======
+  reviews,
+>>>>>>> e64e388cc5ef3966bb6fa475703355b9d17e088b
   location,
   wedding_category,
 }) => {

@@ -65,7 +65,7 @@ const searchSlice = createSlice({
     // Handle search rejected
     builder.addCase(searchStores.rejected, (state, action) => {
       state.loading = false;
-      state.error = action.payload || "Something went wrong";
+      state.error = (action.payload as string) || "Something went wrong";
     });
   },
 });
