@@ -68,7 +68,7 @@ const SpecialOffer = () => {
           <button
             key={index}
             className={`w-3 h-3 rounded-full ${
-              currentSpecialImage === index ? "bg-yellow-500" : "bg-gray-300"
+              currentSpecialImage === index ? "bg-[#B8902E" : "bg-gray-300"
             }`}
             onClick={() => handleDotClick(index)}
           ></button>

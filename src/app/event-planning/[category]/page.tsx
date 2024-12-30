@@ -47,7 +47,7 @@ const CategoryPage = () => {
               name={store.name}
               image={store.image}
               rating={store.rating || 0} // Default values if missing
-              review_count={store.review_count || 0}
+              reviews_count={store.reviews_count || 0}
               location={store.location}
               wedding_category={store.wedding_category || "N/A"} // Default value if missing
             />

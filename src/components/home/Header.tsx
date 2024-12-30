@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 const Header: React.FC = () => {
   return (
@@ -7,7 +7,7 @@ const Header: React.FC = () => {
         {/* <img src="/logo.png" alt="Nikwisa Logo" className="h-10" /> */}
         <h1 className="text-lg font-bold text-black">Nikwisa</h1>
       </div>
-      <button className="bg-yellow-600 text-white px-4 py-2 rounded-lg">
+      <button className="w-32 bg-[#B8902E] hover:bg-yellow-600 text-white py-2 px-4 rounded text-sm font-medium transition">
         Login/Sign Up
       </button>
     </header>

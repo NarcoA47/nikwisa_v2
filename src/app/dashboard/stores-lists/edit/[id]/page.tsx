@@ -250,7 +250,7 @@ const EditStore: React.FC = () => {
           <button
             type="button"
             onClick={() => router.push("/dashboard/stores-lists")}
-            className="bg-[#cac8c3] text-white py-2 px-4 rounded mt-4"
+            className="bg-gray-500 text-white py-2 px-4 rounded mt-4"
           >
             Cancel
           </button>

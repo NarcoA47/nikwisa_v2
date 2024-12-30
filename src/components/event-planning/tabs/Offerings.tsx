@@ -16,9 +16,6 @@ export default function Offerings({ storeId }: { storeId: number }) {
     dispatch(fetchOfferingsByStoreId(storeId));
   }, [storeId, dispatch]);
 
-  console.log("offerings", offerings);
-  console.log("id", storeId);
-
   if (loading) {
     return <div>Loading offerings...</div>;
   }
@@ -43,11 +40,11 @@ export default function Offerings({ storeId }: { storeId: number }) {
                 description: offering.description,
                 price: offering.price,
                 image: offering.image || "/placeholder-image.jpg",
-                phone_number: offering.phoneNumber
-                  ? Number(offering.phoneNumber)
+                phone_number: offering.phone_number
+                  ? Number(offering.phone_number)
                   : undefined,
-                whatsapp_number: offering.whatsappNumber
-                  ? Number(offering.whatsappNumber)
+                whatsapp_number: offering.whatsapp_number
+                  ? Number(offering.whatsapp_number)
                   : undefined,
               }}
             />

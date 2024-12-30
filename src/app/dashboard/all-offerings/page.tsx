@@ -89,7 +89,8 @@ export default function OfferingsManagement() {
 
         <button
           onClick={() => router.push("/dashboard/all-offerings/add")}
-          className="flex items-center bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+          // className="flex items-center bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+          className="bg-[#B8902E] text-white py-2 px-4 rounded mt-4"
         >
           Add Offering
         </button>

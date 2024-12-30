@@ -38,7 +38,7 @@ const page: React.FC = () => {
             <h2 className="text-lg font-bold">{store.name}</h2>
             <p className="text-sm">{store.description}</p>
             <p className="text-xs text-gray-500">Owner: {store.owner}</p>
-            <button className="mt-2 px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700">
+            <button className="bg-[#B8902E] text-white py-2 px-4 rounded mt-4">
               Enter Store
             </button>
           </div>

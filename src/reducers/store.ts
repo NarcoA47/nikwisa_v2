@@ -11,6 +11,7 @@ import { storeReducer } from "./storeSlice";
 import { searchReducer } from "./searchSlice";
 import { reviewsReducer } from "./reviewSlice";
 import { offeringsReducer } from "./offeringsSlice";
+import { imagesReducer } from "./imageSlice";
 
 export const store = configureStore({
   reducer: {
@@ -26,6 +27,7 @@ export const store = configureStore({
     search: searchReducer,
     reviews: reviewsReducer,
     offerings: offeringsReducer,
+    images: imagesReducer,
   },
 });
 

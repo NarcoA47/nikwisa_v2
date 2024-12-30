@@ -41,7 +41,8 @@ const CategoryDetailsPage = () => {
       <p className="mt-4">{categoryData.description}</p>
       <button
         onClick={() => router.push("/categories")}
-        className="mt-6 text-blue-500 hover:underline"
+        // className="mt-6 text-blue-500 hover:underline"
+        className="bg-[#B8902E] text-white py-2 px-4 rounded mt-4"
       >
         Back to Categories
       </button>

@@ -1,12 +1,22 @@
 "use client";
 import { OfferingCardProps } from "@/types/types";
+import { useRouter } from "next/navigation";
 import { FaEdit, FaTrashAlt } from "react-icons/fa"; // Import Edit and Delete icons
 
 const OfferingsCardAdmin = ({
   offering,
-  onEdit,
   onDelete,
+  storeId,
 }: OfferingCardProps) => {
+  const router = useRouter();
+  const onEdit = (offeringId: string) => {
+    // Redirect to the edit page with the service ID
+    router.push(
+      `/dashboard/stores-lists/${storeId}/editOffering/${offeringId}`
+    );
+  };
+
+  // };
   return (
     <div className="w-full bg-white shadow-lg rounded-lg p-4 border border-gray-200">
       {/* Image Section */}
