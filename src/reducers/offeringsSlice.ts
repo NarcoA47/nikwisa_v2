@@ -4,13 +4,13 @@ import axios from "axios";
 // Defining types locally in the slice for clarity
 
 export interface Offering {
-  id: string; // ID as a string
+  id: number; // ID as a string
   name: string;
   description: string;
   price: number;
   image: string | null; // Allow null for fallback
-  phoneNumber?: string;
-  whatsappNumber?: string;
+  phone_number?: string;
+  whatsapp_number?: string;
 }
 
 export interface OfferingState {
@@ -27,6 +27,25 @@ const initialState: OfferingState = {
 };
 
 // Async thunks
+
+// Fetch offering by ID
+export const fetchOfferingById = createAsyncThunk(
+  "offerings/fetchOfferingById",
+  async (offeringId: number, thunkAPI) => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/offerings/${offeringId}`
+      );
+      console.log("fetchOfferingById response:", response.data);
+      return response.data as Offering;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        return thunkAPI.rejectWithValue(error.response.data.message);
+      }
+      return thunkAPI.rejectWithValue("An unknown error occurred");
+    }
+  }
+);
 
 // Fetch offerings by store ID
 export const fetchOfferingsByStoreId = createAsyncThunk(
@@ -68,18 +87,18 @@ export const addOffering = createAsyncThunk(
   }
 );
 
-// Update an existing offering
+// Update an existing offering (partial edit)
 export const updateOffering = createAsyncThunk(
   "offerings/updateOffering",
   async (
     {
       offeringId,
       offeringData,
-    }: { offeringId: number; offeringData: Offering },
+    }: { offeringId: number; offeringData: Partial<Offering> },
     thunkAPI
   ) => {
     try {
-      const response = await axios.put(
+      const response = await axios.patch(
         `${process.env.NEXT_PUBLIC_API_ENDPOINT}/offerings/${offeringId}`,
         offeringData
       );
@@ -117,6 +136,29 @@ const offeringsSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
+    // Fetch Offering by ID
+    builder.addCase(fetchOfferingById.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(
+      fetchOfferingById.fulfilled,
+      (state, action: PayloadAction<Offering>) => {
+        state.loading = false;
+        const index = state.offerings.findIndex(
+          (offering) => offering.id === action.payload.id
+        );
+        if (index === -1) {
+          state.offerings.push(action.payload); // Add new offering if it doesn't exist
+        } else {
+          state.offerings[index] = action.payload; // Update existing offering
+        }
+      }
+    );
+    builder.addCase(fetchOfferingById.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string;
+    });
     // Fetch Offerings by Store ID
     builder.addCase(fetchOfferingsByStoreId.pending, (state) => {
       state.loading = true;
@@ -151,7 +193,7 @@ const offeringsSlice = createSlice({
       state.error = action.payload as string;
     });
 
-    // Update Offering
+    // Update Offering (Partial Update)
     builder.addCase(updateOffering.pending, (state) => {
       state.loading = true;
       state.error = null;
@@ -164,7 +206,11 @@ const offeringsSlice = createSlice({
           (offering) => offering.id === action.payload.id
         );
         if (index !== -1) {
-          state.offerings[index] = action.payload; // Update the offering in the list
+          // Merge the updated offering with the existing one
+          state.offerings[index] = {
+            ...state.offerings[index],
+            ...action.payload,
+          };
         }
       }
     );

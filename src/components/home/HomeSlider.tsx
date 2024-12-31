@@ -40,12 +40,13 @@ const HomeSlider: React.FC<ImageSliderProps> = ({ photos }) => {
         ))}
 
         {/* Dots inside the slider */}
+
         <div className="absolute bottom-4 w-full flex justify-center space-x-2">
           {photos.map((_, index) => (
             <button
               key={index}
               className={`w-3 h-3 rounded-full ${
-                currentImage === index ? "bg-yellow-500" : "bg-gray-300"
+                currentImage === index ? "bg-[#B8902E]" : "bg-gray-300"
               }`}
               onClick={() => handleDotClick(index)}
             ></button>

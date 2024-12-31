@@ -28,8 +28,9 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   const pathname = usePathname(); // Get the current path
 
-  // Check if the current route is part of the dashboard
+  // Check if the current route is part of the dashboard or authentication pages
   const isDashboardRoute = pathname.startsWith("/dashboard");
+  const isAuthRoute = pathname === "/signup" || pathname === "/signin";
 
   return (
     <html
@@ -39,9 +40,9 @@ export default function RootLayout({
       <body className="antialiased">
         <Router>
         <Provider store={store}>
-          {/* Conditionally render Navbar, SearchBar, and BottomNavigation */}
+          {/* Conditionally render Navbar and BottomNavigation */}
           {!isDashboardRoute && <Navbar />}
-          {!isDashboardRoute && (
+          {!isDashboardRoute && !isAuthRoute && (
             <div className="w-11/12 md:w-10/12 mx-auto">
               {/* <SearchBar /> */}
             </div>

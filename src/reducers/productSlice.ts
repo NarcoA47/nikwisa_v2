@@ -243,7 +243,7 @@ interface Store {
   description: string;
   image: string;
   owner: string;
-  reviewsCount: number;
+  reviews_count: number;
   productsCount: number;
 }
 

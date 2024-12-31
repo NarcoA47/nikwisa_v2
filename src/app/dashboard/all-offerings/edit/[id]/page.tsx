@@ -135,13 +135,15 @@ const EditServicePage = () => {
           <button
             type="button"
             onClick={() => router.push("/dashboard/all-offerings")}
-            className="px-4 py-2 bg-gray-500 text-white rounded"
+            // className="px-4 py-2 bg-gray-500 text-white rounded"
+
+            className="bg-gray-500 text-white py-2 px-4 rounded mt-4"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="px-4 py-2 bg-blue-500 text-white rounded"
+            className="bg-[#B8902E] text-white py-2 px-4 rounded mt-4"
           >
             Save
           </button>

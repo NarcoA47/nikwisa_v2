@@ -10,11 +10,16 @@ interface StoreCardProps {
   name: string;
 
   image: string;
+<<<<<<< HEAD
+  rating: number; // If you're using string for rating, keep it as string
+  reviews_count: number; // Use number for review count
+=======
 
   rating: number;
 
   reviews: number;
 
+>>>>>>> e64e388cc5ef3966bb6fa475703355b9d17e088b
   location: string;
 
   wedding_category: string;
@@ -26,12 +31,17 @@ const StoreCard: React.FC<StoreCardProps> = ({
   name,
   image,
   rating,
+<<<<<<< HEAD
+  reviews_count,
+=======
   reviews,
+>>>>>>> e64e388cc5ef3966bb6fa475703355b9d17e088b
   location,
   wedding_category,
 }) => {
   const router = useRouter();
 
+  console.log("ratings", rating);
   const handleNavigation = () => {
     router.push(`/event-planning/${wedding_category}/${id}`);
   };
@@ -60,12 +70,12 @@ const StoreCard: React.FC<StoreCardProps> = ({
           <span className="bg-green-600 text-white text-xs px-2 py-1 rounded font-bold">
             {rating}
           </span>
-          <span className="text-gray-500 text-sm">{reviews} Reviews</span>
+          <span className="text-gray-500 text-sm">{reviews_count} Reviews</span>
         </div>
         <p className="text-sm text-gray-500 mt-1 mb-1">{location}</p>
         <div className="mt-4">
           <button
-            className="w-32 bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded text-sm font-medium transition"
+            className="bg-[#B8902E] text-white py-2 px-4 rounded mt-4"
             onClick={handleNavigation}
           >
             Enter Store

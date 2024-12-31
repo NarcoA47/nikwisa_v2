@@ -149,23 +149,3 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({
     </div>
   );
 };
-
-// export default ServiceDetail;
-// // app/event-planning/[category]/[id]/[serviceId]/page.tsx
-// import ServiceDetail from '@/components/ServiceDetail';
-
-// export default function ServiceDetailPage() {
-//   // In a real app, you'd fetch this data based on the serviceId
-//   const serviceData = {
-//     name: "Tifany's Canyon",
-//     rating: 4.4,
-//     reviews: 13,
-//     location: "Plot No 14349 Shimabala, Lusaka",
-//     mainImage: "/path-to-your-image.jpg",
-//     description: "Weighing in under 7 pounds, the Kilburn is a lightweight piece of vintage styled engineering. Setting the bar as one of the loudest speakers in its class, the Kilburn is a compact, stout-hearted hero with a well-balanced audio which boasts a clear midrange and extended highs for a sound that is both articulate and pronounced. The analogue knobs allow you to fine tune the controls to your personal preferences while the guitar-influenced leather strap enables easy and stylish travel.",
-//     phone: "+1234567890",
-//     whatsapp: "1234567890"
-//   };
-
-//   return <ServiceDetail {...serviceData} />;
-// }

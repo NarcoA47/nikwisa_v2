@@ -96,7 +96,8 @@ const Products = () => {
                               : "text-gray-300"
                           }`}
                         >
-                          ★
+                          className="bg-[#B8902E] text-white py-2 px-4 rounded
+                          mt-4" ★
                         </span>
                       ))}
                     </div>
