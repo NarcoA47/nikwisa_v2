@@ -1,33 +1,27 @@
 import { configureStore } from "@reduxjs/toolkit";
-import authReducer from "./authSlice";
+import { useDispatch} from 'react-redux';
+import { storeReducer } from "./storeSlice";
 import { productReducer } from "./productSlice";
+import { authReducer } from "./authSlice";
 import taskReducer from "./taskersSlice";
-// import companyReducer from "./companySlice";
 import weddingProductReducer from "./weddingSlice";
 import weddingcategoryReducer from "./categorySlice";
 import uiReducer from "./uiSlice";
 import sidebarReducer from "./sidebarSlice";
-import { storeReducer } from "./storeSlice";
-import { searchReducer } from "./searchSlice";
-import { reviewsReducer } from "./reviewSlice";
-import { offeringsReducer } from "./offeringsSlice";
 
-export const store = configureStore({
+const store = configureStore({
   reducer: {
     auth: authReducer,
     product: productReducer,
     taskers: taskReducer,
-    // company: companyReducer,
     weddingProduct: weddingProductReducer,
     categories: weddingcategoryReducer,
     stores: storeReducer,
     ui: uiReducer,
     sidebar: sidebarReducer,
-    search: searchReducer,
-    reviews: reviewsReducer,
-    offerings: offeringsReducer,
   },
 });
+
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
@@ -36,3 +30,8 @@ export type AuthState = {
     username: string;
   } | null;
 };
+
+export const useAppDispatch = () => useDispatch<AppDispatch>();
+// export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
+
+export default store;

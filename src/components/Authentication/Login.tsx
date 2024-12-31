@@ -1,48 +1,57 @@
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect } from "react";
+import { RootState } from "../../reducers/store";
+import { loginUser, setAuth } from "../../reducers/authSlice";
 import { FaSpinner, FaEye, FaEyeSlash } from "react-icons/fa";
 import Swal from "sweetalert2";
-
-import { AppDispatch, RootState } from "@/reducers/store";
-import { loginUser } from "@/reducers/authSlice";
 import Alert from "../forms/Alert";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 
-const LoginForm = () => {
+const LoginForm: React.FC = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate(); // Use navigate hook for redirection
+
+  const { loading, error, isAuthenticated } = useSelector((state: RootState) => state.auth);
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const dispatch = useDispatch<AppDispatch>();
-  const router = useRouter();
+  // Redirect if user is already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard"); // Redirect to dashboard if authenticated
+    }
+  }, [isAuthenticated, navigate]);
 
-  const { loading, error, user } = useSelector((state: RootState) => state.auth);
-
-  // Redirect if user is logged in
-  if (user) {
-    router.push("/dashboard");
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     try {
-      const response = await dispatch(loginUser({ username, password })).unwrap();
-      if (response.accessToken) {
-        Swal.fire({
-          icon: "success",
-          title: "Login Successful",
-          timer: 1500,
-        });
-        router.push("/dashboard");
-      }
-    } catch {
-      // Error handled by Redux state
+      // Simulating login API call
+      const tokens = await loginUser(username, password);
+      
+      // If login is successful, set the auth state and redirect to dashboard
+      dispatch(setAuth(tokens));
+      Swal.fire({
+        icon: "success",
+        title: "Login Successful",
+        timer: 1500,
+      });
+
+      // Redirecting user to dashboard
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Login failed:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Login Failed",
+        text: "Please check your credentials and try again.",
+      });
     }
   };
 
   const handleForgotPassword = () => {
-    router.push("/forgot-password");
+    navigate("/forgot-password"); // Redirect to forgot-password page
   };
 
   return (
@@ -93,9 +102,7 @@ const LoginForm = () => {
 
       <button
         type="submit"
-        className={`w-full bg-[#B88E2F] text-white p-3 rounded-lg mt-6 ${
-          loading ? "opacity-50 cursor-not-allowed" : "hover:bg-[#B88E2F]"
-        }`}
+        className={`w-full bg-[#B88E2F] text-white p-3 rounded-lg mt-6 ${loading ? "opacity-50 cursor-not-allowed" : "hover:bg-[#B88E2F]"}`}
         disabled={loading}
       >
         {loading ? <FaSpinner className="animate-spin" /> : "Login"}

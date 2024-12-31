@@ -209,6 +209,10 @@ export interface UserProfile {
 }
 
 export interface AuthState {
+  initialState: { id: string; user_id: number; username: string; email: string; role: string; };
+  initialState: { id: string; user_id: number; username: string; email: string; role: string; };
+  initialState: { id: string; user_id: number; username: string; email: string; role: string; };
+  initialState: { id: string; user_id: number; username: string; email: string; role: string; };
   user: UserProfile | null;
   role: string | null;
   accessToken: string | null;

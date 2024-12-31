@@ -5,9 +5,11 @@ import { Poppins, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import BottomNavigation from "@/components/BottomNavigation";
-import SearchBar from "@/components/SearchBar";
+// import SearchBar from "@/components/SearchBar";
 import { Provider } from "react-redux";
-import { store } from "@/reducers/store";
+// import ReactDOM from 'react-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
+import store from "@/reducers/store";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -35,12 +37,13 @@ export default function RootLayout({
       className={`${poppins.variable} ${playfairDisplay.variable}`}
     >
       <body className="antialiased">
+        <Router>
         <Provider store={store}>
           {/* Conditionally render Navbar, SearchBar, and BottomNavigation */}
           {!isDashboardRoute && <Navbar />}
           {!isDashboardRoute && (
             <div className="w-11/12 md:w-10/12 mx-auto">
-              <SearchBar />
+              {/* <SearchBar /> */}
             </div>
           )}
           <div
@@ -52,57 +55,8 @@ export default function RootLayout({
           </div>
           {!isDashboardRoute && <BottomNavigation />}
         </Provider>
+        </Router>
       </body>
     </html>
   );
 }
-
-// export default function RootLayout({
-//   children,
-// }: Readonly<{ children: React.ReactNode }>) {
-//   const pathname = usePathname(); // Get the current path
-
-//   // Check if the current route is part of the dashboard
-//   const isDashboardRoute = pathname.startsWith("/dashboard");
-
-//   return (
-//     <html
-//       lang="en"
-//       className={`${poppins.variable} ${playfairDisplay.variable}`}
-//     >
-//       <body className="antialiased">
-//         <Provider store={store}>
-//           {/* Conditionally render Navbar, SearchBar, and BottomNavigation */}
-//           {!isDashboardRoute && <Navbar />}
-//           {!isDashboardRoute && (
-//             <div className="w-11/12 md:w-10/12 mx-auto">
-//               <SearchBar />
-//             </div>
-//           )}
-//           <div
-//             className={`${
-//               isDashboardRoute ? "w-full h-full" : "w-11/12 lg:w-10/12 mx-auto"
-//             }`}
-//           >
-//             {children}
-//           </div>
-// <<<<<<< Updated upstream
-//           {!isDashboardRoute && <BottomNavigation />}
-//         </Provider>
-// =======
-//         )}
-//         <div
-//           className={`${
-//             isDashboardRoute ? "w-full h-full" : "w-11/12 lg:w-10/12 mx-auto"
-//           }`}
-//         >
-//           <Provider store={store}>
-//             <BrowserRouter>{children}</BrowserRouter>
-//           </Provider>
-//         </div>
-//         {!isDashboardRoute && <BottomNavigation />}
-// >>>>>>> Stashed changes
-//       </body>
-//     </html>
-//   );
-// }

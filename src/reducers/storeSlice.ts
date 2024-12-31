@@ -4,7 +4,9 @@ import axios from "axios";
 
 // Initial state
 const initialState: StoreState = {
-  stores: [],
+  stores: [
+    
+  ],
   selectedStore: null,
   loading: false,
   error: null,
