@@ -4,12 +4,12 @@ import { loginUser, setAuth } from "../../reducers/authSlice";
 import { FaSpinner, FaEye, FaEyeSlash } from "react-icons/fa";
 import Swal from "sweetalert2";
 import Alert from "../forms/Alert";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 
 const LoginForm: React.FC = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate(); // Use navigate hook for redirection
+  const router = useRouter(); // Use router hook for redirection
 
   const { loading, error, isAuthenticated } = useSelector((state: RootState) => state.auth);
 
@@ -20,22 +20,37 @@ const LoginForm: React.FC = () => {
   // Redirect if user is already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/dashboard");
+      router.push("/dashboard"); // Redirect to dashboard if authenticated
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, router]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const { access, refresh, user } = await loginUser(username, password);
-      dispatch(setAuth({ access, refresh }, user)); // Dispatch tokens and user
+      // Simulating login API call
+      const tokens = await loginUser(username, password);
+      
+      // If login is successful, set the auth state and redirect to dashboard
+      dispatch(setAuth({
+        tokens: {
+          access: tokens.access, refresh: tokens.refresh,
+          tokens: null
+        }, user: {
+          username,
+          id: 0,
+          email: ""
+        },
+        isAuthenticated: false
+      }));
+
       Swal.fire({
         icon: "success",
         title: "Login Successful",
         timer: 1500,
       });
-  
-      navigate("/dashboard"); // Navigate to dashboard
+
+      // Redirecting user to dashboard
+      router.push("/dashboard");
     } catch (error) {
       console.error("Login failed:", error);
       Swal.fire({
@@ -45,10 +60,9 @@ const LoginForm: React.FC = () => {
       });
     }
   };
-  
 
   const handleForgotPassword = () => {
-    navigate("/forgot-password"); // Redirect to forgot-password page
+    router.push("/forgot-password"); // Redirect to forgot-password page
   };
 
   return (

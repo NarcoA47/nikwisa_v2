@@ -1,10 +1,14 @@
 import axios from "axios";
 import Cookies from "js-cookie";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 // Define token types
 interface Tokens {
   access: string;
   refresh: string;
+  // tokens?: unknown; // Add this line to include tokens property
+  // tokens?: Tokens; // Add this line to include tokens property
+  tokens: Tokens | null; // Add tokens property to AuthState
 }
 
 // Define User type
@@ -72,10 +76,22 @@ export const authReducer = (state = initialState, action: AuthAction): AuthState
 };
 
 // Actions
-export const setAuth = (tokens: Tokens, user: User) => ({
-  type: SET_AUTH,
-  payload: { ...tokens, user }, // Include user in the payload
+export const authSlice = createSlice({
+  name: "auth",
+  initialState,
+  reducers: {
+    setAuth: (state: AuthState, action: PayloadAction<{ tokens: Tokens; user: User; isAuthenticated: boolean }>) => {
+      state.accessToken = action.payload.tokens.access;
+      state.refreshToken = action.payload.tokens.refresh;
+      state.user = action.payload.user;
+      state.isAuthenticated = action.payload.isAuthenticated;
+    },
+    // other reducers...
+  },
 });
+
+export const { setAuth } = authSlice.actions;
+export default authSlice.reducer;
 
 export const logout = () => ({
   type: LOGOUT,
