@@ -1,27 +1,32 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { useDispatch} from 'react-redux';
+import { useDispatch } from "react-redux";
 import { storeReducer } from "./storeSlice";
 import { productReducer } from "./productSlice";
-import { authReducer } from "./authSlice";
+import authReducer from "./authSlice";
 import taskReducer from "./taskersSlice";
-import weddingProductReducer from "./weddingSlice";
+import eventReducer from "./eventSlice";
 import weddingcategoryReducer from "./categorySlice";
 import uiReducer from "./uiSlice";
 import sidebarReducer from "./sidebarSlice";
+import { reviewsReducer } from "./reviewSlice";
+import { offeringsReducer } from "./offeringsSlice";
+import { imagesReducer } from "./imageSlice";
 
 const store = configureStore({
   reducer: {
     auth: authReducer,
     product: productReducer,
     taskers: taskReducer,
-    weddingProduct: weddingProductReducer,
+    eventProduct: eventReducer,
     categories: weddingcategoryReducer,
     stores: storeReducer,
     ui: uiReducer,
     sidebar: sidebarReducer,
+    reviews: reviewsReducer,
+    offerings: offeringsReducer,
+    images: imagesReducer,
   },
 });
-
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

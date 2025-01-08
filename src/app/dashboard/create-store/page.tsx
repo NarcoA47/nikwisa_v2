@@ -1,24 +1,28 @@
 "use client";
 
 import FormRow from "@/components/forms/FormRow";
-import FormRowSelect from "@/components/forms/FormRowSelect";
+
 import { fetchCategories } from "@/reducers/categorySlice";
+import { fetchEventCategories } from "@/reducers/eventSlice";
 import { AppDispatch, RootState } from "@/reducers/store";
 import { addStore } from "@/reducers/storeSlice";
-import { fetchWeddingCategories } from "@/reducers/weddingSlice";
+
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 const defaultStoreData = {
   name: "",
-  categories: [],
-  wedding_category: "",
+  categories: [], // Array of category titles
+  event_planning_categories: [], // Array of event planning category titles
   overview: "",
   phone_number: "",
   whats_app: "",
   location: "",
   image: null,
+  working_hours: null, // New field for working hours, default to null
+  is_verified: false, // Default to false
+  is_responsive: false, // Default to false
 };
 
 const FormRowSelect = ({ label, value, options, onChange, id }: any) => (
@@ -56,15 +60,15 @@ const CreateStore: React.FC = () => {
   const categories = useSelector(
     (state: RootState) => state.categories.categories
   );
-  const weddingCategories = useSelector(
-    (state: RootState) => state.weddingProduct.wedding_categories
+  const EventCategories = useSelector(
+    (state: RootState) => state.eventProduct.event_categories
   );
   const { user } = useSelector((state: RootState) => state.auth);
 
   console.log("user Object", user);
   useEffect(() => {
     dispatch(fetchCategories());
-    dispatch(fetchWeddingCategories());
+    dispatch(fetchEventCategories());
   }, [dispatch]);
 
   const handleInputChange = (field: string, value: any) => {
@@ -91,8 +95,8 @@ const CreateStore: React.FC = () => {
     if (!storeData.name) newErrors.name = "Store name is required.";
     if (storeData.categories.length === 0)
       newErrors.categories = "Category is required.";
-    if (!storeData.wedding_category)
-      newErrors.wedding_category = "Wedding category is required.";
+    if (!storeData.event_planning_categories)
+      newErrors.event_planning_categories = "Event category is required.";
 
     return newErrors;
   };
@@ -102,7 +106,9 @@ const CreateStore: React.FC = () => {
     const sanitized = {
       ...(data.name && { name: data.name }),
       ...(data.categories.length > 0 && { categories: data.categories }),
-      ...(data.wedding_category && { wedding_category: data.wedding_category }),
+      ...(data.event_planning_categories && {
+        event_planning_categories: data.event_planning_categories,
+      }),
       ...(data.overview && { overview: data.overview }),
       ...(data.phone_number && { phone_number: data.phone_number }),
       ...(data.location && { location: data.location }),
@@ -211,9 +217,9 @@ const CreateStore: React.FC = () => {
 
           <FormRowSelect
             label="Wedding Category"
-            value={storeData.wedding_category}
+            value={storeData.event_planning_categories}
             options={weddingCategories}
-            id="wedding_category"
+            id="event_planning_categories"
             onChange={handleInputChange}
           />
 

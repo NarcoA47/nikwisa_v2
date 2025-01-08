@@ -65,6 +65,25 @@ export interface CategoryState {
 //   reviews: Review[];
 //   wedding_category: number;
 // }
+// export interface Store {
+//   id: number;
+//   name: string;
+//   location: string;
+//   phone_number?: string;
+//   whats_app?: string;
+//   overview: string;
+//   rating: number;
+//   reviews_count: number;
+//   image: string;
+//   photos: string[];
+//   createdAt: string;
+//   updatedAt: string;
+//   offerings: Offering[];
+//   reviews: Review[];
+//   wedding_category: string; // Title of the wedding category, can be null
+//   categories: string[]; // Array of category titles
+//   owner: string; // Owner's username
+// }
 export interface Store {
   id: number;
   name: string;
@@ -75,14 +94,17 @@ export interface Store {
   rating: number;
   reviews_count: number;
   image: string;
-  photos: string[];
+  photos: string[]; // If you plan to use photos for the store
   createdAt: string;
   updatedAt: string;
-  offerings: Offering[];
-  reviews: Review[];
-  wedding_category: string; // Title of the wedding category, can be null
+  offerings: Offering[]; // Assuming you have an Offering interface
+  reviews: Review[]; // Assuming you have a Review interface
+  event_planning_categories: string[]; // Array of event planning category titles
   categories: string[]; // Array of category titles
   owner: string; // Owner's username
+  working_hours: string | null; // New field for working hours
+  is_verified: boolean; // Boolean indicating if the business is verified
+  is_responsive: boolean; // Boolean indicating if the business is responsive
 }
 
 export interface StoreState {
@@ -103,8 +125,26 @@ export interface StoreDetailsHeaderProps {
     image: string;
     phone_number?: string;
     whats_app?: string;
+    working_hours: string | null; // Adding working_hours
+    is_verified: boolean; // Adding is_verified
+    is_responsive: boolean; // Adding is_responsive
+    event_planning_categories: string[]; // Array of event planning categories
   };
 }
+
+// export interface StoreDetailsHeaderProps {
+//   store: {
+//     id: number;
+//     name: string;
+//     rating: number;
+//     reviews_count: number;
+//     location: string;
+//     overview: string;
+//     image: string;
+//     phone_number?: string;
+//     whats_app?: string;
+//   };
+// }
 
 /* ================== REVIEW TYPES ================== */
 // Updated Review Interface
@@ -192,10 +232,34 @@ export interface UserProfile {
 }
 
 export interface AuthState {
-  initialState: { id: string; user_id: number; username: string; email: string; role: string; };
-  initialState: { id: string; user_id: number; username: string; email: string; role: string; };
-  initialState: { id: string; user_id: number; username: string; email: string; role: string; };
-  initialState: { id: string; user_id: number; username: string; email: string; role: string; };
+  initialState: {
+    id: string;
+    user_id: number;
+    username: string;
+    email: string;
+    role: string;
+  };
+  initialState: {
+    id: string;
+    user_id: number;
+    username: string;
+    email: string;
+    role: string;
+  };
+  initialState: {
+    id: string;
+    user_id: number;
+    username: string;
+    email: string;
+    role: string;
+  };
+  initialState: {
+    id: string;
+    user_id: number;
+    username: string;
+    email: string;
+    role: string;
+  };
   user: UserProfile | null;
   role: string | null;
   accessToken: string | null;
@@ -237,9 +301,10 @@ export interface WeddingProduct {
   related_products: number[];
 }
 
-export interface WeddingProductState {
+export interface EvenPlanningProductState {
   product: WeddingProduct | null;
-  wedding_categories: Category[];
+  event_categories: Category[];
+  stores: Store[];
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
 }

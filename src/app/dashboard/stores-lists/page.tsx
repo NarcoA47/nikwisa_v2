@@ -58,7 +58,7 @@ const StorePage: React.FC = () => {
               rating={store.rating || 0} // Default values if missing
               reviews_count={store.reviews_count || 0}
               location={store.location}
-              wedding_category={store.wedding_category || "N/A"} // Default value if missing
+              event_planning_categories={store.event_planning_categories || []} // Default value if missing
             />
           ))}
         </div>

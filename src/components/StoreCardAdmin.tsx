@@ -10,7 +10,7 @@ const StoreCardAdmin: React.FC<StoreCardProps> = ({
   rating,
   reviews_count,
   location,
-  wedding_category,
+  event_planning_categories,
 }) => {
   const router = useRouter();
 

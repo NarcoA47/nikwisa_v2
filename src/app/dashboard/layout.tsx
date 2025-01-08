@@ -9,9 +9,15 @@ import AdminNav from "@/components/Navigation/AdminNav";
 import BigSidebar from "@/components/Navigation/BigSidebar";
 import SmallSidebar from "@/components/Navigation/SmallSidebar";
 
-export default function SharedLayout({ children }: { children: React.ReactNode }) {
+export default function SharedLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const dispatch = useDispatch();
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const isAuthenticated = useSelector(
+    (state: RootState) => state.auth.isAuthenticated
+  );
 
   // Check if user is authenticated based on tokens in localStorage
   useEffect(() => {
@@ -32,7 +38,11 @@ export default function SharedLayout({ children }: { children: React.ReactNode }
       <SmallSidebar />
 
       {/* Main content area */}
-      <div className={`transition-all duration-300 ${isAuthenticated ? "lg:ml-64" : "lg:ml-0"}`}>
+      <div
+        className={`transition-all duration-300 ${
+          isAuthenticated ? "lg:ml-64" : "lg:ml-0"
+        }`}
+      >
         {/* Navbar */}
         <AdminNav />
 

@@ -57,7 +57,7 @@ const miniCategories = [
       {
         id: 8,
         name: "Painter",
-        image: "/assets/home/painter.png",
+        image: "/assets/home/bricklayer.png",
         url: "/painter",
       },
     ],

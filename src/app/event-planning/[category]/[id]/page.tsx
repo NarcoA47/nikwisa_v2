@@ -62,10 +62,15 @@ const StoreDetailPage: React.FC = () => {
   // Decode the category and trim any spaces to match the store data
   const decodedCategory = decodeURIComponent(category).trim();
 
-  // Filter the store based on the wedding_category and id
+  // Filter the store based on the  event_planning_categories and id
   const filteredStore = stores.find(
     (store) =>
-      store.id === storeId && store.wedding_category.trim() === decodedCategory // Match with wedding_category
+      store.id === storeId &&
+      store.event_planning_categories.some(
+        (eventCategory: string) =>
+          eventCategory.toLowerCase().replace(/\s+/g, "-") ===
+          decodedCategory.toLowerCase().replace(/\s+/g, "-")
+      )
   );
 
   useEffect(() => {
@@ -127,7 +132,7 @@ const StoreDetailPage: React.FC = () => {
   };
 
   return (
-    <div className="p-4 md:p-6 bg-gray-50 my-8">
+    <div className="p-4 md:p-6 bg-gray-50 my-8 mt-10">
       <StoreDetailsHeader store={filteredStore} />
 
       {/* Tab Navigation */}

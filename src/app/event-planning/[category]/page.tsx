@@ -13,43 +13,57 @@ const CategoryPage = () => {
     (state: RootState) => state.stores
   );
 
-  // Extract the category from the URL using useParams
   const { category } = useParams();
 
   console.log("Category testing:", category);
   useEffect(() => {
-    // Fetch all stores with offerings when the component mounts
     dispatch(fetchStoresWithOfferings());
   }, [dispatch]);
 
-  // console.log("Store testing:", filteredStores);
-  const filteredStores = stores.filter(
-    (store) =>
-      store.wedding_category.toLowerCase().replace(/\s+/g, "-") ===
-      (Array.isArray(category) ? category[0] : category)?.toLowerCase()
-  );
+  console.log("Stores before filtering:", stores);
+
+  const normalizedCategory =
+    typeof category === "string"
+      ? category.toLowerCase().replace(/\s+/g, "-")
+      : "";
+
+  const filteredStores = stores.filter((store) => {
+    const normalizedStoreCategories = store.event_planning_categories.map(
+      (eventCategory: string) =>
+        eventCategory.toLowerCase().replace(/\s+/g, "-")
+    );
+
+    console.log(
+      "Store categories:",
+      normalizedStoreCategories,
+      "Checking against category:",
+      normalizedCategory
+    );
+
+    return normalizedStoreCategories.includes(normalizedCategory);
+  });
 
   console.log("Filtered stores:", filteredStores);
 
-  // Loading and Error States
   if (loading)
     return <div className="text-center text-gray-500">Loading...</div>;
   if (error) return <div className="text-center text-red-500">{error}</div>;
 
   return (
-    <div className="p-4 md:p-8 space-y-6">
+    <div className="p-0 md:p-8 space-y-6 ">
       {filteredStores.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 ">
           {filteredStores.map((store) => (
             <StoreCard
               key={store.id}
               id={store.id}
               name={store.name}
               image={store.image}
-              rating={store.rating || 0} // Default values if missing
+              rating={store.rating || 0}
               reviews_count={store.reviews_count || 0}
+              working_hours={store.working_hours}
               location={store.location}
-              wedding_category={store.wedding_category || "N/A"} // Default value if missing
+              event_planning_categories={store.event_planning_categories || []}
             />
           ))}
         </div>
@@ -63,3 +77,74 @@ const CategoryPage = () => {
 };
 
 export default CategoryPage;
+
+// "use client";
+
+// import { useEffect } from "react";
+// import { useDispatch, useSelector } from "react-redux";
+// import StoreCard from "@/components/StoreCard";
+// import { RootState, AppDispatch } from "@/reducers/store";
+// import { fetchStoresWithOfferings } from "@/reducers/storeSlice";
+// import { useParams } from "next/navigation";
+
+// const CategoryPage = () => {
+//   const dispatch: AppDispatch = useDispatch();
+//   const { stores, loading, error } = useSelector(
+//     (state: RootState) => state.stores
+//   );
+
+//   // Extract the category from the URL using useParams
+//   const { category } = useParams();
+
+//   console.log("Category testing:", category);
+//   useEffect(() => {
+//     // Fetch all stores with offerings when the component mounts
+//     dispatch(fetchStoresWithOfferings());
+//   }, [dispatch]);
+
+//   console.log("stores before filtering:", stores);
+//   // console.log("Store testing:", filteredStores);
+//   const filteredStores = stores.filter((store) =>
+//     store.event_planning_categories.some(
+//       (eventCategory) =>
+//         eventCategory.toLowerCase().replace(/\s+/g, "-") ===
+//         (Array.isArray(category) && category[0]
+//           ? category[0].toLowerCase().replace(/\s+/g, "-")
+//           : "") // Ensure fallback to an empty string if category is undefined
+//     )
+//   );
+
+//   console.log("Filtered stores:", filteredStores);
+
+//   // Loading and Error States
+//   if (loading)
+//     return <div className="text-center text-gray-500">Loading...</div>;
+//   if (error) return <div className="text-center text-red-500">{error}</div>;
+
+//   return (
+//     <div className="p-4 md:p-8 space-y-6">
+//       {filteredStores.length > 0 ? (
+//         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+//           {filteredStores.map((store) => (
+//             <StoreCard
+//               key={store.id}
+//               id={store.id}
+//               name={store.name}
+//               image={store.image}
+//               rating={store.rating || 0} // Default values if missing
+//               reviews_count={store.reviews_count || 0}
+//               location={store.location}
+//               event_planning_categories={store.event_planning_categories || []} // Default value if missing
+//             />
+//           ))}
+//         </div>
+//       ) : (
+//         <div className="text-center text-gray-600">
+//           No stores available for the category: {category}
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default CategoryPage;

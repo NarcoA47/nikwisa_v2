@@ -1,22 +1,22 @@
-import { Category, WeddingProduct, WeddingProductState } from "@/types/types";
+import { EvenPlanningProductState } from "@/types/types";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const initialState: WeddingProductState = {
+const initialState: EvenPlanningProductState = {
   product: null,
-  wedding_categories: [],
+  event_categories: [],
   stores: [], // Add stores to the state
   status: "idle",
   error: null,
 };
 
-export const fetchWeddingProduct = createAsyncThunk(
-  "weddingProduct/fetchWeddingProduct",
+export const fetchEventProduct = createAsyncThunk(
+  "eventProduct/fetchEventProduct",
   async () => {
     try {
-      console.log("Fetching all wedding products");
+      console.log("Fetching all eevnt planning products");
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/weddings/`
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/eventcategory/`
       );
       console.log("API response:", response.data);
       return response.data;
@@ -24,7 +24,8 @@ export const fetchWeddingProduct = createAsyncThunk(
       console.error("Error fetching products:", error);
       if (axios.isAxiosError(error) && error.response) {
         throw Error(
-          error.response.data.message || "Failed to fetch wedding products"
+          error.response.data.message ||
+            "Failed to fetch event planning products"
         );
       }
       throw error;
@@ -32,21 +33,20 @@ export const fetchWeddingProduct = createAsyncThunk(
   }
 );
 
-export const fetchWeddingCategories = createAsyncThunk(
-  "weddingProduct/fetchWeddingCategories",
+export const fetchEventCategories = createAsyncThunk(
+  "eventProduct/fetchEventCategories",
   async () => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/weddingscategory/`
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/eventcategory/`
       );
-      console.log("Wedding wedding_categories API response:", response.data);
+      console.log(" event_categories API response:", response.data);
       return response.data;
     } catch (error) {
-      console.error("Error fetching wedding_categories:", error);
+      console.error("Error fetching event_categories:", error);
       if (axios.isAxiosError(error) && error.response) {
         throw Error(
-          error.response.data.message ||
-            "Failed to fetch wedding wedding_categories"
+          error.response.data.message || "Failed to fetch  event_categories"
         );
       }
       throw error;
@@ -56,7 +56,7 @@ export const fetchWeddingCategories = createAsyncThunk(
 
 // Fetch stores with offerings
 export const fetchStoresWithOfferings = createAsyncThunk(
-  "weddingProduct/fetchStoresWithOfferings",
+  "eventProduct/fetchStoresWithOfferings",
   async () => {
     try {
       console.log("Fetching stores with offerings");
@@ -75,31 +75,31 @@ export const fetchStoresWithOfferings = createAsyncThunk(
   }
 );
 
-const weddingSlice = createSlice({
-  name: "weddingProduct",
+const eventSlice = createSlice({
+  name: "eventProduct",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchWeddingProduct.pending, (state) => {
+      .addCase(fetchEventProduct.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(fetchWeddingProduct.fulfilled, (state, action) => {
+      .addCase(fetchEventProduct.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.product = action.payload;
       })
-      .addCase(fetchWeddingProduct.rejected, (state, action) => {
+      .addCase(fetchEventProduct.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message ?? null;
       })
-      .addCase(fetchWeddingCategories.pending, (state) => {
+      .addCase(fetchEventCategories.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(fetchWeddingCategories.fulfilled, (state, action) => {
+      .addCase(fetchEventCategories.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.wedding_categories = action.payload;
+        state.event_categories = action.payload;
       })
-      .addCase(fetchWeddingCategories.rejected, (state, action) => {
+      .addCase(fetchEventCategories.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message ?? null;
       })
@@ -117,7 +117,7 @@ const weddingSlice = createSlice({
   },
 });
 
-export default weddingSlice.reducer;
+export default eventSlice.reducer;
 
 // import { Category, WeddingProduct, WeddingProductState } from "@/types/types";
 // import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
@@ -125,16 +125,16 @@ export default weddingSlice.reducer;
 
 // const initialState: WeddingProductState = {
 //   product: null,
-//   wedding_categories: [],
+//   event_categories: [],
 //   status: "idle",
 //   error: null,
 // };
 
-// export const fetchWeddingProduct = createAsyncThunk(
-//   "weddingProduct/fetchWeddingProduct",
+// export const fetchEventProduct = createAsyncThunk(
+//   "weddingProduct/fetchEventProduct",
 //   async () => {
 //     try {
-//       console.log("Fetching all wedding products");
+//       console.log("Fetching all event planning products");
 //       const response = await axios.get(
 //         `${process.env.NEXT_PUBLIC_API_ENDPOINT}/weddings/`
 //       );
@@ -144,7 +144,7 @@ export default weddingSlice.reducer;
 //       console.error("Error fetching products:", error);
 //       if (axios.isAxiosError(error) && error.response) {
 //         throw Error(
-//           error.response.data.message || "Failed to fetch wedding products"
+//           error.response.data.message || "Failed to fetch event planning products"
 //         );
 //       }
 //       throw error;
@@ -152,8 +152,8 @@ export default weddingSlice.reducer;
 //   }
 // );
 
-// export const fetchWeddingCategories = createAsyncThunk(
-//   "weddingProduct/fetchWeddingCategories",
+// export const fetchEventCategories = createAsyncThunk(
+//   "weddingProduct/fetchEventCategories",
 //   async () => {
 //     try {
 //       const response = await axios.get(
@@ -161,10 +161,10 @@ export default weddingSlice.reducer;
 //       );
 //       return response.data;
 //     } catch (error) {
-//       console.error("Error fetching wedding_categories:", error);
+//       console.error("Error fetching event_categories:", error);
 //       if (axios.isAxiosError(error) && error.response) {
 //         throw Error(
-//           error.response.data.message || "Failed to fetch wedding wedding_categories"
+//           error.response.data.message || "Failed to fetch event planning event_categories"
 //         );
 //       }
 //       throw error;
@@ -178,25 +178,25 @@ export default weddingSlice.reducer;
 //   reducers: {},
 //   extraReducers: (builder) => {
 //     builder
-//       .addCase(fetchWeddingProduct.pending, (state) => {
+//       .addCase(fetchEventProduct.pending, (state) => {
 //         state.status = "loading";
 //       })
-//       .addCase(fetchWeddingProduct.fulfilled, (state, action) => {
+//       .addCase(fetchEventProduct.fulfilled, (state, action) => {
 //         state.status = "succeeded";
 //         state.product = action.payload;
 //       })
-//       .addCase(fetchWeddingProduct.rejected, (state, action) => {
+//       .addCase(fetchEventProduct.rejected, (state, action) => {
 //         state.status = "failed";
 //         state.error = action.error.message ?? null;
 //       })
-//       .addCase(fetchWeddingCategories.pending, (state) => {
+//       .addCase(fetchEventCategories.pending, (state) => {
 //         state.status = "loading";
 //       })
-//       .addCase(fetchWeddingCategories.fulfilled, (state, action) => {
+//       .addCase(fetchEventCategories.fulfilled, (state, action) => {
 //         state.status = "succeeded";
-//         state.wedding_categories = action.payload;
+//         state.event_categories = action.payload;
 //       })
-//       .addCase(fetchWeddingCategories.rejected, (state, action) => {
+//       .addCase(fetchEventCategories.rejected, (state, action) => {
 //         state.status = "failed";
 //         state.error = action.error.message ?? null;
 //       });

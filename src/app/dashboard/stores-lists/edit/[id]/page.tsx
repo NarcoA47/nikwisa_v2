@@ -1,21 +1,25 @@
 "use client";
 
 import { fetchCategories } from "@/reducers/categorySlice";
+import { fetchEventCategories } from "@/reducers/eventSlice";
 import { AppDispatch, RootState } from "@/reducers/store";
 import { fetchStoresByUserId, partialUpdateStore } from "@/reducers/storeSlice";
-import { fetchWeddingCategories } from "@/reducers/weddingSlice";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 const defaultStoreData = {
   name: "",
-  categories: [],
-  wedding_category: "",
+  categories: [], // Array of category titles
+  event_planning_categories: [], // Array of event planning category titles
   overview: "",
   phone_number: "",
   whats_app: "",
   location: "",
+  image: null,
+  working_hours: null, // New field for working hours, default to null
+  is_verified: false, // Default to false
+  is_responsive: false, // Default to false
 };
 
 const TextInput = ({
@@ -84,8 +88,8 @@ const EditStore: React.FC = () => {
   const categories = useSelector(
     (state: RootState) => state.categories.categories
   );
-  const weddingCategories = useSelector(
-    (state: RootState) => state.weddingProduct.wedding_categories
+  const EventCategories = useSelector(
+    (state: RootState) => state.eventProduct.event_categories
   );
   const { user } = useSelector((state: RootState) => state.auth);
 
@@ -98,7 +102,7 @@ const EditStore: React.FC = () => {
       dispatch(fetchStoresByUserId(user.user_id.toString()));
     }
     dispatch(fetchCategories());
-    dispatch(fetchWeddingCategories());
+    dispatch(fetchEventCategories());
   }, [dispatch, user?.user_id]);
 
   useEffect(() => {
@@ -135,7 +139,9 @@ const EditStore: React.FC = () => {
           typeof cat === "string" ? cat : ""
         ),
       }),
-      ...(data.wedding_category && { wedding_category: data.wedding_category }),
+      ...(data.event_planning_categories && {
+        event_planning_categories: data.event_planning_categories,
+      }),
       ...(data.overview && { overview: data.overview }),
       ...(data.phone_number && { phone_number: data.phone_number }),
       ...(data.location && { location: data.location }),
@@ -197,10 +203,10 @@ const EditStore: React.FC = () => {
 
         <SelectInput
           label="SubCategory"
-          value={storeData.wedding_category || ""}
-          options={weddingCategories}
+          value={storeData.event_planning_categories || ""}
+          options={EventCategories}
           onChange={handleInputChange}
-          id="wedding_category"
+          id="event_planning_categories"
         />
 
         <div className="mb-6">

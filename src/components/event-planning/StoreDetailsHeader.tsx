@@ -6,7 +6,7 @@ import { StoreDetailsHeaderProps } from "@/types/types";
 export default function StoreDetailsHeader({ store }: StoreDetailsHeaderProps) {
   console.log("StoreDetailsHeader", store);
   return (
-    <div className="flex flex-col-reverse md:flex-row md:space-x-8 mb-8">
+    <div className="flex flex-col-reverse md:flex-row md:space-x-8 mb-8 md:mt-8 ">
       {/* Left Section */}
       <div className="md:w-1/2">
         <h1 className="text-xl md:text-5xl font-bold text-gray-900 mb-2.5">

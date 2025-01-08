@@ -15,7 +15,7 @@ export const fetchCategories = createAsyncThunk(
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_API_ENDPOINT}/categories/`
       );
-
+      console.log("categories", response.data);
       return response.data; // Assuming response.data is an array of categories
     } catch (error) {
       console.error("Error fetching categories:", error); // Log the error
