@@ -1,9 +1,12 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
+import { registerUser } from "../../reducers/authSlice";
 
 export default function RegistrationForm() {
   const router = useRouter();
+  const dispatch = useDispatch();
 
   // State to track the current step
   const [step, setStep] = useState(1);
@@ -30,6 +33,7 @@ export default function RegistrationForm() {
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    
   };
 
   const handleNext = async (e: React.FormEvent<HTMLFormElement>) => {

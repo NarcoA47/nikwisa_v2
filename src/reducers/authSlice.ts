@@ -39,7 +39,7 @@ const getCookie = (key: string): string | null => {
 
 // Initial state
 const initialState: AuthState = {
-  isAuthenticated: Boolean(getCookie("access_token")),
+  isAuthenticated: Boolean(getCookie("access_token")), // Check if tokens exist in cookies
   accessToken: getCookie("access_token"),
   refreshToken: getCookie("refresh_token"),
   user: null,

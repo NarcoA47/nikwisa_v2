@@ -25,7 +25,14 @@ export default function SharedLayout({
     const refreshToken = localStorage.getItem("refresh_token");
 
     if (accessToken && refreshToken && !isAuthenticated) {
-      dispatch(setAuth({ access: accessToken, refresh: refreshToken }));
+      dispatch(setAuth({ tokens: {
+        access: accessToken, refresh: refreshToken,
+        tokens: null
+      }, user: {
+        id: 0,
+        username: "",
+        email: ""
+      }, isAuthenticated: true }));
     } else if (!accessToken || !refreshToken) {
       dispatch(logout());
     }
