@@ -1,8 +1,6 @@
-"use client";
-
-import { FaAlignLeft, FaUserCircle, FaCaretDown } from "react-icons/fa";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { FaAlignLeft, FaUserCircle, FaCaretDown } from "react-icons/fa";
 import { toggleSidebar } from "@/reducers/sidebarSlice";
 import { logout } from "@/reducers/authSlice";
 import { RootState } from "@/reducers/store";
@@ -10,10 +8,10 @@ import { useRouter } from "next/navigation";
 
 const AdminNav = () => {
   const dispatch = useDispatch();
-  const router = useRouter(); // For navigation after logout
+  const router = useRouter();
   const [showLogout, setShowLogout] = useState(false);
 
-  // Access user data from the Redux store
+  // Access user data from Redux store
   const user = useSelector((state: RootState) => state.auth.user);
 
   // Handle logout
@@ -45,7 +43,7 @@ const AdminNav = () => {
             onClick={() => setShowLogout(!showLogout)}
           >
             <FaUserCircle />
-            {user?.username || "Guest"} {/* Display username */}
+            {user?.user_type || "Guest"} {/* Display username from the user data */}
             <FaCaretDown />
           </button>
 
