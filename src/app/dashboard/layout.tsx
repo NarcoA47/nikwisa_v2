@@ -5,7 +5,7 @@ import Cookies from "js-cookie";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/reducers/store";
 import { setAuth, logout } from "@/reducers/authSlice";
-import jwtDecode from "jwt-decode"; // Assuming you're using jwt-decode
+import {jwtDecode} from "jwt-decode"; // Assuming you're using jwt-decode
 
 import AdminNav from "@/components/Navigation/AdminNav";
 import BigSidebar from "@/components/Navigation/BigSidebar";
@@ -20,6 +20,7 @@ export default function SharedLayout({
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated
   );
+  
 
   useEffect(() => {
     const accessToken = Cookies.get("access_token");
