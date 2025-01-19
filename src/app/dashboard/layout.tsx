@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect } from "react";
+import Cookies from "js-cookie";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/reducers/store";
 import { setAuth, logout } from "@/reducers/authSlice";
+import {jwtDecode} from "jwt-decode"; // Assuming you're using jwt-decode
 
 import AdminNav from "@/components/Navigation/AdminNav";
 import BigSidebar from "@/components/Navigation/BigSidebar";
@@ -18,21 +20,36 @@ export default function SharedLayout({
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated
   );
+  
 
-  // Check if user is authenticated based on tokens in localStorage
   useEffect(() => {
-    const accessToken = localStorage.getItem("access_token");
-    const refreshToken = localStorage.getItem("refresh_token");
+    const accessToken = Cookies.get("access_token");
+    const refreshToken = Cookies.get("refresh_token");
 
     if (accessToken && refreshToken && !isAuthenticated) {
-      dispatch(setAuth({ tokens: {
-        access: accessToken, refresh: refreshToken,
-        tokens: null
-      }, user: {
-        id: 0,
-        username: "",
-        email: ""
-      }, isAuthenticated: true }));
+      try {
+        // Decode the access token to extract user information
+        const decodedToken: any = jwtDecode(accessToken);
+
+        // Dispatch action to set authentication and user details
+        dispatch(
+          setAuth({
+            tokens: {
+              access: accessToken,
+              refresh: refreshToken,
+            },
+            user: {
+              id: decodedToken?.user_id || null,
+              username: decodedToken?.username || "Guest",
+              email: decodedToken?.email || null,
+            },
+            isAuthenticated: true,
+          })
+        );
+      } catch (error) {
+        console.error("Error decoding token:", error);
+        dispatch(logout()); // Logout if the token is invalid
+      }
     } else if (!accessToken || !refreshToken) {
       dispatch(logout());
     }

@@ -1,180 +1,200 @@
-import axios from "axios";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import Cookies from "js-cookie";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { jwtDecode } from "jwt-decode";
 
-// Define token types
-interface Tokens {
-  access: string;
-  refresh: string;
-  // tokens?: unknown; // Add this line to include tokens property
-  // tokens?: Tokens; // Add this line to include tokens property
-  tokens: Tokens | null; // Add tokens property to AuthState
-}
-
-// Define User type
-interface User {
-  id: number;
-  username: string;
-  email: string;
-}
-
-// Define AuthState
+// Define the shape of the auth state
 interface AuthState {
+  loading: boolean;
+  error: string | null;
   isAuthenticated: boolean;
   accessToken: string | null;
   refreshToken: string | null;
-  user: User | null;
-  error: string | null;
-  loading: boolean;
+  user: {
+    id: number | null;
+    username: string | null;
+    email: string | null;
+  } | null;
 }
-
-// Action types
-const SET_AUTH = 'SET_AUTH';
-const LOGOUT = 'LOGOUT';
-
-// Check if cookies are available
-const getCookie = (key: string): string | null => {
-  return Cookies.get(key) || null;
-};
 
 // Initial state
 const initialState: AuthState = {
-  isAuthenticated: Boolean(getCookie("access_token")), // Check if tokens exist in cookies
-  accessToken: getCookie("access_token"),
-  refreshToken: getCookie("refresh_token"),
-  user: null,
-  error: null,
   loading: false,
+  error: null,
+  isAuthenticated: false,
+  accessToken: null,
+  refreshToken: null,
+  user: null,
 };
 
-// Reducer
-interface AuthAction {
-  type: string;
-  payload?: Tokens & { user?: User };
-}
 
-export const authReducer = (state = initialState, action: AuthAction): AuthState => {
-  switch (action.type) {
-    case SET_AUTH:
+// Inside the loginUser async thunk:
+export const loginUser = createAsyncThunk(
+  "auth/login",
+  async (
+    { username, password }: { username: string; password: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/login/`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Invalid username or password");
+      }
+
+      const data = await response.json();
+      const decoded: { id: number; username: string; email: string } = jwtDecode(data.access); // Decode the access token to get user info
+
+      // Set user data in the store
+      Cookies.set("access_token", data.access);
+      Cookies.set("refresh_token", data.refresh);
+
       return {
-        ...state,
-        isAuthenticated: true,
-        accessToken: action.payload?.access || state.accessToken,
-        refreshToken: action.payload?.refresh || state.refreshToken,
-        user: action.payload?.user || state.user, // Update user in state
+        user: decoded, // Assuming the decoded token contains user data
+        tokens: {
+          access: data.access,
+          refresh: data.refresh,
+        },
       };
-    case LOGOUT:
-      return {
-        ...state,
-        isAuthenticated: false,
-        accessToken: null,
-        refreshToken: null,
-      };
-    default:
-      return state;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
+    }
   }
-};
+);
 
-// Actions
-export const authSlice = createSlice({
+
+// Async Thunk for fetching user info
+export const fetchUser = createAsyncThunk(
+  "auth/fetchUser",
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const state = getState() as { auth: AuthState };
+      const accessToken = state.auth.accessToken;
+      if (!accessToken) throw new Error("No access token available");
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/users/`,
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch user");
+      }
+
+      return await response.json();
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Async Thunk for refreshing tokens
+export const refreshToken = createAsyncThunk(
+  "auth/refreshToken",
+  async (_, { rejectWithValue }) => {
+    try {
+      const refreshToken = Cookies.get("refresh_token");
+      if (!refreshToken) throw new Error("No refresh token available");
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/refresh/`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ refresh: refreshToken }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to refresh token");
+      }
+
+      const data = await response.json();
+      Cookies.set("access_token", data.access);
+      return data;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Slice definition
+const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setAuth: (state: AuthState, action: PayloadAction<{ tokens: Tokens; user: User; isAuthenticated: boolean }>) => {
+    logout: (state) => {
+      Cookies.remove("access_token");
+      Cookies.remove("refresh_token");
+      state.isAuthenticated = false;
+      state.accessToken = null;
+      state.refreshToken = null;
+      state.user = null;
+    },
+    setAuth: (state, action) => {
       state.accessToken = action.payload.tokens.access;
       state.refreshToken = action.payload.tokens.refresh;
       state.user = action.payload.user;
-      state.isAuthenticated = action.payload.isAuthenticated;
+      state.isAuthenticated = true;
     },
-    // other reducers...
+  },
+  extraReducers: (builder) => {
+    builder
+      // Login
+      .addCase(loginUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(loginUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.isAuthenticated = true;
+        state.accessToken = action.payload.tokens.access;
+        state.refreshToken = action.payload.tokens.refresh;
+        state.user = action.payload.user;
+      })
+      .addCase(loginUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      // Fetch User
+      .addCase(fetchUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+      })
+      .addCase(fetchUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      // Refresh Token
+      .addCase(refreshToken.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(refreshToken.fulfilled, (state, action) => {
+        state.loading = false;
+        state.accessToken = action.payload.access;
+      })
+      .addCase(refreshToken.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
   },
 });
 
-export const { setAuth } = authSlice.actions;
+export const { logout, setAuth } = authSlice.actions;
 export default authSlice.reducer;
-
-export const logout = () => ({
-  type: LOGOUT,
-});
-
-// Function to refresh access token
-const refreshAccessToken = async (refreshToken: string) => {
-  try {
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_API_ENDPOINT}/token/refresh/`,
-      { refresh: refreshToken }
-    );
-    const { access } = response.data;
-    Cookies.set("access_token", access);
-    return access;
-  } catch (error) {
-    console.error("Error refreshing access token:", error);
-    throw new Error("Token refresh failed");
-  }
-};
-
-export const loginUser = async (username: string, password: string) => {
-  try {
-    // Make API request to fetch the tokens
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_API_ENDPOINT}/token/`,
-      {
-        username,
-        password,
-      }
-    );
-
-    const { access, refresh }: Tokens = response.data;
-
-    // Store tokens in cookies
-    Cookies.set("access_token", access);
-    Cookies.set("refresh_token", refresh);
-
-    // Fetch user data using the access token
-    let user = null;
-    try {
-      const userResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/users/`, {
-        headers: {
-          Authorization: `Bearer ${access}`,
-        },
-      });
-
-      user = userResponse.data;
-    } catch (userError) {
-      console.error("Failed to fetch user data:", userError);
-      // Provide a fallback user object or log out the user
-      user = { id: 0, username: "Guest", email: "" }; // Example fallback
-    }
-    // Return tokens and user data (user can be null if fetching user fails)
-    return { access, refresh, user };
-  } catch (error) {
-    console.error("Error logging in:", error);
-    throw new Error("Login failed");
-  }
-};
-
-// Function to fetch user data with token refresh logic
-export const fetchUserData = async () => {
-  let access = getCookie("access_token");
-  const refresh = getCookie("refresh_token");
-
-  if (!access && refresh) {
-    access = await refreshAccessToken(refresh);
-  }
-
-  if (access) {
-    try {
-      const userResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/users/`, {
-        headers: {
-          Authorization: `Bearer ${access}`,
-        },
-      });
-      return userResponse.data;
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-      throw new Error("Failed to fetch user data");
-    }
-  } else {
-    throw new Error("No valid tokens available");
-  }
-};
