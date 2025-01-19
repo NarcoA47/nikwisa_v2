@@ -63,9 +63,7 @@ export default function SharedLayout({
 
       {/* Main content area */}
       <div
-        className={`transition-all duration-300 ${
-          isAuthenticated ? "lg:ml-64" : "lg:ml-0"
-        }`}
+        
       >
         {/* Navbar */}
         <AdminNav />

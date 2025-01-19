@@ -1,36 +1,69 @@
 import React, { useState, useEffect } from "react";
-import { RootState } from "../../reducers/store";
-import { loginUser } from "../../reducers/authSlice";
 import { useRouter } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch } from "../../reducers/store";
+import { fetchToken } from "../../utils/api";
+import {jwtDecode} from "jwt-decode";
+import Cookies from 'js-cookie';
 
 const LoginForm: React.FC = () => {
-  
-  const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
-
-  const { loading, error, isAuthenticated } = useSelector(
-    (state: RootState) => state.auth
-  );
-
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  interface UserData {
+    username: string;
+    email: string;
+    // Add other properties if needed
+  }
+
+  const [userData, setUserData] = useState<UserData | null>(null); // State to hold user data
 
   useEffect(() => {
-    if (isAuthenticated) {
-      router.push("/dashboard");
+    // Check if access token is available in cookies
+    const token = Cookies.get("access_token");
+    if (token) {
+      fetchUserData(token); // Fetch user data on token presence
+      router.push("/dashboard"); // Redirect to dashboard if token is found
     }
-  }, [isAuthenticated, router]);
+  }, [router]);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    dispatch(loginUser({ username, password }));
+  const fetchUserData = (token: string) => {
+    try {
+      const decoded: any = jwtDecode(token); // Decode the JWT to extract user data
+      setUserData(decoded); // Set user data from decoded token
+    } catch (err) {
+      console.error("Failed to decode token", err);
+    }
   };
 
-  const handleForgotPassword = () => {
-    router.push("/forgot-password");
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const { access, refresh } = await fetchToken(username, password);
+
+      if (!access || !refresh) {
+        throw new Error('No token found');
+      }
+
+      // Store tokens in cookies
+      Cookies.set('access_token', access);
+      Cookies.set('refresh_token', refresh);
+
+      // Fetch user data after successful login
+      fetchUserData(access);
+
+      // Redirect to dashboard
+      router.push("/dashboard");
+    } catch (err: unknown) {
+      setError("Invalid username or password");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -87,8 +120,8 @@ const LoginForm: React.FC = () => {
         <button
           type="submit"
           className={`w-full bg-[#B88E2F] text-white p-3 rounded-lg mt-6 ${
-            loading ? "opacity-50 cursor-not-allowed" : "hover:bg-[#B88E2F]"
-          }`}
+            loading ? "opacity-50 cursor-not-allowed" : "hover:bg-[#B88E2F]"}
+          `}
           disabled={loading}
         >
           {loading ? "Logging in..." : "Login"}
@@ -96,7 +129,7 @@ const LoginForm: React.FC = () => {
 
         <div className="flex justify-between items-center mt-4">
           <button
-            onClick={handleForgotPassword}
+            // onClick={handleForgotPassword}
             className="text-yellow-500 hover:underline text-sm"
           >
             Forgot Password?
