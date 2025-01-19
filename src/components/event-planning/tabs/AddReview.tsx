@@ -1,84 +1,119 @@
 "use client";
-import { RootState } from "@/reducers/store";
-import { AddReviewProps } from "@/types/types";
-import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Cookies from 'js-cookie';
+import { jwtDecode } from 'jwt-decode';
 
-const AddReview: React.FC<AddReviewProps> = ({ storeId, onSubmit }) => {
+interface AddReviewProps {
+  storeId: number;
+}
+
+interface User {
+  id: number;
+  username: string;
+  email: string;
+}
+
+const AddReview: React.FC<AddReviewProps> = ({ storeId }) => {
   const [rating, setRating] = useState(1); // Default rating is 1
   const [reviewText, setReviewText] = useState("");
+  const [user, setUser] = useState<User | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const router = useRouter();
 
-  const { user } = useSelector((state: RootState) => state.auth);
+  useEffect(() => {
+    const fetchUserData = () => {
+      const accessToken = Cookies.get('access_token');
+      if (!accessToken) {
+        router.push("/signin");
+        return;
+      }
+
+      try {
+        const decodedToken: { id: number; username: string; email: string } = jwtDecode(accessToken);
+        setUser(decodedToken);
+      } catch (err) {
+        console.error('Failed to decode token', err);
+        router.push("/signin");
+      }
+    };
+
+    fetchUserData();
+  }, [router]);
+
   // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!user) {
+      router.push("/signin");
+      return;
+    }
+
     const review = {
       rating,
       comment: reviewText,
       store: storeId, // Pass store ID
-      user: user?.user_id, // Pass user ID, not the user object
+      user: user.id, // Pass user ID, not the user object
     };
-    onSubmit(review); // Call the onSubmit function passed from parent
-    setReviewText(""); // Reset the review text after submission
-  };
 
-  // Handle star click to set rating
-  const handleStarClick = (star: number, event: React.MouseEvent) => {
-    const boundingRect = event.currentTarget.getBoundingClientRect();
-    const clickPosition = event.clientX - boundingRect.left;
-    const starWidth = boundingRect.width;
+    setLoading(true);
+    setError(null);
 
-    // Fractional rating logic
-    const fraction = clickPosition / starWidth;
-    let newRating = star + (fraction < 0.5 ? 0 : 0.5); // Either a whole or half point
-    setRating(parseFloat(newRating.toFixed(1))); // Set rating as float (1.5, 2.0, etc.)
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/reviews/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${Cookies.get('access_token')}`,
+        },
+        body: JSON.stringify(review),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to submit review");
+      }
+
+      // Reset the review text after successful submission
+      setReviewText("");
+      setRating(1);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="space-y-4 mt-6 md:w-1/3">
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <div className="flex items-center space-x-2">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <svg
-                key={star}
-                xmlns="http://www.w3.org/2000/svg"
-                fill={
-                  star <= Math.floor(rating)
-                    ? "#F57C00" // Full color for integer stars
-                    : star - rating === 0.5
-                    ? "#F57C00"
-                    : "gray" // Half color for fractional rating
-                }
-                viewBox="0 0 24 24"
-                width="24"
-                height="24"
-                className="cursor-pointer"
-                onClick={(e) => handleStarClick(star, e)}
-              >
-                <path d="M12 17.27l5.18 3.73-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73-1.64 7.03L12 17.27z" />
-              </svg>
-            ))}
-          </div>
-          <div className="text-xs text-gray-500">{rating.toFixed(1)} / 5</div>
-        </div>
-        <div>
-          <textarea
-            value={reviewText}
-            onChange={(e) => setReviewText(e.target.value)}
-            placeholder="Your Review"
-            required
-            className="p-2 border border-gray-300 rounded-md w-full h-32"
-          />
-        </div>
-        <button
-          type="submit"
-          className=" bg-[#B8902E] hover:bg-yellow-600 text-white py-2 px-6 rounded text-sm font-medium transition"
+    <form onSubmit={handleSubmit}>
+      <div>
+        <label htmlFor="rating">Rating:</label>
+        <select
+          id="rating"
+          value={rating}
+          onChange={(e) => setRating(Number(e.target.value))}
         >
-          Submit Review
-        </button>
-      </form>
-    </div>
+          {[1, 2, 3, 4, 5].map((value) => (
+            <option key={value} value={value}>
+              {value}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label htmlFor="reviewText">Review:</label>
+        <textarea
+          id="reviewText"
+          value={reviewText}
+          onChange={(e) => setReviewText(e.target.value)}
+        />
+      </div>
+      {error && <p className="error">{error}</p>}
+      <button type="submit" disabled={loading}>
+        {loading ? "Submitting..." : "Submit Review"}
+      </button>
+    </form>
   );
 };
 
