@@ -2,9 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { FaAlignLeft, FaUserCircle, FaCaretDown } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import Cookies from 'js-cookie';
-import {jwtDecode} from 'jwt-decode';
-import { toggleSidebar } from '@/reducers/sidebarSlice';
-import { useDispatch } from 'react-redux';
+import { jwtDecode } from "jwt-decode";
 
 interface User {
   id: number;
@@ -13,12 +11,11 @@ interface User {
 }
 
 const AdminNav: React.FC = () => {
-  const dispatch = useDispatch();
   const router = useRouter();
   const [showLogout, setShowLogout] = useState(false);
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [, setLoading] = useState<boolean>(true);
+  const [, setError] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -27,7 +24,6 @@ const AdminNav: React.FC = () => {
       if (!accessToken) {
         setError('No access token available');
         setLoading(false);
-        router.push("/signin");
         return;
       }
 
@@ -36,14 +32,13 @@ const AdminNav: React.FC = () => {
         setUser(decodedToken);
       } catch (err) {
         setError('Failed to decode token');
-        router.push("/signin");
       } finally {
         setLoading(false);
       }
     };
 
     fetchUserData();
-  }, [router]);
+  }, []);
 
   const handleLogout = () => {
     Cookies.remove('access_token');
@@ -70,7 +65,7 @@ const AdminNav: React.FC = () => {
       <div className="w-[90%] flex justify-between items-center mx-auto">
         <button
           className="text-xl text-[#B8902E]"
-          onClick={() => dispatch(toggleSidebar())}
+          onClick={() => console.log("Sidebar toggled")}
         >
           <FaAlignLeft />
         </button>
