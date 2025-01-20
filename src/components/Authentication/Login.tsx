@@ -59,16 +59,11 @@ const LoginForm: React.FC = () => {
 
       // Redirect to dashboard
       router.push("/dashboard");
+    } catch (err: unknown) {
+      setError("Invalid username or password");
+    } finally {
+      setLoading(false);
     }
-  }, [isAuthenticated, router]);
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    dispatch(loginUser({ username, password }));
-  };
-
-  const handleForgotPassword = () => {
-    router.push("/forgot-password");
   };
 
   return (

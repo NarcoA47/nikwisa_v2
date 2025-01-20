@@ -1,12 +1,12 @@
 import { Offering, Store, StoreState } from "@/types/types";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 
 // Initial state
 const initialState: StoreState = {
-  stores: [
-    
-  ],
+  stores: [],
   selectedStore: null,
   loading: false,
   error: null,
@@ -113,14 +113,25 @@ export const fetchOfferingsByStoreId = createAsyncThunk(
 // Fetch stores by user ID
 export const fetchStoresByUserId = createAsyncThunk(
   "stores/fetchStoresByUserId",
-  async (userId: string, thunkAPI) => {
+  async (_, thunkAPI) => {
+    const accessToken = Cookies.get("access_token");
+    if (!accessToken) {
+      return thunkAPI.rejectWithValue("User not authenticated");
+    }
+
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/${userId}`
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/by_user/`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
       );
-      console.log("stores by user ID: ", response.data);
-      return response.data as Store[];
+      console.log("Fetched stores for user: ", response.data);
+      return response.data as Store[]; // Return the stores
     } catch (error) {
+      console.error("Error fetching stores:", error);
       if (axios.isAxiosError(error) && error.response) {
         return thunkAPI.rejectWithValue(error.response.data.message);
       }
@@ -128,25 +139,6 @@ export const fetchStoresByUserId = createAsyncThunk(
     }
   }
 );
-
-// Add a new store
-// export const addStore = createAsyncThunk(
-//   "stores/addStore",
-//   async (storeData: Store, thunkAPI) => {
-//     try {
-//       const response = await axios.post(
-//         `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/`,
-//         storeData
-//       );
-//       return response.data as Store;
-//     } catch (error) {
-//       if (axios.isAxiosError(error) && error.response) {
-//         return thunkAPI.rejectWithValue(error.response.data.message);
-//       }
-//       return thunkAPI.rejectWithValue("An unknown error occurred");
-//     }
-//   }
-// );
 
 // Update an existing store
 export const updateStore = createAsyncThunk(

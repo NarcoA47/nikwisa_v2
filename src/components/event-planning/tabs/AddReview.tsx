@@ -1,8 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Cookies from 'js-cookie';
-import { jwtDecode } from 'jwt-decode';
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 
 interface AddReviewProps {
   storeId: number;
@@ -24,17 +24,18 @@ const AddReview: React.FC<AddReviewProps> = ({ storeId }) => {
 
   useEffect(() => {
     const fetchUserData = () => {
-      const accessToken = Cookies.get('access_token');
+      const accessToken = Cookies.get("access_token");
       if (!accessToken) {
         router.push("/signin");
         return;
       }
 
       try {
-        const decodedToken: { id: number; username: string; email: string } = jwtDecode(accessToken);
+        const decodedToken: { id: number; username: string; email: string } =
+          jwtDecode(accessToken);
         setUser(decodedToken);
       } catch (err) {
-        console.error('Failed to decode token', err);
+        console.error("Failed to decode token", err);
         router.push("/signin");
       }
     };
@@ -42,6 +43,7 @@ const AddReview: React.FC<AddReviewProps> = ({ storeId }) => {
     fetchUserData();
   }, [router]);
 
+  console.log("user review", user);
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,14 +64,17 @@ const AddReview: React.FC<AddReviewProps> = ({ storeId }) => {
     setError(null);
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/reviews/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${Cookies.get('access_token')}`,
-        },
-        body: JSON.stringify(review),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/reviews/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${Cookies.get("access_token")}`,
+          },
+          body: JSON.stringify(review),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to submit review");
