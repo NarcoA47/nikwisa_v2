@@ -2,7 +2,6 @@ import { Offering, Store, StoreState } from "@/types/types";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
 
 // Initial state
 const initialState: StoreState = {
@@ -10,6 +9,7 @@ const initialState: StoreState = {
   selectedStore: null,
   loading: false,
   error: null,
+  store: null
 };
 
 // Async thunks
@@ -59,7 +59,7 @@ export const fetchStoresByWeddingCategory = createAsyncThunk(
 // Fetch all stores with offerings
 export const fetchStoresWithOfferings = createAsyncThunk(
   "stores/fetchStoresWithOfferings",
-  async (_, thunkAPI) => {
+  async (storeId: string, thunkAPI) => {
     try {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/`
@@ -77,13 +77,24 @@ export const fetchStoresWithOfferings = createAsyncThunk(
 // Fetch store by ID
 export const fetchStoreById = createAsyncThunk(
   "stores/fetchStoreById",
-  async (storeId: string, thunkAPI) => {
+  async (storeId: number, thunkAPI) => {
+    const accessToken = Cookies.get("access_token");
+    if (!accessToken) {
+      return thunkAPI.rejectWithValue("User not authenticated");
+    }
+
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/${storeId}`
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/${storeId}/`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
       );
       return response.data as Store;
-    } catch (error) {
+      
+      } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         return thunkAPI.rejectWithValue(error.response.data.message);
       }
@@ -113,7 +124,7 @@ export const fetchOfferingsByStoreId = createAsyncThunk(
 // Fetch stores by user ID
 export const fetchStoresByUserId = createAsyncThunk(
   "stores/fetchStoresByUserId",
-  async (_, thunkAPI) => {
+  async (storeId: string, thunkAPI) => {
     const accessToken = Cookies.get("access_token");
     if (!accessToken) {
       return thunkAPI.rejectWithValue("User not authenticated");
@@ -121,7 +132,7 @@ export const fetchStoresByUserId = createAsyncThunk(
 
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/by_user/`,
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/${storeId}/`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,

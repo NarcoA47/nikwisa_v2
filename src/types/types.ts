@@ -52,43 +52,6 @@ export interface User {
   username: string;
   email: string;
 }
-/* ================== STORE TYPES ================== */
-// export interface Store {
-//   id: string;
-//   name: string;
-//   location: string;
-//   phoneNumber?: string;
-//   whatsappNumber?: string;
-//   overview: string;
-//   rating: number;
-//   reviewsCount: number;
-//   image: string;
-//   photos: string[];
-//   createdAt: string;
-//   updatedAt: string;
-//   offerings: Offering[];
-//   reviews: Review[];
-//   wedding_category: number;
-// }
-// export interface Store {
-//   id: number;
-//   name: string;
-//   location: string;
-//   phone_number?: string;
-//   whats_app?: string;
-//   overview: string;
-//   rating: number;
-//   reviews_count: number;
-//   image: string;
-//   photos: string[];
-//   createdAt: string;
-//   updatedAt: string;
-//   offerings: Offering[];
-//   reviews: Review[];
-//   wedding_category: string; // Title of the wedding category, can be null
-//   categories: string[]; // Array of category titles
-//   owner: string; // Owner's username
-// }
 export interface Store {
   id: number;
   name: string;
@@ -117,6 +80,7 @@ export interface StoreState {
   selectedStore: Store | null;
   loading: boolean;
   error: string | null;
+  store: Store | null;
 }
 
 export interface StoreDetailsHeaderProps {
@@ -137,19 +101,6 @@ export interface StoreDetailsHeaderProps {
   };
 }
 
-// export interface StoreDetailsHeaderProps {
-//   store: {
-//     id: number;
-//     name: string;
-//     rating: number;
-//     reviews_count: number;
-//     location: string;
-//     overview: string;
-//     image: string;
-//     phone_number?: string;
-//     whats_app?: string;
-//   };
-// }
 
 /* ================== REVIEW TYPES ================== */
 // Updated Review Interface
@@ -240,27 +191,7 @@ export interface AuthState {
   initialState: {
     id: string;
     user_id: number;
-    username: string;
-    email: string;
-    role: string;
-  };
-  initialState: {
-    id: string;
-    user_id: number;
-    username: string;
-    email: string;
-    role: string;
-  };
-  initialState: {
-    id: string;
-    user_id: number;
-    username: string;
-    email: string;
-    role: string;
-  };
-  initialState: {
-    id: string;
-    user_id: number;
+    store_id: number;
     username: string;
     email: string;
     role: string;
