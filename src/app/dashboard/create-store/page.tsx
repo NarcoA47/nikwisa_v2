@@ -114,7 +114,7 @@ const CreateStore: React.FC = () => {
       ...(data.location && { location: data.location }),
       ...(data.whats_app && { whats_app: data.whats_app }),
       ...(data.image && { image: data.image }),
-      owner: user, // Ensure user ID is being passed
+      owner: user?.id, // Ensure user ID is being passed
     };
     console.log("Sanitized payload:", sanitized); // Log sanitized data
     return sanitized;

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { fetchToken } from "../../utils/api";
-import {jwtDecode} from "jwt-decode";
-import Cookies from 'js-cookie';
+import { jwtDecode } from "jwt-decode";
+import Cookies from "js-cookie";
 
 const LoginForm: React.FC = () => {
   const router = useRouter();
@@ -47,12 +47,12 @@ const LoginForm: React.FC = () => {
       const { access, refresh } = await fetchToken(username, password);
 
       if (!access || !refresh) {
-        throw new Error('No token found');
+        throw new Error("No token found");
       }
 
       // Store tokens in cookies
-      Cookies.set('access_token', access);
-      Cookies.set('refresh_token', refresh);
+      Cookies.set("access_token", access);
+      Cookies.set("refresh_token", refresh);
 
       // Fetch user data after successful login
       fetchUserData(access);
@@ -120,7 +120,8 @@ const LoginForm: React.FC = () => {
         <button
           type="submit"
           className={`w-full bg-[#B88E2F] text-white p-3 rounded-lg mt-6 ${
-            loading ? "opacity-50 cursor-not-allowed" : "hover:bg-[#B88E2F]"}
+            loading ? "opacity-50 cursor-not-allowed" : "hover:bg-[#B88E2F]"
+          }
           `}
           disabled={loading}
         >

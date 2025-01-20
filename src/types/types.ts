@@ -47,6 +47,11 @@ export interface CategoryState {
   error: string | null;
 }
 
+export interface User {
+  id: number;
+  username: string;
+  email: string;
+}
 /* ================== STORE TYPES ================== */
 // export interface Store {
 //   id: string;
@@ -339,7 +344,7 @@ export interface StoreCardProps {
   rating: number; // String rating format
   reviews_count: number;
   location: string;
-  wedding_category: string;
+  event_planning_categories: string[];
 }
 
 export interface OverviewTabProps {
