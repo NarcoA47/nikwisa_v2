@@ -218,7 +218,7 @@ const CreateStore: React.FC = () => {
           <FormRowSelect
             label="Wedding Category"
             value={storeData.event_planning_categories}
-            options={weddingCategories}
+            options={EventCategories}
             id="event_planning_categories"
             onChange={handleInputChange}
           />
