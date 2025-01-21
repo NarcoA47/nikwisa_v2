@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
-import { fetchStoreById } from "@/reducers/storeSlice";
+import { fetchStoreById, refreshAccessToken } from "@/reducers/storeSlice";
 import { AppDispatch, RootState } from "@/reducers/store";
 import StoreCardAdmin from "@/components/StoreCardAdmin"; // Adjust the import path as necessary
 
@@ -29,9 +29,15 @@ const StorePage: React.FC = () => {
 
   // Extract user ID and store ID from token
   useEffect(() => {
-    const accessToken = Cookies.get("access_token");
-    console.log("accessToken", accessToken); // Check if the token exists
-    if (accessToken) {
+    const fetchUserData = async () => {
+      let accessToken = Cookies.get("access_token");
+      console.log("accessToken", accessToken); // Check if the token exists
+      if (!accessToken) {
+        console.log("No access token found");
+        router.push("/signin"); // Redirect to sign-in if no token is found
+        return;
+      }
+
       try {
         const decodedToken: User = jwtDecode(accessToken); // Correct decoding
         console.log("Decoded token:", decodedToken); // Log decoded token to verify user info
@@ -39,11 +45,21 @@ const StorePage: React.FC = () => {
         setStoreId(decodedToken.store_id); // Set the store ID from the decoded token if available
       } catch (err) {
         console.error("Failed to decode token", err);
+        try {
+          accessToken = await refreshAccessToken(); // Refresh the access token
+          if (!accessToken) throw new Error("No access token available");
+          const decodedToken: User = jwtDecode(accessToken); // Decode the new token
+          console.log("Decoded token after refresh:", decodedToken); // Log decoded token to verify user info
+          setUserId(decodedToken.user_id); // Set the user ID from the decoded token
+          setStoreId(decodedToken.store_id); // Set the store ID from the decoded token if available
+        } catch (refreshError) {
+          console.error("Failed to refresh access token", refreshError);
+          router.push("/signin"); // Redirect to sign-in if token refresh fails
+        }
       }
-    } else {
-      console.log("No access token found");
-      router.push("/signin"); // Redirect to sign-in if no token is found
-    }
+    };
+
+    fetchUserData();
   }, [router]);
 
   console.log("userId", userId); // Check if userId is being set correctly

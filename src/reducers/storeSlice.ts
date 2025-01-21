@@ -12,6 +12,19 @@ const initialState: StoreState = {
   store: null
 };
 
+export const refreshAccessToken = async () => {
+  try {
+    const response = await axios.post(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/refresh/`, {
+      refresh: Cookies.get("refresh_token"),
+    });
+    const { access } = response.data;
+    Cookies.set("access_token", access);
+    return access;
+  } catch (error) {
+    throw new Error("Failed to refresh access token");
+  }
+};
+
 // Async thunks
 
 export const addStore = createAsyncThunk(
@@ -78,7 +91,7 @@ export const fetchStoresWithOfferings = createAsyncThunk(
 export const fetchStoreById = createAsyncThunk(
   "stores/fetchStoreById",
   async (storeId: number, thunkAPI) => {
-    const accessToken = Cookies.get("access_token");
+    let accessToken = Cookies.get("access_token");
     if (!accessToken) {
       return thunkAPI.rejectWithValue("User not authenticated");
     }
@@ -93,8 +106,24 @@ export const fetchStoreById = createAsyncThunk(
         }
       );
       return response.data as Store;
-      
-      } catch (error) {
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response && error.response.status === 401) {
+        // Token expired, try to refresh
+        try {
+          accessToken = await refreshAccessToken();
+          const response = await axios.get(
+            `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/${storeId}/`,
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          );
+          return response.data as Store;
+        } catch {
+          return thunkAPI.rejectWithValue("Failed to refresh access token");
+        }
+      }
       if (axios.isAxiosError(error) && error.response) {
         return thunkAPI.rejectWithValue(error.response.data.message);
       }
