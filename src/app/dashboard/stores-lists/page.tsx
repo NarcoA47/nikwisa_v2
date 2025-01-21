@@ -56,6 +56,7 @@ const StorePage: React.FC = () => {
     }
   }, [dispatch, storeId]);
 
+  console.log("store", store);
   const handleAddStoreClick = () => {
     router.push("/create-store");
   };
@@ -71,30 +72,25 @@ const StorePage: React.FC = () => {
           Add Store
         </button>
       </div>
-
       {/* Loading State */}
-      {loading && <p>Loading stores...</p>}
-
-      {/* Error State */}
-      {error && <p className="text-red-500">Error: {error}</p>}
-
-      {/* Store List */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {store ? (
-          <StoreCardAdmin
-            key={store.id}
-            id={store.id}
-            name={store.name}
-            image={store.image}
-            rating={store.rating || 0} // Default value if missing
-            reviews_count={store.reviews_count || 0}
-            location={store.location}
-            event_planning_categories={store.event_planning_categories || []} // Default value if missing
-          />
-        ) : (
-          !loading && <p>No store available.</p>
-        )}
-      </div>
+      {loading && <p>Loading store...</p>}{" "}
+      {/* Show loading while waiting for store data */}
+      {error && <p className="text-red-500">Error: {error}</p>}{" "}
+      {/* Show error if there's an issue */}
+      {store ? (
+        <StoreCardAdmin
+          key={store.id}
+          id={store.id}
+          name={store.name}
+          image={store.image}
+          rating={store.rating || 0} // Default value if missing
+          reviews_count={store.reviews_count || 0}
+          location={store.location}
+          event_planning_categories={store.event_planning_categories || []} // Default value if missing
+        />
+      ) : (
+        !loading && <p>No store available.</p> // Show this if store is null and loading is complete
+      )}
     </div>
   );
 };

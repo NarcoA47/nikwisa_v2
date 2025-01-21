@@ -9,7 +9,7 @@ const initialState: StoreState = {
   selectedStore: null,
   loading: false,
   error: null,
-  store: null
+  store: null,
 };
 
 // Async thunks
@@ -92,9 +92,9 @@ export const fetchStoreById = createAsyncThunk(
           },
         }
       );
+      console.log("fetcing store by id", response.data);
       return response.data as Store;
-      
-      } catch (error) {
+    } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         return thunkAPI.rejectWithValue(error.response.data.message);
       }
@@ -256,18 +256,14 @@ const storeSlice = createSlice({
     // Fetch Store By ID
     builder.addCase(fetchStoreById.pending, (state) => {
       state.loading = true;
-      state.error = null;
     });
-    builder.addCase(
-      fetchStoreById.fulfilled,
-      (state, action: PayloadAction<Store>) => {
-        state.loading = false;
-        state.selectedStore = action.payload;
-      }
-    );
-    builder.addCase(fetchStoreById.rejected, (state, action) => {
+    builder.addCase(fetchStoreById.fulfilled, (state, action) => {
+      state.store = action.payload; // Store the fetched data
       state.loading = false;
+    });
+    builder.addCase(fetchStoreById.rejected, (state, action) => {
       state.error = action.payload as string;
+      state.loading = false;
     });
 
     // Fetch Offerings By Store ID

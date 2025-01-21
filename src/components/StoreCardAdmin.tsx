@@ -31,13 +31,20 @@ const StoreCardAdmin: React.FC<StoreCardProps> = ({
       className="flex border-2 border-black rounded-lg overflow-hidden shadow-sm p-2"
     >
       <div className="w-1/3 relative">
-        <Image
-          src={image}
-          alt={name}
-          layout="fill" // Ensures the image covers the container
-          objectFit="cover" // Ensures proper scaling
-          className="rounded "
-        />
+        {image ? (
+          <Image
+            src={image}
+            alt={name}
+            layout="fill" // Ensures the image covers the container
+            objectFit="cover" // Ensures proper scaling
+            className="rounded"
+          />
+        ) : (
+          <div className="bg-gray-200 w-full h-full flex items-center justify-center rounded">
+            <span>No image available</span>{" "}
+            {/* You can customize this with a placeholder */}
+          </div>
+        )}
       </div>
 
       {/* Content Section */}
