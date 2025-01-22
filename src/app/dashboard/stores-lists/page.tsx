@@ -74,7 +74,7 @@ const StorePage: React.FC = () => {
 
   console.log("store", store);
   const handleAddStoreClick = () => {
-    router.push("/create-store");
+    router.push("/dashboard/create-store");
   };
 
   return (

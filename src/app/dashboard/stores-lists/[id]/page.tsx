@@ -4,7 +4,6 @@ import StoreDetailsHeader from "@/components/event-planning/StoreDetailsHeader";
 import AddReview from "@/components/event-planning/tabs/AddReview";
 import Offerings from "@/components/event-planning/tabs/Offerings";
 import Overview from "@/components/event-planning/tabs/Overview";
-import PhotosGallery from "@/components/event-planning/tabs/PhotoGallery";
 import Reviews from "@/components/event-planning/tabs/Reviews";
 import { AppDispatch, RootState } from "@/reducers/store";
 import { fetchStoreById } from "@/reducers/storeSlice";
@@ -15,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import OfferingsAdmin from "@/components/event-planning/tabs/OfferingsAdmin";
+import PhotosGalleryAdmin from "@/components/event-planning/tabs/PhotoGalleryAdmin";
 
 interface User {
   id: number;
@@ -113,7 +113,7 @@ const StoreDetailPage: React.FC = () => {
       case "offerings":
         return <OfferingsAdmin storeId={store.id} />;
       case "photos":
-        return <PhotosGallery storeId={store.id} />;
+        return <PhotosGalleryAdmin storeId={store.id} />;
       default:
         return <Overview overview={store.overview} />;
     }

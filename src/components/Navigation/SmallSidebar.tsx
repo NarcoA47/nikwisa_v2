@@ -4,16 +4,11 @@ import { FaTimes } from "react-icons/fa";
 import Link from "next/link";
 import Navlinks from "./Navlinks";
 import Image from "next/image";
-import { useDispatch, useSelector } from "react-redux";
-import { toggleSidebar } from "@/reducers/sidebarSlice";
-import { RootState } from "@/reducers/store";
 
-const SmallSidebar = () => {
-  const dispatch = useDispatch();
-  const showSidebar = useSelector(
-    (state: RootState) => state.sidebar.showSidebar
-  );
-
+const SmallSidebar: React.FC<{
+  showSidebar: boolean;
+  toggleSidebar: () => void;
+}> = ({ showSidebar, toggleSidebar }) => {
   return (
     <aside
       className={`fixed inset-0 z-50 flex items-center justify-center transition-opacity lg:hidden ${
@@ -29,16 +24,16 @@ const SmallSidebar = () => {
       >
         <button
           className="absolute top-4 right-4 text-red-600 text-2xl"
-          onClick={() => dispatch(toggleSidebar())}
+          onClick={toggleSidebar}
         >
           <FaTimes />
         </button>
         <header>
-          <Link href="/" className="flex items-center ">
+          <Link href="/" className="flex items-center">
             <Image src="/logo.png" alt="Company Logo" width={180} height={50} />
           </Link>
         </header>
-        <Navlinks toggleSidebar={() => dispatch(toggleSidebar())} />
+        <Navlinks toggleSidebar={toggleSidebar} />
       </div>
     </aside>
   );

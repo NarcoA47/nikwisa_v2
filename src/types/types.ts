@@ -101,7 +101,6 @@ export interface StoreDetailsHeaderProps {
   };
 }
 
-
 /* ================== REVIEW TYPES ================== */
 // Updated Review Interface
 export interface Review {
@@ -246,9 +245,15 @@ export interface EvenPlanningProductState {
 }
 
 /* ================== UI COMPONENT TYPES ================== */
+// export interface AlertProps {
+//   message: string;
+//   type: "success" | "danger";
+// }
+
 export interface AlertProps {
   message: string;
-  type: "success" | "danger";
+
+  type: "success" | "danger" | "error";
 }
 
 export interface TabNavigationProps {

@@ -1,84 +1,42 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from "react";
 import { FaAlignLeft, FaUserCircle, FaCaretDown } from "react-icons/fa";
 import { useRouter } from "next/navigation";
-import Cookies from 'js-cookie';
-import {jwtDecode} from 'jwt-decode';
-import { toggleSidebar } from '@/reducers/sidebarSlice';
-import { useDispatch } from 'react-redux';
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode"; // Fixed import issue
 
-interface User {
-  id: number;
-  username: string;
-  email: string;
+interface AdminNavProps {
+  toggleSidebar: () => void;
 }
 
-const AdminNav: React.FC = () => {
-  const dispatch = useDispatch();
+const AdminNav: React.FC<AdminNavProps> = ({ toggleSidebar }) => {
   const router = useRouter();
   const [showLogout, setShowLogout] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const [user, setUser] = useState<{ username: string } | null>(null);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      const accessToken = Cookies.get('access_token');
-      if (!accessToken) {
-        setError('No access token available');
-        setLoading(false);
-        router.push("/signin");
-        return;
-      }
+    const accessToken = Cookies.get("access_token");
+    if (!accessToken) {
+      router.push("/signin");
+      return;
+    }
 
-      try {
-        const decodedToken: { id: number; username: string; email: string } = jwtDecode(accessToken);
-        setUser(decodedToken);
-      } catch (err) {
-        setError('Failed to decode token');
-        router.push("/signin");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserData();
+    try {
+      const decodedToken: { username: string } = jwtDecode(accessToken);
+      setUser(decodedToken);
+    } catch {
+      router.push("/signin");
+    }
   }, [router]);
-
-  const handleLogout = () => {
-    Cookies.remove('access_token');
-    Cookies.remove('refresh_token');
-    router.push("/signin");
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setShowLogout(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
 
   return (
     <nav className="h-16 bg-white shadow-md flex items-center justify-between transition-all duration-300">
       <div className="w-[90%] flex justify-between items-center mx-auto">
-        <button
-          className="text-xl text-[#B8902E]"
-          onClick={() => dispatch(toggleSidebar())}
-        >
+        <button className="text-xl text-[#B8902E]" onClick={toggleSidebar}>
           <FaAlignLeft />
         </button>
-
         <h3 className="hidden lg:block font-semibold text-gray-800">
           Dashboard
         </h3>
-
         <div className="relative">
           <button
             className="flex items-center gap-2 bg-[#B8902E] text-white px-4 py-2 rounded-md shadow-md"
@@ -88,15 +46,15 @@ const AdminNav: React.FC = () => {
             {user?.username || "Guest"}
             <FaCaretDown />
           </button>
-
           {showLogout && (
-            <div
-              ref={dropdownRef}
-              className="absolute left-0 top-full mt-2 w-full bg-blue-100 shadow-lg text-center rounded-md py-2"
-            >
+            <div className="absolute left-0 top-full mt-2 w-full bg-blue-100 shadow-lg text-center rounded-md py-2">
               <button
                 className="text-[#B8902E] capitalize px-4 py-2 w-full text-sm hover:bg-blue-200 rounded-md"
-                onClick={handleLogout}
+                onClick={() => {
+                  Cookies.remove("access_token");
+                  Cookies.remove("refresh_token");
+                  router.push("/signin");
+                }}
               >
                 Logout
               </button>

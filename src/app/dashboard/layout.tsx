@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/reducers/store";
 import { setAuth, logout } from "@/reducers/authSlice";
-import {jwtDecode} from "jwt-decode"; // Assuming you're using jwt-decode
+import { jwtDecode } from "jwt-decode";
 
 import AdminNav from "@/components/Navigation/AdminNav";
 import BigSidebar from "@/components/Navigation/BigSidebar";
@@ -20,7 +20,21 @@ export default function SharedLayout({
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated
   );
-  
+
+  const [showSidebar, setShowSidebar] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  const toggleSidebar = () => setShowSidebar(!showSidebar);
+
+  // Track screen size for responsive design
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    handleResize(); // Initial check
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     const accessToken = Cookies.get("access_token");
@@ -28,10 +42,8 @@ export default function SharedLayout({
 
     if (accessToken && refreshToken && !isAuthenticated) {
       try {
-        // Decode the access token to extract user information
         const decodedToken: any = jwtDecode(accessToken);
 
-        // Dispatch action to set authentication and user details
         dispatch(
           setAuth({
             tokens: {
@@ -48,7 +60,7 @@ export default function SharedLayout({
         );
       } catch (error) {
         console.error("Error decoding token:", error);
-        dispatch(logout()); // Logout if the token is invalid
+        dispatch(logout());
       }
     } else if (!accessToken || !refreshToken) {
       dispatch(logout());
@@ -56,21 +68,28 @@ export default function SharedLayout({
   }, [isAuthenticated, dispatch]);
 
   return (
-    <main className="relative h-full">
-      {/* Sidebar components */}
-      <BigSidebar />
-      <SmallSidebar />
-
-      {/* Main content area */}
-      <div
-        
-      >
-        {/* Navbar */}
-        <AdminNav />
-
-        {/* Page content */}
-        <div className="w-[90%] mx-auto py-8">{children}</div>
-      </div>
-    </main>
+    <section>
+      <main className="relative h-full w-full  flex">
+        {/* Conditionally render sidebars */}
+        {isMobile ? (
+          <SmallSidebar
+            showSidebar={showSidebar}
+            toggleSidebar={toggleSidebar}
+          />
+        ) : (
+          <BigSidebar showSidebar={showSidebar} toggleSidebar={toggleSidebar} />
+        )}
+        <div
+          className={`flex-1 transition-all duration-300 ${
+            showSidebar && !isMobile ? "ml-64" : "ml-0"
+          }`}
+        >
+          <AdminNav toggleSidebar={toggleSidebar} />
+          <div className="w-[90vw] md:w-[80vw] mx-auto py-1 ">
+            <div>{children}</div>
+          </div>
+        </div>
+      </main>
+    </section>
   );
 }

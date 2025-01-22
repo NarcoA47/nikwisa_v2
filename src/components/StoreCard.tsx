@@ -25,6 +25,7 @@ const StoreCard: React.FC<StoreCardProps> = ({
 }) => {
   const router = useRouter();
 
+  console.log("image", image);
   // Handle navigation to store page
   const handleNavigation = (category: string) => {
     router.push(`/event-planning/${category}/${id}`);

@@ -30,7 +30,7 @@ export const fetchImagesByStoreId = createAsyncThunk(
   async (storeId: number, thunkAPI) => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/${storeId}/images`
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store/${storeId}/images`
       );
       return response.data as ImageData[];
     } catch (error) {
@@ -79,11 +79,64 @@ export const deleteImage = createAsyncThunk(
   }
 );
 
+// Upload multiple images
+
+export const uploadMultipleImages = createAsyncThunk(
+  "images/uploadMultipleImages",
+  async (
+    { storeId, images }: { storeId: number; images: FormData },
+    thunkAPI
+  ) => {
+    try {
+      images.append("store_id", storeId.toString());
+
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store/${storeId}/images/upload-multiple-images/`,
+        images,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      const data = response.data;
+      console.log("Backend Response Data:", data); // Debugging
+
+      // Check if the response contains a success message
+      if (data && data.detail && typeof data.detail === "string") {
+        return []; // Return an empty array as no new images were provided, but we received a success message
+      }
+
+      // If the response contains an array of images, return it
+      if (Array.isArray(data)) {
+        return data;
+      } else if (data.images && Array.isArray(data.images)) {
+        return data.images;
+      } else {
+        throw new Error("Unexpected response format");
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        return thunkAPI.rejectWithValue(error.response.data.message);
+      }
+      return thunkAPI.rejectWithValue("An unknown error occurred");
+    }
+  }
+);
+
 // Slice
 const imagesSlice = createSlice({
   name: "images",
   initialState,
-  reducers: {},
+  reducers: {
+    resetError: (state) => {
+      state.error = null;
+    },
+    resetLoading: (state) => {
+      state.loading = false;
+    },
+  },
   extraReducers: (builder) => {
     // Fetch Images by Store ID
     builder.addCase(fetchImagesByStoreId.pending, (state) => {
@@ -137,7 +190,34 @@ const imagesSlice = createSlice({
       state.loading = false;
       state.error = action.payload as string;
     });
+
+    builder.addCase(uploadMultipleImages.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(
+      uploadMultipleImages.fulfilled,
+      (state, action: PayloadAction<ImageData[]>) => {
+        if (Array.isArray(action.payload)) {
+          state.images = [
+            ...state.images,
+            ...action.payload.filter(
+              (newImage) =>
+                !state.images.some((image) => image.id === newImage.id)
+            ),
+          ];
+        } else {
+          console.error("Invalid payload received:", action.payload);
+        }
+        state.loading = false;
+      }
+    );
+    builder.addCase(uploadMultipleImages.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string;
+    });
   },
 });
 
+export const { resetError, resetLoading } = imagesSlice.actions;
 export const imagesReducer = imagesSlice.reducer;

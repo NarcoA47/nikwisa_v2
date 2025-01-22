@@ -6,13 +6,13 @@ import { useDispatch, useSelector } from "react-redux";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { useRouter } from "next/navigation";
 import { AppDispatch, RootState } from "@/reducers/store";
-import { fetchStores } from "@/reducers/storeSlice";
+import { fetchStores } from "@/reducers/productSlice";
 
 const page: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const router = useRouter();
   const { stores, loading, error } = useSelector(
-    (state: RootState) => state.store
+    (state: RootState) => state.stores
   );
 
   useEffect(() => {
@@ -36,7 +36,7 @@ const page: React.FC = () => {
         >
           <div className="flex-grow">
             <h2 className="text-lg font-bold">{store.name}</h2>
-            <p className="text-sm">{store.description}</p>
+            <p className="text-sm">{store.overview}</p>
             <p className="text-xs text-gray-500">Owner: {store.owner}</p>
             <button className="bg-[#B8902E] text-white py-2 px-4 rounded mt-4">
               Enter Store

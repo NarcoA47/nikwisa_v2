@@ -18,20 +18,8 @@ export const links = [
     path: "/dashboard/stores-lists",
     icon: <RiStore2Fill />,
   },
-  // {
-  //   id: 3,
-  //   text: "Create Store",
-  //   path: "/dashboard/create-store",
-  //   icon: <RiStore2Fill />,
-  // },
   {
     id: 4,
-    text: "Create Product",
-    path: "/dashboard/create-product",
-    icon: <MdQueryStats />,
-  },
-  {
-    id: 5,
     text: "All Offerings",
     path: "/dashboard/all-offerings",
     icon: <MdQueryStats />,
@@ -54,9 +42,7 @@ const Navlinks = ({ toggleSidebar }: { toggleSidebar?: () => void }) => {
               : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
           }`}
         >
-          {icon && <span className="text-xl">{icon}</span>}{" "}
-          {/* Icon if available */}
-          <span>{text}</span>
+          {icon && <span className="text-xl">{icon}</span>} <span>{text}</span>
         </Link>
       ))}
     </nav>
