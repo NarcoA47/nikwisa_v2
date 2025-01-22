@@ -81,12 +81,15 @@ const StorePage: React.FC = () => {
     <div className="container mx-auto p-8">
       <div className="flex justify-between mb-4">
         <h1 className="text-2xl font-bold mb-4">My Stores</h1>
-        <button
-          className="bg-[#B8902E] text-white py-2 px-4 rounded mt-4"
-          onClick={handleAddStoreClick}
-        >
-          Add Store
-        </button>
+        {/* Conditionally render Add Store button */}
+        {!store && (
+          <button
+            className="bg-[#B8902E] text-white py-2 px-4 rounded mt-4"
+            onClick={handleAddStoreClick}
+          >
+            Add Store
+          </button>
+        )}
       </div>
       {/* Loading State */}
       {loading && <p>Loading store...</p>}{" "}

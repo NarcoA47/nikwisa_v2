@@ -16,7 +16,8 @@ const CreateStoreSteps = () => {
     image: null,
     overview: "",
     location: "",
-    working_hours: null,
+    working_hours: "",
+    owner: null,
   });
 
   const handleNext = (newData: any) => {

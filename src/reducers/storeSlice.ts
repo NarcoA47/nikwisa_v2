@@ -30,19 +30,55 @@ export const refreshAccessToken = async () => {
 
 // Async thunks
 
+// Assuming you're using js-cookie to manage cookies
+
 export const addStore = createAsyncThunk(
   "stores/addStore",
-  async (storeData: Store, thunkAPI) => {
+  async (storeData, thunkAPI) => {
     try {
+      // Retrieve the token from cookies (or wherever it's stored)
+      let accessToken = Cookies.get("access_token");
+
+      if (!accessToken) {
+        return thunkAPI.rejectWithValue("User not authenticated");
+      }
+
+      // Log the access token to ensure it's being retrieved
+      console.log("Access Token:", accessToken);
+
+      // Send the request with the token in the Authorization header
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/`,
-        storeData
+        storeData,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json", // Ensure the correct content type
+          },
+        }
       );
-      return response.data as Store;
+
+      // Log the response to see if the request is successful
+      console.log("Store created:", response.data);
+
+      return response.data; // Returning the store data from the response
     } catch (error) {
+      // Check if the error is an Axios error and has a response
       if (axios.isAxiosError(error) && error.response) {
-        return thunkAPI.rejectWithValue(error.response.data.message);
+        console.log("Error Response:", error.response); // Log the full response for debugging
+
+        // If the error is a 401 Unauthorized, it might be an issue with the token
+        if (error.response.status === 401) {
+          return thunkAPI.rejectWithValue("Unauthorized access - Token issue");
+        }
+
+        // Handle any other errors from the server
+        return thunkAPI.rejectWithValue(
+          error.response.data.message || "An error occurred"
+        );
       }
+
+      // If the error is not Axios-specific, return a general error
       return thunkAPI.rejectWithValue("An unknown error occurred");
     }
   }
@@ -337,7 +373,7 @@ const storeSlice = createSlice({
     );
     builder.addCase(addStore.rejected, (state, action) => {
       state.loading = false;
-      state.error = action.payload as string;
+      state.error = action.payload as string; // Handle error and set it in the state
     });
 
     // Update Store

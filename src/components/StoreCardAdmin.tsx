@@ -28,7 +28,7 @@ const StoreCardAdmin: React.FC<StoreCardProps> = ({
   return (
     <div
       key={id}
-      className="flex border-2 border-black rounded-lg overflow-hidden shadow-sm p-2"
+      className="flex border-2 border-black rounded-lg overflow-hidden shadow-sm p-2 mt-5"
     >
       <div className="w-1/3 relative">
         {image ? (
