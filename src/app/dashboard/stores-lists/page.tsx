@@ -78,7 +78,7 @@ const StorePage: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto p-8">
+    <div className="container mx-auto p-0 md:p-8">
       <div className="flex justify-between mb-4">
         <h1 className="text-2xl font-bold mb-4">My Stores</h1>
         {/* Conditionally render Add Store button */}

@@ -4,61 +4,53 @@ import { fetchCategories } from "@/reducers/categorySlice";
 import { RootState, AppDispatch } from "@/reducers/store";
 import Image from "next/image";
 
-const Step1Categories = ({ selectedCategories, onNext }: any) => {
+const Step1 = ({ selectedCategories, onNext }: any) => {
   const dispatch: AppDispatch = useDispatch();
   const categories = useSelector(
     (state: RootState) => state.categories.categories
   );
-  const categoryStatus = useSelector(
-    (state: RootState) => state.categories.status
-  );
 
-  const [selected, setSelected] = useState<string[]>(selectedCategories);
+  // Convert slugs to IDs based on fetched categories
+  const [selected, setSelected] = useState<string[]>([]);
 
   useEffect(() => {
+    console.log("Fetching categories...");
     dispatch(fetchCategories());
   }, [dispatch]);
 
+  useEffect(() => {
+    if (categories.length > 0) {
+      console.log("Fetched Categories:", categories); // Log fetched categories
+      console.log("Selected Slugs (from Props):", selectedCategories); // Log passed slugs
+      const initialSelectedIds = selectedCategories
+        .map(
+          (slug: string) =>
+            categories.find((category) => category.slug === slug)?.id
+        )
+        .filter((id): id is string => Boolean(id)); // Filter out undefined IDs
+      console.log("Mapped IDs:", initialSelectedIds); // Log IDs after mapping
+      setSelected(initialSelectedIds);
+    }
+  }, [categories, selectedCategories]);
+
   const toggleCategory = (categoryId: string) => {
-    setSelected((prev) =>
-      prev.includes(categoryId)
+    setSelected((prev) => {
+      const newSelected = prev.includes(categoryId)
         ? prev.filter((id) => id !== categoryId)
-        : [...prev, categoryId]
-    );
+        : [...prev, categoryId];
+      console.log("Updated Selected Categories:", newSelected); // Log updated selection
+      return newSelected;
+    });
   };
 
-  console.log("selected", selected);
   const handleNext = () => {
     if (selected.length === 0) {
       alert("Please select at least one category.");
       return;
     }
-    onNext({ categories: selected }); // Pass selected IDs
+    console.log("Categories Passed to onNext:", selected); // Log data passed to onNext
+    onNext({ categories: selected });
   };
-
-  if (categoryStatus === "loading") {
-    return (
-      <div className="text-center py-6 text-gray-500">
-        Loading categories...
-      </div>
-    );
-  }
-
-  if (categoryStatus === "failed") {
-    return (
-      <div className="text-center py-6 text-red-500">
-        Error: Unable to load categories.
-      </div>
-    );
-  }
-
-  if (!categories || categories.length === 0) {
-    return (
-      <div className="text-center py-6 text-gray-500">
-        No categories available at the moment.
-      </div>
-    );
-  }
 
   return (
     <div>
@@ -104,4 +96,4 @@ const Step1Categories = ({ selectedCategories, onNext }: any) => {
   );
 };
 
-export default Step1Categories;
+export default Step1;

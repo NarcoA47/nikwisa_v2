@@ -254,9 +254,25 @@ export const partialUpdateStore = createAsyncThunk(
     thunkAPI
   ) => {
     try {
+      // Retrieve the token from cookies (or wherever it's stored)
+      let accessToken = Cookies.get("access_token");
+
+      if (!accessToken) {
+        return thunkAPI.rejectWithValue("User not authenticated");
+      }
+
+      // Log the access token to ensure it's being retrieved
+      console.log("Access Token:", accessToken);
+
       const response = await axios.patch(
         `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/${storeId}/`,
-        partialData
+        partialData,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json", // Ensure the correct content type
+          },
+        }
       );
       return response.data as Store; // Return the updated store
     } catch (error) {
@@ -268,13 +284,25 @@ export const partialUpdateStore = createAsyncThunk(
   }
 );
 
-// Delete a store
 export const deleteStore = createAsyncThunk(
   "stores/deleteStore",
   async (storeId: string, thunkAPI) => {
     try {
+      // Retrieve the token from cookies (or wherever it's stored)
+      let accessToken = Cookies.get("access_token");
+
+      if (!accessToken) {
+        return thunkAPI.rejectWithValue("User not authenticated");
+      }
+
       await axios.delete(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/${storeId}/`
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/${storeId}/`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json", // Ensure the correct content type
+          },
+        }
       );
       return storeId; // Return store ID to be deleted for state updates
     } catch (error) {
@@ -403,19 +431,22 @@ const storeSlice = createSlice({
       state.loading = true;
       state.error = null;
     });
+
     builder.addCase(
       deleteStore.fulfilled,
       (state, action: PayloadAction<string>) => {
         state.loading = false;
         state.stores = state.stores.filter(
-          (store) => store.id !== Number(action.payload)
-        ); // Remove the deleted store from the list
+          (store) => store.id !== Number(action.payload) // Ensure type consistency
+        );
       }
     );
+
     builder.addCase(deleteStore.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
     });
+
     // Fetch stores by user ID
     builder.addCase(fetchStoresByUserId.pending, (state) => {
       state.loading = true;

@@ -1,7 +1,12 @@
 "use client";
+
+import { AppDispatch } from "@/reducers/store";
+import { deleteStore } from "@/reducers/storeSlice";
 import { StoreCardProps } from "@/types/types";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { toast } from "react-toastify"; // Optional: for notifications
 
 const StoreCardAdmin: React.FC<StoreCardProps> = ({
   id,
@@ -13,6 +18,7 @@ const StoreCardAdmin: React.FC<StoreCardProps> = ({
   event_planning_categories,
 }) => {
   const router = useRouter();
+  const dispatch = useDispatch<AppDispatch>(); // Use the correct dispatch type for TypeScript
 
   // Handle navigation to the view store page
   const handleViewNavigation = () => {
@@ -20,15 +26,26 @@ const StoreCardAdmin: React.FC<StoreCardProps> = ({
   };
 
   // Handle navigation to the edit store page
-
   const handleEditNavigation = () => {
     router.push(`/dashboard/stores-lists/edit/${id}`);
+  };
+
+  // Handle store deletion
+  const handleDeleteStore = async () => {
+    if (confirm(`Are you sure you want to delete the store "${name}"?`)) {
+      try {
+        await dispatch(deleteStore(id.toString())).unwrap(); // Dispatch and unwrap the promise
+        toast.success("Store deleted successfully!"); // Optional: Show success notification
+      } catch (error: any) {
+        toast.error(error || "Failed to delete store."); // Optional: Show error notification
+      }
+    }
   };
 
   return (
     <div
       key={id}
-      className="flex border-2 border-black rounded-lg overflow-hidden shadow-sm p-2 mt-5"
+      className="flex border-2 border-black rounded-lg overflow-hidden shadow-sm p-2 mt-5 "
     >
       <div className="w-1/3 relative">
         {image ? (
@@ -41,8 +58,7 @@ const StoreCardAdmin: React.FC<StoreCardProps> = ({
           />
         ) : (
           <div className="bg-gray-200 w-full h-full flex items-center justify-center rounded">
-            <span>No image available</span>{" "}
-            {/* You can customize this with a placeholder */}
+            <span>No image available</span>
           </div>
         )}
       </div>
@@ -62,17 +78,24 @@ const StoreCardAdmin: React.FC<StoreCardProps> = ({
         <div className="mt-4 flex gap-2">
           {/* Button to view the store */}
           <button
-            className="w-32 bg-[#B8902E] hover:bg-yellow-600 text-white py-2 px-4 rounded text-sm font-medium transition"
+            className="w-32 bg-[#B8902E] hover:bg-yellow-600 text-white py-2 px-4 rounded text-[9px] md:text-sm font-medium transition"
             onClick={handleViewNavigation}
           >
-            View Store
+            View
           </button>
           {/* Button to edit the store */}
           <button
-            className="w-32 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded text-sm font-medium transition"
+            className="w-32 bg-blue-600  hover:bg-blue-700 text-white py-2 rounded text-[9px] md:text-sm font-medium transition"
             onClick={handleEditNavigation}
           >
-            Edit Store
+            Edit
+          </button>
+          {/* Button to delete the store */}
+          <button
+            className="w-32 hover:bg-[#f8d7da] bg-[#842029] text-white py-2 rounded text-[9px] md:text-sm font-medium transition"
+            onClick={handleDeleteStore}
+          >
+            Delete
           </button>
         </div>
       </div>

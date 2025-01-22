@@ -4,29 +4,45 @@ import { fetchEventCategories } from "@/reducers/eventSlice";
 import { RootState, AppDispatch } from "@/reducers/store";
 import Image from "next/image";
 
-const Step2SubCategories = ({
-  selectedEventCategories,
-  onPrevious,
-  onNext,
-}: any) => {
+const Step2 = ({ selectedEventCategories, onPrevious, onNext }: any) => {
   const dispatch: AppDispatch = useDispatch();
   const eventCategories = useSelector(
     (state: RootState) => state.eventProduct.event_categories
   );
+  const [selected, setSelected] = useState<string[]>([]);
 
   useEffect(() => {
+    console.log("Fetching event categories...");
     dispatch(fetchEventCategories());
   }, [dispatch]);
 
-  const [selected, setSelected] = useState<string[]>(selectedEventCategories);
+  useEffect(() => {
+    // Map slugs to IDs after event categories are fetched
+    if (eventCategories.length > 0) {
+      console.log("Fetched Event Categories:", eventCategories); // Log fetched event categories
+      console.log(
+        "Selected Event Category Slugs (from Props):",
+        selectedEventCategories
+      ); // Log passed slugs
+      const initialSelectedIds = selectedEventCategories
+        .map(
+          (slug: string) =>
+            eventCategories.find((category) => category.slug === slug)?.id
+        )
+        .filter((id): id is string => Boolean(id)); // Filter out undefined IDs
+      console.log("Mapped Event Category IDs:", initialSelectedIds); // Log mapped IDs
+      setSelected(initialSelectedIds);
+    }
+  }, [eventCategories, selectedEventCategories]);
 
-  // Toggle category selection by ID
   const toggleEventCategory = (categoryId: string) => {
-    setSelected((prev) =>
-      prev.includes(categoryId)
+    setSelected((prev) => {
+      const newSelected = prev.includes(categoryId)
         ? prev.filter((id) => id !== categoryId)
-        : [...prev, categoryId]
-    );
+        : [...prev, categoryId];
+      console.log("Updated Selected Event Categories:", newSelected); // Log updated selection
+      return newSelected;
+    });
   };
 
   const handleNext = () => {
@@ -34,8 +50,14 @@ const Step2SubCategories = ({
       alert("Please select at least one event category.");
       return;
     }
-    // Pass selected IDs
-    onNext({ event_planning_categories: selected });
+
+    const selectedCategories = eventCategories
+      .filter((category) => selected.includes(category.id))
+      .map((category) => category.slug);
+
+    console.log("Selected Event Categories:", selectedCategories); // Debug log
+
+    onNext({ event_planning_categories: selectedCategories });
   };
 
   return (
@@ -52,14 +74,14 @@ const Step2SubCategories = ({
                 ? "border-[#B8902E] bg-[#F5F5F5]" // Highlight selected category with border and background
                 : "border-gray-300 bg-white"
             }`}
-            onClick={() => toggleEventCategory(category.id)} // Use category.id
+            onClick={() => toggleEventCategory(category.id)}
           >
-            {/* Category Image */}
+            {/* Image */}
             <div
               className={`w-8 h-8 sm:w-24 sm:h-24 flex items-center justify-center overflow-hidden rounded-lg bg-gray-100 sm:rounded-md sm:border sm:border-gray-300 hover:scale-105 transition duration-300`}
             >
               <Image
-                src={category.image || "/fallback-image.png"} // Use a fallback image if none is provided
+                src={category.image || "/fallback-image.png"}
                 alt={category.title}
                 className="object-cover"
                 width={80}
@@ -67,24 +89,23 @@ const Step2SubCategories = ({
               />
             </div>
 
-            {/* Category Name */}
-            <span className="text-[8px] sm:text-[10px] lg:text-sm text-gray-700 mt-2">
+            {/* Name */}
+            <span className="mt-2 text-[8px] sm:text-[10px] lg:text-sm text-gray-700">
               {category.title}
             </span>
           </div>
         ))}
       </div>
-
-      <div className="flex justify-between mt-6">
+      <div className="flex justify-between mt-4">
         <button
           onClick={onPrevious}
-          className="bg-gray-500 text-white px-4 py-2 rounded"
+          className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
         >
           Previous
         </button>
         <button
           onClick={handleNext}
-          className="bg-[#B8902E] text-white px-4 py-2 rounded"
+          className="bg-[#B8902E] text-white px-4 py-2 rounded hover:bg-[#9c7a1e]"
         >
           Next
         </button>
@@ -93,4 +114,4 @@ const Step2SubCategories = ({
   );
 };
 
-export default Step2SubCategories;
+export default Step2;

@@ -85,7 +85,7 @@ export default function SharedLayout({
           }`}
         >
           <AdminNav toggleSidebar={toggleSidebar} />
-          <div className="w-[90vw] md:w-[80vw] mx-auto py-1 ">
+          <div className="w-[90vw] md:w-[80vw] mx-auto py-1  ">
             <div>{children}</div>
           </div>
         </div>

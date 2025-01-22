@@ -1,44 +1,19 @@
-import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState, AppDispatch } from "@/reducers/store";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/reducers/store";
 import FormRow from "@/components/forms/FormRow";
-import { fetchEventCategories } from "@/reducers/eventSlice";
+import { partialUpdateStore } from "@/reducers/storeSlice";
 import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
-import { addStore } from "@/reducers/storeSlice"; // Import the addStore function from your slice
 
-const Step3StoreDetails = ({ storeData, onPrevious, onSubmit }: any) => {
+const Step3 = ({ storeData, onPrevious, onSubmit, storeId }: any) => {
   const dispatch: AppDispatch = useDispatch();
   const router = useRouter();
-
   const [data, setData] = useState(storeData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<any>({});
-  const [user, setUser] = useState<{ user_id: string } | null>(null); // Make sure to capture user_id
-
-  useEffect(() => {
-    const accessToken = Cookies.get("access_token");
-    if (!accessToken) {
-      setUser(null); // No token found, set user to null
-      return;
-    }
-
-    try {
-      const decodedToken: { user_id: string } = jwtDecode(accessToken); // Decode user_id from the token
-      setUser(decodedToken); // Set the decoded user details
-    } catch (error) {
-      console.error("Failed to decode token:", error);
-      setUser(null); // Invalid token, set user to null
-    }
-  }, []);
-
-  useEffect(() => {
-    dispatch(fetchEventCategories());
-  }, [dispatch]);
 
   const handleInputChange = (field: string, value: any) => {
-    setData((prev: typeof storeData) => ({ ...prev, [field]: value }));
+    setData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,49 +34,47 @@ const Step3StoreDetails = ({ storeData, onPrevious, onSubmit }: any) => {
       newErrors.whats_app = "Invalid WhatsApp number format.";
     }
     if (!data.name) newErrors.name = "Store name is required.";
-    if (data.categories.length === 0)
-      newErrors.categories = "Category is required.";
-    if (!data.event_planning_categories)
-      newErrors.event_planning_categories = "Event category is required.";
+    if (!data.location) newErrors.location = "Location is required.";
 
     return newErrors;
   };
 
-  const sanitizePayload = (data: typeof storeData) => {
-    // Include the owner with user_id here
+  const sanitizePayload = (data: any) => {
     return {
-      ...data,
-      phone_number: data.phone_number.trim(),
-      owner: user?.user_id, // Adding the owner field
+      ...(data.name && { name: data.name }),
+      ...(data.overview && { overview: data.overview }),
+      ...(data.phone_number && { phone_number: data.phone_number }),
+      ...(data.location && { location: data.location }),
+      ...(data.whats_app && { whats_app: data.whats_app }),
+      ...(data.working_hours && { working_hours: data.working_hours }),
+      ...(data.image && { image: data.image }),
     };
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     const validationErrors = validateFields();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
+    setErrors(validationErrors);
 
+    if (Object.keys(validationErrors).length > 0) return;
+
+    const sanitizedData = sanitizePayload(data);
     setIsSubmitting(true);
+    console.log("Final Store Data:", sanitizedData);
     try {
-      const sanitizedData = sanitizePayload(data);
-      console.log("Form Data:", sanitizedData); // Logs the entire data object to the console
+      await dispatch(
+        partialUpdateStore({
+          storeId,
+          partialData: sanitizedData,
+        })
+      ).unwrap();
 
-      // Add store to Redux via dispatch
-      const response = await dispatch(addStore(sanitizedData));
-
-      // Check if the store was successfully added (based on the action's result)
-      if (response.type === "stores/addStore/fulfilled") {
-        // Redirect on successful store creation
-        router.push("/dashboard/stores-lists");
-      } else {
-        // Handle any errors that occurred during the store creation
-        console.error("Store creation failed:", response.payload);
-        setIsSubmitting(false);
-      }
+      console.log("storeId", storeId);
+      onSubmit(sanitizedData);
+      router.push("/dashboard/stores-lists");
     } catch (error) {
-      console.error("Error during submission:", error);
+      console.error("Error during form submission:", error);
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -109,57 +82,65 @@ const Step3StoreDetails = ({ storeData, onPrevious, onSubmit }: any) => {
   return (
     <div className="max-w-3xl mx-auto mt-8">
       <h2 className="text-lg font-bold mb-4">Store Details</h2>
+
       <FormRow
         type="text"
         name="name"
-        value={data.name} // Use data for all fields
+        value={data.name}
         handleChange={(e) => handleInputChange("name", e.target.value)}
         labelText="Store Name"
         placeholder="Enter store name"
+        error={errors.name}
       />
 
       <FormRow
         type="textarea"
         name="overview"
-        value={data.overview} // Changed from storeData.overview to data.overview
+        value={data.overview}
         handleChange={(e) => handleInputChange("overview", e.target.value)}
         labelText="Store Overview"
         placeholder="Enter a brief description"
+        error={errors.overview}
       />
 
       <FormRow
         type="text"
         name="location"
-        value={data.location} // Changed from storeData.location to data.location
+        value={data.location}
         handleChange={(e) => handleInputChange("location", e.target.value)}
         labelText="Location"
         placeholder="Enter location"
+        error={errors.location}
       />
 
       <FormRow
         type="text"
         name="phone_number"
-        value={data.phone_number} // Use data for consistency
+        value={data.phone_number}
         handleChange={(e) => handleInputChange("phone_number", e.target.value)}
         labelText="Phone Number"
         placeholder="Enter phone number"
+        error={errors.phone_number}
       />
 
       <FormRow
         type="text"
         name="whats_app"
-        value={data.whats_app} // Changed from storeData.whats_app to data.whats_app
+        value={data.whats_app}
         handleChange={(e) => handleInputChange("whats_app", e.target.value)}
         labelText="WhatsApp Number"
         placeholder="Enter WhatsApp number"
+        error={errors.whats_app}
       />
+
       <FormRow
         type="text"
         name="working_hours"
-        value={data.working_hours} // Changed from storeData.whats_app to data.whats_app
+        value={data.working_hours}
         handleChange={(e) => handleInputChange("working_hours", e.target.value)}
         labelText="Working Hours"
-        placeholder="Enter Working Hours"
+        placeholder="Enter working hours"
+        error={errors.working_hours}
       />
 
       <div className="mb-6">
@@ -176,6 +157,7 @@ const Step3StoreDetails = ({ storeData, onPrevious, onSubmit }: any) => {
           onChange={handleImageChange}
         />
       </div>
+
       <div className="mt-4">
         <button
           onClick={onPrevious}
@@ -197,4 +179,4 @@ const Step3StoreDetails = ({ storeData, onPrevious, onSubmit }: any) => {
   );
 };
 
-export default Step3StoreDetails;
+export default Step3;
