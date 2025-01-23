@@ -49,11 +49,11 @@ export const addStore = createAsyncThunk(
       // Send the request with the token in the Authorization header
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/`,
-        storeData,
+        storeData, // This should now be a FormData object
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json", // Ensure the correct content type
+            "Content-Type": "multipart/form-data", // Use multipart for file uploads
           },
         }
       );

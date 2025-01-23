@@ -27,7 +27,7 @@ const FormRowSelect: React.FC<FormRowSelectProps> = ({
     </label>
     <select
       id={id}
-      className="w-full p-4 mt-2 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      className="w-full p-1.5 md:p-4 mt-2 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
       value={value}
       onChange={(e) => onChange(id, Number(e.target.value))}
     >

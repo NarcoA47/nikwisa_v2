@@ -43,7 +43,7 @@ export const FormRow: React.FC<FormRowProps> = ({
           name={name}
           value={value}
           onChange={handleChange}
-          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+          className="w-full p-2 md:p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
           placeholder={placeholder}
         />
       )}

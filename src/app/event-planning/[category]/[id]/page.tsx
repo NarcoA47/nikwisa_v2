@@ -46,10 +46,17 @@ const StoreDetailPage: React.FC = () => {
 
   useEffect(() => {
     if (tabContentRef.current) {
-      const contentHeight = tabContentRef.current.scrollHeight;
-      tabContentRef.current.style.maxHeight = `${contentHeight}px`;
+      // Automatically adjust height based on content
+      tabContentRef.current.style.maxHeight = `${window.innerHeight - 200}px`;
     }
-  }, [activeTab]); // Only depend on activeTab for height updates
+  }, [activeTab]); // Re-run whenever the active tab changes
+
+  // useEffect(() => {
+  //   if (tabContentRef.current) {
+  //     const contentHeight = tabContentRef.current.scrollHeight;
+  //     tabContentRef.current.style.maxHeight = `${contentHeight}px`;
+  //   }
+  // }, [activeTab]); // Only depend on activeTab for height updates
 
   // Wait for category and id to be available before rendering the page
   if (!category || !id) {
@@ -151,9 +158,8 @@ const StoreDetailPage: React.FC = () => {
 
       {/* Tab Content with Animation */}
       <div
-        className="tab-content-container mt-6 overflow-hidden transition-all duration-500 ease-in-out opacity-0"
+        className="tab-content-container mt-6 overflow-y-auto transition-all duration-500 ease-in-out"
         ref={tabContentRef}
-        style={{ opacity: activeTab === "" ? 0 : 1 }}
       >
         {renderTabContent()}
       </div>
