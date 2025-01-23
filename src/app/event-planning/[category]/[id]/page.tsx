@@ -109,17 +109,7 @@ const StoreDetailPage: React.FC = () => {
             >
               {showAddReviewForm ? "Cancel" : "Add a Review"}
             </button>
-            {showAddReviewForm && (
-              <AddReview
-                storeId={filteredStore.id} // Pass storeId to AddReview
-                onSubmit={(newReview) => {
-                  // Handle new review submission here (dispatch an action to add the review)
-                  console.log(newReview);
-                  setShowAddReviewForm(false); // Hide form after submission
-                  dispatch(fetchReviewsByStoreId(filteredStore.id)); // Refresh reviews after adding
-                }}
-              />
-            )}
+            {showAddReviewForm && <AddReview storeId={filteredStore.id} />}
           </div>
         );
       case "offerings":

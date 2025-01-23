@@ -1,125 +1,201 @@
-"use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
+import { AppDispatch } from "@/reducers/store";
+import { useDispatch } from "react-redux";
+import { addReview } from "@/reducers/reviewSlice";
+import { FormRow } from "@/components/FormRow";
+import FormRowSelect from "@/components/forms/FormRowSelect";
+import Alert from "@/components/forms/Alert"; // Import the Alert component
 
 interface AddReviewProps {
   storeId: number;
 }
 
-interface User {
-  id: number;
-  username: string;
-  email: string;
-}
-
 const AddReview: React.FC<AddReviewProps> = ({ storeId }) => {
-  const [rating, setRating] = useState(1); // Default rating is 1
-  const [reviewText, setReviewText] = useState("");
-  const [user, setUser] = useState<User | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const dispatch: AppDispatch = useDispatch();
   const router = useRouter();
+  const [reviewData, setReviewData] = useState({
+    rating: 0,
+    comment: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const [alertType, setAlertType] = useState<"success" | "error" | null>(null);
 
-  useEffect(() => {
-    const fetchUserData = () => {
-      const accessToken = Cookies.get("access_token");
-      if (!accessToken) {
-        router.push("/signin");
-        return;
-      }
+  const handleInputChange = (field: string, value: any) => {
+    setReviewData((prev) => ({ ...prev, [field]: value }));
+  };
 
-      try {
-        const decodedToken: { id: number; username: string; email: string } =
-          jwtDecode(accessToken);
-        setUser(decodedToken);
-      } catch (err) {
-        console.error("Failed to decode token", err);
-        router.push("/signin");
-      }
-    };
-
-    fetchUserData();
-  }, [router]);
-
-  console.log("user review", user);
-  // Handle form submission
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!user) {
-      router.push("/signin");
-      return;
-    }
-
-    const review = {
-      rating,
-      comment: reviewText,
-      store: storeId, // Pass store ID
-      user: user.id, // Pass user ID, not the user object
-    };
-
-    setLoading(true);
-    setError(null);
-
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/reviews/`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${Cookies.get("access_token")}`,
-          },
-          body: JSON.stringify(review),
-        }
+      const response = await dispatch(
+        addReview({
+          storeId, // Pass storeId as expected by the backend
+          reviewData,
+        })
       );
 
-      if (!response.ok) {
-        throw new Error("Failed to submit review");
-      }
+      if (response.meta.requestStatus === "fulfilled") {
+        // Set success alert
+        setAlertMessage("Review submitted successfully!");
+        setAlertType("success");
 
-      // Reset the review text after successful submission
-      setReviewText("");
-      setRating(1);
-    } catch (err) {
-      setError(err.message);
+        // Reset the form after submission
+        setReviewData({ rating: 0, comment: "" });
+      } else {
+        // Set error alert
+        setAlertMessage("Failed to submit review. Please try again.");
+        setAlertType("error");
+      }
+    } catch (error) {
+      setAlertMessage("An unexpected error occurred.");
+      setAlertType("error");
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
+
+      // Clear the alert message after 3 seconds
+      setTimeout(() => {
+        setAlertMessage(null);
+        setAlertType(null);
+      }, 3000);
     }
   };
 
+  const ratingOptions = [1, 2, 3, 4, 5].map((value) => ({
+    id: value,
+    slug: value.toString(),
+    title: value.toString(),
+  }));
+
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label htmlFor="rating">Rating:</label>
-        <select
-          id="rating"
-          value={rating}
-          onChange={(e) => setRating(Number(e.target.value))}
-        >
-          {[1, 2, 3, 4, 5].map((value) => (
-            <option key={value} value={value}>
-              {value}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div>
-        <label htmlFor="reviewText">Review:</label>
-        <textarea
-          id="reviewText"
-          value={reviewText}
-          onChange={(e) => setReviewText(e.target.value)}
-        />
-      </div>
-      {error && <p className="error">{error}</p>}
-      <button type="submit" disabled={loading}>
-        {loading ? "Submitting..." : "Submit Review"}
+    <div className="max-w-3xl mx-auto md:ml-0 md:mr-auto mt-8">
+      {/* Display Alert based on success or error */}
+      {alertMessage && <Alert message={alertMessage} type={alertType!} />}
+
+      <FormRowSelect
+        label="Rating"
+        id="rating"
+        value={reviewData.rating || ""}
+        options={ratingOptions}
+        onChange={(id, value) => handleInputChange("rating", value)}
+      />
+
+      <FormRow
+        type="textarea"
+        name="comment"
+        value={reviewData.comment}
+        handleChange={(e) => handleInputChange("comment", e.target.value)}
+        labelText="Store Review"
+        placeholder="Enter a brief Store Review"
+      />
+
+      <button
+        onClick={handleSubmit}
+        className={`bg-[#B8902E] text-white px-4 py-2 rounded mt-4 ${
+          isSubmitting ? "opacity-50" : ""
+        }`}
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? "Submitting..." : "Submit Review"}
       </button>
-    </form>
+    </div>
   );
 };
 
 export default AddReview;
+
+// import React, { useState, useEffect } from "react";
+// import { useRouter } from "next/navigation";
+// import Cookies from "js-cookie";
+// import { jwtDecode } from "jwt-decode"; // Import without curly braces
+// import { AppDispatch } from "@/reducers/store";
+// import { useDispatch } from "react-redux";
+// import { addReview } from "@/reducers/reviewSlice";
+// import { FormRow } from "@/components/FormRow";
+// import FormRowSelect from "@/components/forms/FormRowSelect";
+
+// interface AddReviewProps {
+//   storeId: number;
+// }
+
+// interface User {
+//   id: number;
+//   username: string;
+//   email: string;
+// }
+
+// const AddReview: React.FC<AddReviewProps> = ({ storeId }) => {
+//   const dispatch: AppDispatch = useDispatch();
+//   const router = useRouter();
+//   const [reviewData, setReviewData] = useState({
+//     rating: 0,
+//     comment: "",
+//   });
+//   const [isSubmitting, setIsSubmitting] = useState(false);
+
+//   const handleInputChange = (field: string, value: any) => {
+//     setReviewData((prev) => ({ ...prev, [field]: value }));
+//   };
+
+//   const handleSubmit = async () => {
+//     setIsSubmitting(true);
+//     try {
+//       const response = await dispatch(
+//         addReview({
+//           storeId, // Pass storeId as expected by the backend
+//           reviewData,
+//         })
+//       );
+
+//       if (response.meta.requestStatus === "fulfilled") {
+//         router.push("/dashboard/stores-lists");
+//       } else {
+//         console.error("Review creation failed:", response.payload);
+//       }
+//     } catch (error) {
+//       console.error("Error during submission:", error);
+//     } finally {
+//       setIsSubmitting(false);
+//     }
+//   };
+
+//   const ratingOptions = [1, 2, 3, 4, 5].map((value) => ({
+//     id: value,
+//     slug: value.toString(),
+//     title: value.toString(),
+//   }));
+
+//   return (
+//     <div className="max-w-3xl mx-auto md:ml-0 md:mr-auto mt-8">
+//       <FormRowSelect
+//         label="Rating"
+//         id="rating"
+//         value={reviewData.rating || ""}
+//         options={ratingOptions}
+//         onChange={(id, value) => handleInputChange("rating", value)}
+//       />
+
+//       <FormRow
+//         type="textarea"
+//         name="comment"
+//         value={reviewData.comment}
+//         handleChange={(e) => handleInputChange("comment", e.target.value)}
+//         labelText="Store Review"
+//         placeholder="Enter a brief Store Review"
+//       />
+
+//       <button
+//         onClick={handleSubmit}
+//         className={`bg-[#B8902E] text-white px-4 py-2 rounded mt-4 ${
+//           isSubmitting ? "opacity-50" : ""
+//         }`}
+//         disabled={isSubmitting}
+//       >
+//         {isSubmitting ? "Submitting..." : "Submit Review"}
+//       </button>
+//     </div>
+//   );
+// };
+
+// export default AddReview;

@@ -37,7 +37,7 @@ const Reviews: React.FC<ReviewsProps> = ({ storeId }) => {
         reviews.map((review) => (
           <div
             key={review.id}
-            className="flex items-start gap-4 p-4 border-b border-gray-300 bg-[#D9D9D9]"
+            className="flex items-start gap-4 p-4 border-b border-gray-300 bg-[#D9D9D9] max-w-3xl mx-auto md:ml-0 md:mr-auto rounded-lg"
           >
             <img
               src={review.user.profile_image}

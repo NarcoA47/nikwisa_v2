@@ -706,3 +706,9 @@ export const mockData = [
     ],
   },
 ];
+
+// {
+//   "store": 1,
+//   "rating": 5,
+//   "comment": "Great service and fast delivery!"
+// }
