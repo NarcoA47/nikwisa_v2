@@ -85,31 +85,18 @@ const Step3StoreDetails = ({ storeData, onPrevious, onSubmit }: any) => {
 
     setIsSubmitting(true);
     try {
-      const formData = new FormData();
+      const sanitizedData = sanitizePayload(data);
+      console.log("Form Data:", sanitizedData); // Logs the entire data object to the console
 
-      // Add all store data fields to FormData
-      Object.keys(data).forEach((key) => {
-        if (key === "image" && data.image) {
-          formData.append(key, data.image); // Append the file
-        } else {
-          formData.append(key, data[key]);
-        }
-      });
+      // Add store to Redux via dispatch
+      const response = await dispatch(addStore(sanitizedData));
 
-      // Add the owner field explicitly
-      if (user?.user_id) {
-        formData.append("owner", user.user_id);
-      }
-
-      console.log("Form Data to Submit:", formData); // This won't log file content but shows other fields
-
-      // Dispatch the FormData to the `addStore` action
-      const response = await dispatch(addStore(formData));
-
+      // Check if the store was successfully added (based on the action's result)
       if (response.type === "stores/addStore/fulfilled") {
         // Redirect on successful store creation
         router.push("/dashboard/stores-lists");
       } else {
+        // Handle any errors that occurred during the store creation
         console.error("Store creation failed:", response.payload);
         setIsSubmitting(false);
       }
@@ -118,36 +105,6 @@ const Step3StoreDetails = ({ storeData, onPrevious, onSubmit }: any) => {
       setIsSubmitting(false);
     }
   };
-
-  // const handleSubmit = async () => {
-  //   const validationErrors = validateFields();
-  //   if (Object.keys(validationErrors).length > 0) {
-  //     setErrors(validationErrors);
-  //     return;
-  //   }
-
-  //   setIsSubmitting(true);
-  //   try {
-  //     const sanitizedData = sanitizePayload(data);
-  //     console.log("Form Data:", sanitizedData); // Logs the entire data object to the console
-
-  //     // Add store to Redux via dispatch
-  //     const response = await dispatch(addStore(sanitizedData));
-
-  //     // Check if the store was successfully added (based on the action's result)
-  //     if (response.type === "stores/addStore/fulfilled") {
-  //       // Redirect on successful store creation
-  //       router.push("/dashboard/stores-lists");
-  //     } else {
-  //       // Handle any errors that occurred during the store creation
-  //       console.error("Store creation failed:", response.payload);
-  //       setIsSubmitting(false);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error during submission:", error);
-  //     setIsSubmitting(false);
-  //   }
-  // };
 
   return (
     <div className="max-w-3xl mx-auto mt-8">

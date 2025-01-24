@@ -56,7 +56,6 @@ const OfferingsAdmin = ({ storeId }: { storeId: number }) => {
             <OfferingsCardAdmin
               key={offering.id}
               offering={offering}
-              onDelete={handleDelete}
               storeId={storeId}
             />
           ))

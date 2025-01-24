@@ -12,11 +12,14 @@ import { fetchReviewsByStoreId } from "@/reducers/reviewSlice";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
+import { useRouter } from "next/navigation";
 
 const StoreDetailPage: React.FC = () => {
-  // Always call hooks at the top
   const dispatch = useDispatch<AppDispatch>();
   const { category, id } = useParams(); // Get category and id from the URL params
+  const router = useRouter();
 
   const { stores, loading, error } = useSelector(
     (state: RootState) => state.stores
@@ -26,50 +29,51 @@ const StoreDetailPage: React.FC = () => {
     (state: RootState) => state.reviews
   );
 
-  const { user } = useSelector((state: RootState) => state.auth); // Access logged-in user
-
   const [activeTab, setActiveTab] = useState("overview");
   const [showAddReviewForm, setShowAddReviewForm] = useState(false);
+  const [user, setUser] = useState<{ username: string } | null>(null);
 
-  const tabContentRef = useRef<HTMLDivElement>(null); // Ref to measure content height
+  const tabContentRef = useRef<HTMLDivElement>(null);
 
-  // Fetch stores and reviews only once during component mount
+  useEffect(() => {
+    const accessToken = Cookies.get("access_token");
+
+    if (accessToken) {
+      try {
+        const decodedToken: { username: string } = jwtDecode(accessToken);
+        setUser(decodedToken); // Set user information if the token is valid
+      } catch {
+        Cookies.remove("access_token"); // Remove invalid token
+        setUser(null);
+      }
+    } else {
+      setUser(null); // No token means no user
+    }
+  }, []);
+
   useEffect(() => {
     dispatch(fetchStoresWithOfferings());
   }, [dispatch]);
 
   useEffect(() => {
     if (id) {
-      dispatch(fetchReviewsByStoreId(parseInt(id, 10))); // Fetch reviews for the selected store
+      dispatch(fetchReviewsByStoreId(parseInt(id, 10)));
     }
   }, [dispatch, id]);
 
   useEffect(() => {
     if (tabContentRef.current) {
-      // Automatically adjust height based on content
       tabContentRef.current.style.maxHeight = `${window.innerHeight - 200}px`;
     }
-  }, [activeTab]); // Re-run whenever the active tab changes
+  }, [activeTab]);
 
-  // useEffect(() => {
-  //   if (tabContentRef.current) {
-  //     const contentHeight = tabContentRef.current.scrollHeight;
-  //     tabContentRef.current.style.maxHeight = `${contentHeight}px`;
-  //   }
-  // }, [activeTab]); // Only depend on activeTab for height updates
-
-  // Wait for category and id to be available before rendering the page
   if (!category || !id) {
     return <div>Loading store details...</div>;
   }
 
-  // Ensure id is a number
-  const storeId = parseInt(id as string, 10); // Convert id to a number
-
-  // Decode the category and trim any spaces to match the store data
+  const storeId = parseInt(id as string, 10);
   const decodedCategory = decodeURIComponent(category).trim();
 
-  // Filter the store based on the  event_planning_categories and id
   const filteredStore = stores.find(
     (store) =>
       store.id === storeId &&
@@ -79,14 +83,6 @@ const StoreDetailPage: React.FC = () => {
           decodedCategory.toLowerCase().replace(/\s+/g, "-")
       )
   );
-
-  useEffect(() => {
-    if (filteredStore) {
-      console.log("Filtered store:", filteredStore); // Debugging: Show the filtered store
-    } else {
-      console.log("No store found for the given category and ID.");
-    }
-  }, [filteredStore]);
 
   if (loading || loadingReviews) {
     return <div>Loading...</div>;
@@ -100,7 +96,14 @@ const StoreDetailPage: React.FC = () => {
     return <div>No store found for the given category and ID.</div>;
   }
 
-  // Render the correct tab content based on the activeTab state
+  const handleAddReviewClick = () => {
+    if (user) {
+      setShowAddReviewForm((prev) => !prev);
+    } else {
+      router.push("/signin");
+    }
+  };
+
   const renderTabContent = () => {
     switch (activeTab) {
       case "overview":
@@ -109,13 +112,22 @@ const StoreDetailPage: React.FC = () => {
         return (
           <div>
             <Reviews reviews={reviews} storeId={filteredStore.id} />
-            {/* Add Review Section */}
-            <button
-              onClick={() => setShowAddReviewForm((prev) => !prev)}
-              className="bg-[#B8902E] text-white py-2 px-4 rounded mt-4"
-            >
-              {showAddReviewForm ? "Cancel" : "Add a Review"}
-            </button>
+            {/* Conditional Button Rendering */}
+            {user ? (
+              <button
+                onClick={handleAddReviewClick}
+                className="bg-[#B8902E] text-white py-2 px-4 rounded mt-4"
+              >
+                {showAddReviewForm ? "Cancel" : "Add  Review"}
+              </button>
+            ) : (
+              <button
+                onClick={() => router.push("/signin")}
+                className="bg-[#B8902E] text-white py-2 px-4 rounded mt-4"
+              >
+                Login to Add a Review
+              </button>
+            )}
             {showAddReviewForm && <AddReview storeId={filteredStore.id} />}
           </div>
         );
@@ -132,7 +144,6 @@ const StoreDetailPage: React.FC = () => {
     <div className="p-4 md:p-6 bg-gray-50 my-8 mt-10">
       <StoreDetailsHeader store={filteredStore} />
 
-      {/* Tab Navigation */}
       <div className="mt-6 border-b">
         <nav className="flex space-x-6">
           {[
@@ -146,7 +157,7 @@ const StoreDetailPage: React.FC = () => {
               onClick={() => setActiveTab(tab.value)}
               className={`pb-2 text-sm md:text-lg font-medium border-b-2 transition-colors duration-300 ${
                 activeTab === tab.value
-                  ? "border-[#B8902E]  text-[#B8902E] "
+                  ? "border-[#B8902E] text-[#B8902E]"
                   : "border-transparent text-gray-600 hover:text-gray-800"
               }`}
             >
@@ -156,7 +167,6 @@ const StoreDetailPage: React.FC = () => {
         </nav>
       </div>
 
-      {/* Tab Content with Animation */}
       <div
         className="tab-content-container mt-6 overflow-y-auto transition-all duration-500 ease-in-out"
         ref={tabContentRef}

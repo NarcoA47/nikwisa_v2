@@ -5,9 +5,10 @@ import { AppDispatch, RootState } from "@/reducers/store";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import Image from "next/image"; // Import the Image component from Next.js
 
 const Page = () => {
-  const { id } = useParams();
+  const { offeringId, id } = useParams();
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
 
@@ -15,84 +16,69 @@ const Page = () => {
     (state: RootState) => state.offerings
   );
 
-  const [offeringData, setOfferingData] = useState<{
-    name: string;
-    description: string;
-    price: number;
-    image: File | null;
-    phone_number: string;
-    whatsapp_number: string;
-  }>({
+  const [offeringData, setOfferingData] = useState({
     name: "",
     description: "",
     price: 0,
-    image: null, // Now this will be the file object
+    image: null as File | null,
     phone_number: "",
     whatsapp_number: "",
   });
 
-  const [imagePreview, setImagePreview] = useState<string | null>(null); // For displaying the image preview
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   // Fetch offering by ID on component mount
   useEffect(() => {
-    if (id) {
-      dispatch(fetchOfferingById(id));
+    if (offeringId) {
+      dispatch(fetchOfferingById(offeringId));
     }
-  }, [id, dispatch]);
+  }, [offeringId, dispatch]);
 
   // Update local state when offering data changes
   useEffect(() => {
     if (offerings && offerings.length > 0) {
       const currentOffering = offerings[0];
-      setOfferingData((prevState) => ({
-        ...prevState,
+      setOfferingData({
         name: currentOffering.name || "",
         description: currentOffering.description || "",
         price: currentOffering.price || 0,
         phone_number: currentOffering.phone_number || "",
         whatsapp_number: currentOffering.whatsapp_number || "",
         image: null, // Reset the image state
-      }));
-
-      // Set preview image if the offering has an image
-      if (currentOffering.image) {
-        setImagePreview(currentOffering.image);
-      }
+      });
+      setImagePreview(currentOffering.image || null);
     }
   }, [offerings]);
 
-  // Handle image upload
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
     if (file) {
       setOfferingData((prevState) => ({
         ...prevState,
-        image: file, // Store the file object in the state
+        image: file,
       }));
-
-      // Create a preview URL for the image
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
+      reader.onloadend = () => setImagePreview(reader.result as string);
       reader.readAsDataURL(file);
     }
   };
 
+  console.log("offeringData", offeringData);
+  console.log("offeringID", offeringId);
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-
     try {
-      // You can now handle image upload through FormData or as part of the offeringData
+      // If image is null, update without image field
+      const offeringPayload = offeringData.image
+        ? offeringData
+        : { ...offeringData, image: undefined };
+
       await dispatch(
-        updateOffering({
-          offeringId: id,
-          offeringData,
-        })
+        updateOffering({ offeringId, offeringData: offeringPayload })
       );
 
-      // Navigate to the dashboard after successful save
-      router.push("/dashboard/all-offerings");
+      router.push(`/dashboard/stores-lists/${id}`);
     } catch (err) {
       console.error("Failed to update offering:", err);
     }
@@ -105,24 +91,16 @@ const Page = () => {
     }));
   };
 
-  if (loading) {
-    return <div>Loading offering...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  if (!offerings || offerings.length === 0) {
+  if (loading) return <div>Loading offering...</div>;
+  if (error) return <div>Error: {error}</div>;
+  if (!offerings || offerings.length === 0)
     return <div>No offering found.</div>;
-  }
 
   return (
     <div className="max-w-3xl mx-auto mt-8">
       <h2 className="text-2xl font-bold mb-4">Edit Offering</h2>
       <form onSubmit={handleSave}>
         {[
-          // Input fields as before
           {
             label: "Offering Name",
             id: "name",
@@ -153,30 +131,30 @@ const Page = () => {
             type: "text",
             value: offeringData.whatsapp_number,
           },
-        ].map((field) => (
-          <div className="mb-6" key={field.id}>
+        ].map(({ label, id, type, value }) => (
+          <div className="mb-6" key={id}>
             <label
-              htmlFor={field.id}
+              htmlFor={id}
               className="block text-base font-medium text-gray-700"
             >
-              {field.label}
+              {label}
             </label>
-            {field.type === "textarea" ? (
+            {type === "textarea" ? (
               <textarea
-                id={field.id}
-                value={field.value as string}
-                onChange={(e) => handleChange(field.id, e.target.value)}
+                id={id}
+                value={value as string}
+                onChange={(e) => handleChange(id, e.target.value)}
                 className="w-full p-4 mt-2 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             ) : (
               <input
-                type={field.type}
-                id={field.id}
-                value={field.value}
+                type={type}
+                id={id}
+                value={value}
                 onChange={(e) =>
                   handleChange(
-                    field.id,
-                    field.type === "number"
+                    id,
+                    type === "number"
                       ? parseFloat(e.target.value)
                       : e.target.value
                   )
@@ -203,9 +181,11 @@ const Page = () => {
           />
           {imagePreview && (
             <div className="mt-4">
-              <img
+              <Image
                 src={imagePreview}
                 alt="Image Preview"
+                width={500}
+                height={300}
                 className="max-w-full h-auto rounded-lg"
               />
             </div>
@@ -215,7 +195,7 @@ const Page = () => {
         <div className="flex justify-between gap-4">
           <button
             type="button"
-            onClick={() => router.push("/dashboard/all-offerings")}
+            onClick={() => router.push(`/dashboard/stores-lists/${id}`)}
             className="bg-gray-500 text-white py-2 px-4 rounded mt-4"
           >
             Cancel

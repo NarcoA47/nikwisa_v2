@@ -6,6 +6,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/reducers/store";
 import { setAuth, logout } from "@/reducers/authSlice";
 import { jwtDecode } from "jwt-decode";
+import { useRouter } from "next/navigation";
 
 import AdminNav from "@/components/Navigation/AdminNav";
 import BigSidebar from "@/components/Navigation/BigSidebar";
@@ -17,10 +18,10 @@ export default function SharedLayout({
   children: React.ReactNode;
 }) {
   const dispatch = useDispatch();
+  const router = useRouter();
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated
   );
-
   const [showSidebar, setShowSidebar] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -36,6 +37,7 @@ export default function SharedLayout({
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Check if the user has valid tokens
   useEffect(() => {
     const accessToken = Cookies.get("access_token");
     const refreshToken = Cookies.get("refresh_token");
@@ -64,8 +66,13 @@ export default function SharedLayout({
       }
     } else if (!accessToken || !refreshToken) {
       dispatch(logout());
+      router.push("/signin"); // Redirect to sign-in page if no tokens
     }
-  }, [isAuthenticated, dispatch]);
+  }, [isAuthenticated, dispatch, router]);
+
+  if (!isAuthenticated) {
+    return null; // Optionally, you can return a loading spinner or something else while the check is happening
+  }
 
   return (
     <section>
@@ -85,7 +92,7 @@ export default function SharedLayout({
           }`}
         >
           <AdminNav toggleSidebar={toggleSidebar} />
-          <div className="w-[90vw] md:w-[80vw] mx-auto py-1  ">
+          <div className="w-[90vw] md:w-[80vw] mx-auto py-1">
             <div>{children}</div>
           </div>
         </div>

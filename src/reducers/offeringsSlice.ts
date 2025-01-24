@@ -1,20 +1,12 @@
+import { Offering } from "@/types/types";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
+import Cookies from "js-cookie"; // Import js-cookie for token handling
 
 // Defining types locally in the slice for clarity
 
-export interface Offering {
-  id: number; // ID as a string
-  name: string;
-  description: string;
-  price: number;
-  image: string | null; // Allow null for fallback
-  phone_number?: string;
-  whatsapp_number?: string;
-}
-
 export interface OfferingState {
-  offerings: Offering[]; // Ensure offerings is always an array
+  offerings: Offering[];
   loading: boolean;
   error: string | null;
 }
@@ -34,9 +26,8 @@ export const fetchOfferingById = createAsyncThunk(
   async (offeringId: number, thunkAPI) => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/offerings/${offeringId}`
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/offerings/${offeringId}/`
       );
-      console.log("fetchOfferingById response:", response.data);
       return response.data as Offering;
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
@@ -53,11 +44,8 @@ export const fetchOfferingsByStoreId = createAsyncThunk(
   async (storeId: number, thunkAPI) => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/${storeId}/offerings`
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/${storeId}/offerings/`
       );
-      console.log("fetchOfferingsByStoreId response:", response.data);
-
-      // Assuming the response is an object containing an 'offerings' array
       return response.data as Offering[];
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
@@ -71,11 +59,24 @@ export const fetchOfferingsByStoreId = createAsyncThunk(
 // Add a new offering
 export const addOffering = createAsyncThunk(
   "offerings/addOffering",
-  async (offeringData: Offering, thunkAPI) => {
+  async (offeringData: FormData, thunkAPI) => {
+    // Use FormData type if you are uploading files
     try {
+      const accessToken = Cookies.get("access_token");
+      if (!accessToken) {
+        console.error("Access token is missing");
+        return thunkAPI.rejectWithValue("User not authenticated");
+      }
+
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/offerings`,
-        offeringData
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/offerings/`,
+        offeringData,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            // Do not manually set Content-Type for FormData
+          },
+        }
       );
       return response.data as Offering;
     } catch (error) {
@@ -86,6 +87,36 @@ export const addOffering = createAsyncThunk(
     }
   }
 );
+
+// export const addOffering = createAsyncThunk(
+//   "offerings/addOffering",
+//   async (offeringData: Offering, thunkAPI) => {
+//     try {
+//       const accessToken = Cookies.get("access_token");
+//       if (!accessToken) {
+//         console.error("Access token is missing");
+//         return thunkAPI.rejectWithValue("User not authenticated");
+//       }
+
+//       const response = await axios.post(
+//         `${process.env.NEXT_PUBLIC_API_ENDPOINT}/offerings/`,
+//         offeringData,
+//         {
+//           headers: {
+//             Authorization: `Bearer ${accessToken}`,
+//             "Content-Type": "application/json",
+//           },
+//         }
+//       );
+//       return response.data as Offering;
+//     } catch (error) {
+//       if (axios.isAxiosError(error) && error.response) {
+//         return thunkAPI.rejectWithValue(error.response.data.message);
+//       }
+//       return thunkAPI.rejectWithValue("An unknown error occurred");
+//     }
+//   }
+// );
 
 // Update an existing offering (partial edit)
 export const updateOffering = createAsyncThunk(
@@ -98,9 +129,21 @@ export const updateOffering = createAsyncThunk(
     thunkAPI
   ) => {
     try {
+      const accessToken = Cookies.get("access_token");
+      if (!accessToken) {
+        console.error("Access token is missing");
+        return thunkAPI.rejectWithValue("User not authenticated");
+      }
+
       const response = await axios.patch(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/offerings/${offeringId}`,
-        offeringData
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/offerings/${offeringId}/`,
+        offeringData,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
       );
       return response.data as Offering;
     } catch (error) {
@@ -117,8 +160,19 @@ export const deleteOffering = createAsyncThunk(
   "offerings/deleteOffering",
   async (offeringId: number, thunkAPI) => {
     try {
+      const accessToken = Cookies.get("access_token");
+      if (!accessToken) {
+        console.error("Access token is missing");
+        return thunkAPI.rejectWithValue("User not authenticated");
+      }
+
       await axios.delete(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/offerings/${offeringId}`
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/offerings/${offeringId}/`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
       );
       return offeringId; // Return offering ID to be deleted for state updates
     } catch (error) {
@@ -149,9 +203,9 @@ const offeringsSlice = createSlice({
           (offering) => offering.id === action.payload.id
         );
         if (index === -1) {
-          state.offerings.push(action.payload); // Add new offering if it doesn't exist
+          state.offerings.push(action.payload);
         } else {
-          state.offerings[index] = action.payload; // Update existing offering
+          state.offerings[index] = action.payload;
         }
       }
     );
@@ -159,6 +213,7 @@ const offeringsSlice = createSlice({
       state.loading = false;
       state.error = action.payload as string;
     });
+
     // Fetch Offerings by Store ID
     builder.addCase(fetchOfferingsByStoreId.pending, (state) => {
       state.loading = true;
@@ -168,7 +223,7 @@ const offeringsSlice = createSlice({
       fetchOfferingsByStoreId.fulfilled,
       (state, action: PayloadAction<Offering[]>) => {
         state.loading = false;
-        state.offerings = action.payload; // Set the fetched offerings
+        state.offerings = action.payload;
       }
     );
     builder.addCase(fetchOfferingsByStoreId.rejected, (state, action) => {
@@ -185,7 +240,7 @@ const offeringsSlice = createSlice({
       addOffering.fulfilled,
       (state, action: PayloadAction<Offering>) => {
         state.loading = false;
-        state.offerings.push(action.payload); // Add the new offering to the list
+        state.offerings.push(action.payload);
       }
     );
     builder.addCase(addOffering.rejected, (state, action) => {
@@ -193,7 +248,7 @@ const offeringsSlice = createSlice({
       state.error = action.payload as string;
     });
 
-    // Update Offering (Partial Update)
+    // Update Offering
     builder.addCase(updateOffering.pending, (state) => {
       state.loading = true;
       state.error = null;
@@ -206,7 +261,6 @@ const offeringsSlice = createSlice({
           (offering) => offering.id === action.payload.id
         );
         if (index !== -1) {
-          // Merge the updated offering with the existing one
           state.offerings[index] = {
             ...state.offerings[index],
             ...action.payload,
@@ -229,8 +283,8 @@ const offeringsSlice = createSlice({
       (state, action: PayloadAction<number>) => {
         state.loading = false;
         state.offerings = state.offerings.filter(
-          (offering) => offering.id !== action.payload.toString()
-        ); // Remove the deleted offering from the list
+          (offering) => offering.id !== action.payload
+        );
       }
     );
     builder.addCase(deleteOffering.rejected, (state, action) => {

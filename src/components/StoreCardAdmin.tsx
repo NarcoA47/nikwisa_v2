@@ -35,6 +35,7 @@ const StoreCardAdmin: React.FC<StoreCardProps> = ({
     try {
       await dispatch(deleteStore(id.toString())).unwrap(); // Dispatch and unwrap the promise
       toast.success("Store deleted successfully!"); // Optional: Show success notification
+      window.location.reload(); // Reload the page after deletion
     } catch (error: any) {
       toast.error(error || "Failed to delete store."); // Optional: Show error notification
     }
