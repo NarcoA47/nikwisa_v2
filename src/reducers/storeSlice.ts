@@ -48,7 +48,7 @@ export const addStore = createAsyncThunk(
 
       // Send the request with the token in the Authorization header
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/`,
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/stores/`,
         storeData,
         {
           headers: {
@@ -96,7 +96,7 @@ export const fetchStoresByWeddingCategory = createAsyncThunk(
   }) => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/${storeId}?category=${weddingCategory}`
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/stores/${storeId}?category=${weddingCategory}`
       );
       return response.data as Store;
     } catch (error) {
@@ -114,7 +114,7 @@ export const fetchStoresWithOfferings = createAsyncThunk(
   async (storeId: string, thunkAPI) => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/`
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/stores/`
       );
       return response.data as Store[]; // Ensure the API response matches the Store type
     } catch (error) {
@@ -137,7 +137,7 @@ export const fetchStoreById = createAsyncThunk(
 
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/${storeId}/`,
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/stores/${storeId}/`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
