@@ -13,7 +13,7 @@ const CreateStoreSteps = () => {
     name: "",
     phone_number: "",
     whats_app: "",
-    image: null,
+    image: "",
     overview: "",
     location: "",
     working_hours: "",

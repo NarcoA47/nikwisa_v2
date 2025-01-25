@@ -1,6 +1,7 @@
 import { Review, ReviewState } from "@/types/types";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 // Initial state for reviews
 const initialState: ReviewState = {
@@ -31,21 +32,55 @@ export const fetchReviewsByStoreId = createAsyncThunk(
 );
 
 // Add a new review
+
 export const addReview = createAsyncThunk(
   "reviews/addReview",
   async (
-    { storeId, reviewData }: { storeId: string; reviewData: Review },
+    {
+      storeId,
+      reviewData,
+    }: { storeId: number; reviewData: { rating: number; comment: string } },
     thunkAPI
   ) => {
     try {
+      const accessToken = Cookies.get("access_token");
+      if (!accessToken) {
+        console.error("Access token is missing");
+        return thunkAPI.rejectWithValue("User not authenticated");
+      }
+
+      // Debug token
+
+      const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+      const tokenPayload = JSON.parse(atob(accessToken.split(".")[1]));
+
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/${storeId}/reviews`,
-        reviewData
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/reviews/`,
+        {
+          store: storeId,
+          ...reviewData,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
       );
-      return response.data as Review;
+
+      return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        return thunkAPI.rejectWithValue(error.response.data.message);
+      console.error("Error occurred:", error);
+
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          console.error("Response Data:", error.response.data);
+          return thunkAPI.rejectWithValue(
+            error.response.data.detail || "An error occurred"
+          );
+        }
+        console.error("Axios Error:", error.message);
+        return thunkAPI.rejectWithValue(error.message);
       }
       return thunkAPI.rejectWithValue("An unknown error occurred");
     }
@@ -79,17 +114,69 @@ export const updateReview = createAsyncThunk(
 );
 
 // Delete a review
+
 export const deleteReview = createAsyncThunk(
   "reviews/deleteReview",
+  async (reviewId: Number, thunkAPI) => {
+    try {
+      // Retrieve the token from cookies (or wherever it's stored)
+      const accessToken = Cookies.get("access_token");
+
+      if (!accessToken) {
+        return thunkAPI.rejectWithValue("User not authenticated");
+      }
+
+      // Perform the delete request to the correct endpoint
+      await axios.delete(
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/reviews/${reviewId}/`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      return reviewId; // Return the review ID to update the state
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        return thunkAPI.rejectWithValue(error.response.data.message);
+      }
+      return thunkAPI.rejectWithValue("An unknown error occurred");
+    }
+  }
+);
+
+// Async thunk for partial update
+export const partialUpdateReview = createAsyncThunk(
+  "reviews/partialUpdateReview",
   async (
-    { storeId, reviewId }: { storeId: string; reviewId: string },
+    {
+      reviewId,
+      partialData,
+    }: { reviewId: string; partialData: Partial<Review> },
     thunkAPI
   ) => {
     try {
-      await axios.delete(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/${storeId}/reviews/${reviewId}`
+      // Retrieve the token
+      let accessToken = Cookies.get("access_token");
+
+      if (!accessToken) {
+        return thunkAPI.rejectWithValue("User not authenticated");
+      }
+
+      // Make the request to update the review
+      const response = await axios.patch(
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/reviews/${reviewId}/`,
+        partialData,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
       );
-      return reviewId; // Return review ID to be deleted for state updates
+      return response.data as Review; // The updated review
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         return thunkAPI.rejectWithValue(error.response.data.message);
@@ -176,6 +263,33 @@ const reviewsSlice = createSlice({
       }
     );
     builder.addCase(deleteReview.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string;
+    });
+    // Extra reducers for handling the partialUpdateReview state
+    builder.addCase(partialUpdateReview.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+
+    builder.addCase(
+      partialUpdateReview.fulfilled,
+      (state, action: PayloadAction<Review>) => {
+        state.loading = false;
+
+        // Assuming you keep reviews in an array and each review has a unique id:
+        const index = state.reviews.findIndex(
+          (review) => review.id === action.payload.id
+        );
+
+        // Replace the old review with the updated review data
+        if (index !== -1) {
+          state.reviews[index] = action.payload;
+        }
+      }
+    );
+
+    builder.addCase(partialUpdateReview.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
     });

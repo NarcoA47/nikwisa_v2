@@ -706,3 +706,19 @@ export const mockData = [
     ],
   },
 ];
+
+// {
+//   "store": 1,
+//   "rating": 5,
+//   "comment": "Great service and fast delivery!"
+// }
+
+// {
+//   "name": "Conference Hall Rental",
+//   "description": "A state-of-the-art conference room suitable for business meetings and seminars.",
+//   "image": "<Base64 encoded image or file upload if supported>",
+//   "price": 7000.0,
+//   "store": 1,
+//   "phone_number": "0977862033",
+//   "whatsapp_number": "0977862033"
+// }

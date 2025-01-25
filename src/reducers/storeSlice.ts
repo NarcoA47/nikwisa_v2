@@ -53,7 +53,7 @@ export const addStore = createAsyncThunk(
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json", // Ensure the correct content type
+            "Content-Type": "multipart/form-data", // Use multipart for file uploads
           },
         }
       );
