@@ -96,7 +96,7 @@ export const fetchStoresByWeddingCategory = createAsyncThunk(
   }) => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/${storeId}?category=${weddingCategory}`
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/stores/${storeId}?category=${weddingCategory}`
       );
       return response.data as Store;
     } catch (error) {
