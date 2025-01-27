@@ -190,7 +190,7 @@ const Step3StoreDetails = ({ storeData, onPrevious, onSubmit }: any) => {
           }`}
           disabled={isSubmitting}
         >
-          {isSubmitting ? "Submitting..." : "Submit Review"}
+          {isSubmitting ? "Creating..." : "create store"}
         </button>
       </div>
     </div>

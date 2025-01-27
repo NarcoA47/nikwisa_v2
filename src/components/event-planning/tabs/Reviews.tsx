@@ -15,10 +15,11 @@ import "react-toastify/dist/ReactToastify.css";
 import ReviewForm from "@/components/forms/ReviewForm";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
+import { useRouter } from "next/navigation";
 
 const Reviews: React.FC<ReviewsProps> = ({ storeId }) => {
   const dispatch = useDispatch<AppDispatch>();
-
+  const router = useRouter();
   const { reviews, loading, error } = useSelector(
     (state: RootState) => state.reviews
   );

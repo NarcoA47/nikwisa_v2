@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";  // Import Next.js router
+import { usePathname } from "next/navigation"; // Import Next.js router
 import { Poppins, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
@@ -23,7 +23,7 @@ const playfairDisplay = Playfair_Display({
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const pathname = usePathname() || "";  // Ensure pathname is always a string
+  const pathname = usePathname() || ""; // Ensure pathname is always a string
 
   const isDashboardRoute = pathname.startsWith("/dashboard");
   const isAuthRoute = pathname === "/signup" || pathname === "/signin";

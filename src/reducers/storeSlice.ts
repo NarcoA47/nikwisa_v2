@@ -48,7 +48,7 @@ export const addStore = createAsyncThunk(
 
       // Send the request with the token in the Authorization header
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/`,
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/stores/`,
         storeData, // This should now be a FormData object
         {
           headers: {
@@ -114,7 +114,7 @@ export const fetchStoresWithOfferings = createAsyncThunk(
   async (storeId: string, thunkAPI) => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/`
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/stores/`
       );
       return response.data as Store[]; // Ensure the API response matches the Store type
     } catch (error) {
@@ -137,7 +137,7 @@ export const fetchStoreById = createAsyncThunk(
 
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/${storeId}/`,
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/stores/${storeId}/`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -265,7 +265,7 @@ export const partialUpdateStore = createAsyncThunk(
       console.log("Access Token:", accessToken);
 
       const response = await axios.patch(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/${storeId}/`,
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/stores/${storeId}/`,
         partialData,
         {
           headers: {
@@ -296,7 +296,7 @@ export const deleteStore = createAsyncThunk(
       }
 
       await axios.delete(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/${storeId}/`,
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/stores/${storeId}/`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,

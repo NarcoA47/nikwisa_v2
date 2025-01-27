@@ -240,8 +240,26 @@ export interface EvenPlanningProductState {
   product: WeddingProduct | null;
   event_categories: Category[];
   stores: Store[];
+  event_subcategories: EventSubcategory[];
+  event_subcategory_details: EventSubcategory | null; // Add this field for specific subcategory details
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
+}
+
+export interface EventCategory {
+  id: number;
+  title: string;
+  slug: string;
+  image: string;
+  categories?: number[]; // An array of category IDs
+}
+
+// EventSubcategory interface to represent event subcategories (e.g., "Pre Wedding Planning")
+export interface EventSubcategory {
+  id: number;
+  title: string;
+  slug: string;
+  categories: EventCategory[]; // Array of categories within this subcategory
 }
 
 /* ================== UI COMPONENT TYPES ================== */

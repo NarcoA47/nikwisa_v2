@@ -1,42 +1,73 @@
-import { bride } from "@/data";
-import React from "react";
+"use client";
+
+import { fetchEventSubcategories } from "@/reducers/eventSlice";
+import { RootState, AppDispatch } from "@/reducers/store";
+import Link from "next/link";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 const ForBride = () => {
-  const mobileItems = bride.slice(0, 6); // Max 9 items for mobile
-  const desktopItems = bride.slice(0, 12); // Max 12 items for desktop
+  const dispatch: AppDispatch = useDispatch();
+
+  const { event_subcategories, status, error } = useSelector(
+    (state: RootState) => state.eventProduct
+  );
+
+  useEffect(() => {
+    if (status === "idle") {
+      dispatch(fetchEventSubcategories());
+    }
+  }, [dispatch, status]);
+
+  const filteredSubcategories = event_subcategories.filter((subcategory) =>
+    subcategory.title.toLowerCase().includes("for bride")
+  );
+
+  if (status === "loading") return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
+  if (filteredSubcategories.length === 0)
+    return <div>No subcategories found containing "bride".</div>;
+
+  const brideCategories = filteredSubcategories.flatMap(
+    (subcategory) => subcategory.categories || []
+  );
 
   return (
     <div className="w-full my-8 bg-[#FEF4F7] p-3 md:p-8">
       <section>
-        {/* Header Section */}
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-semibold text-gray-800">
-            Wedding planning for Bride
+            Wedding Planning for Bride
           </h3>
         </div>
 
-        {/* Grid Layout */}
         <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-4">
-          {desktopItems.map((item, index) => (
-            <div
-              key={item.id}
+          {brideCategories.map((category) => (
+            <Link
+              key={category.id}
+              href={
+                category.slug
+                  ? `/event-planning/${category.slug
+                      .toLowerCase()
+                      .replace(/ /g, "-")}/`
+                  : "#"
+              }
               className={`flex flex-col items-center text-center ${
-                index >= 9 ? "hidden lg:flex" : ""
-              }`} // Hide extra items on mobile
+                !category.slug ? "cursor-not-allowed opacity-50" : ""
+              }`}
+              aria-disabled={!category.slug}
             >
-              {/* Image Section */}
-              <div className="w-24 h-24 sm:w-28 sm:h-28 lg:w-40 lg:h-48">
+              <div className="w-24 h-24 sm:w-28 sm:h-28 lg:w-40 lg:h-48 bg-gray-200 rounded-full flex items-center justify-center">
                 <img
-                  src={item.image}
-                  alt={item.name}
+                  src={category.image}
+                  alt={category.title}
                   className="w-full h-full object-cover rounded-md"
                 />
               </div>
-              {/* Name Section */}
               <p className="mt-2 text-sm sm:text-base lg:text-lg text-gray-700">
-                {item.name}
+                {category.title}
               </p>
-            </div>
+            </Link>
           ))}
         </div>
       </section>
