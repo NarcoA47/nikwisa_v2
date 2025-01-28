@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import { fetchStoreById, refreshAccessToken } from "@/reducers/storeSlice";
@@ -104,8 +104,10 @@ const StorePage: React.FC = () => {
           image={store.image}
           rating={store.rating || 0} // Default value if missing
           reviews_count={store.reviews_count || 0}
+          working_hours={store.working_hours}
           location={store.location}
           event_planning_categories={store.event_planning_categories || []} // Default value if missing
+          rent_hire_categories={store.rent_hire_categories || []}
         />
       ) : (
         !loading && <p>No store available.</p> // Show this if store is null and loading is complete

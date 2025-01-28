@@ -5,6 +5,7 @@ import { productReducer } from "./productSlice";
 import authReducer from "./authSlice";
 import taskReducer from "./taskersSlice";
 import eventReducer from "./eventSlice";
+import rentHireReducer from "./rent&hireSlice";
 import weddingcategoryReducer from "./categorySlice";
 import uiReducer from "./uiSlice";
 import sidebarReducer from "./sidebarSlice";
@@ -25,6 +26,7 @@ const store = configureStore({
     reviews: reviewsReducer,
     offerings: offeringsReducer,
     images: imagesReducer,
+    rentHireProduct: rentHireReducer,
   },
 });
 

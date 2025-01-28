@@ -68,6 +68,7 @@ export interface Store {
   offerings: Offering[]; // Assuming you have an Offering interface
   reviews: Review[]; // Assuming you have a Review interface
   event_planning_categories: string[]; // Array of event planning category titles
+  rent_hire_categories: string[];
   categories: string[]; // Array of category titles
   owner: string; // Owner's username
   working_hours: string | null; // New field for working hours
@@ -97,7 +98,8 @@ export interface StoreDetailsHeaderProps {
     working_hours: string | null; // Adding working_hours
     is_verified: boolean; // Adding is_verified
     is_responsive: boolean; // Adding is_responsive
-    event_planning_categories: string[]; // Array of event planning categories
+    event_planning_categories: string[];
+    rent_hire_categories: string[]; // Array of event planning categories
   };
 }
 
@@ -299,6 +301,7 @@ export interface StoreCardProps {
   reviews_count: number;
   location: string;
   event_planning_categories: string[];
+  rent_hire_categories: string[];
 }
 
 export interface OverviewTabProps {
@@ -368,4 +371,31 @@ export interface City {
   name: string;
   image: string;
   url: string;
+}
+
+/* ================== RENT & HIRE TYPES ================== */
+
+export interface RentHireState {
+  rent_hire_categories: Category[];
+  stores: Store[];
+  rent_hire_subcategories: EventSubcategory[];
+  rent_hire_subcategory_details: EventSubcategory | null; // Add this field for specific subcategory details
+  status: "idle" | "loading" | "succeeded" | "failed";
+  error: string | null;
+}
+
+export interface RentHireCategory {
+  id: number;
+  title: string;
+  slug: string;
+  image: string;
+  categories?: number[]; // An array of category IDs
+}
+
+// EventSubcategory interface to represent event subcategories (e.g., "Pre Wedding Planning")
+export interface RentHireSubcategory {
+  id: number;
+  title: string;
+  slug: string;
+  categories: RentHireCategory[]; // Array of categories within this subcategory
 }

@@ -90,7 +90,7 @@ const Reviews: React.FC<ReviewsProps> = ({ storeId }) => {
   if (error) {
     return <div>Error loading reviews: {error}</div>;
   }
-
+  console.log("reviews", reviews);
   return (
     <div className="space-y-6">
       {reviews.length === 0 ? (
@@ -151,15 +151,15 @@ const Reviews: React.FC<ReviewsProps> = ({ storeId }) => {
                         onClick={() => router.push("/signin")}
                         className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md hover:text-blue-700 hover:shadow-lg transition-all duration-200 ease-in-out"
                       >
+                        <span>Login</span>
                         <MdEdit className="w-5 h-5" />
-                        <span>Login to Edit</span>
                       </button>
                       <button
                         onClick={() => router.push("/signin")}
                         className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md hover:text-red-700 hover:shadow-lg transition-all duration-200 ease-in-out"
                       >
+                        <span>Login</span>
                         <MdDeleteForever className="w-5 h-5" />
-                        <span>Login to Delete</span>
                       </button>
                     </>
                   ) : null}
