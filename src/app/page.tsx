@@ -17,9 +17,16 @@ const Home: React.FC = () => {
       {/* <SearchBar /> */}
       <HeroFilter />
       <Categories />
-
-      <EventCategory />
-      <RentCategory />
+      <div className=" flex md:flex-row flex-col w-full ">
+        {/* EventCategory takes 50% width on desktop */}
+        <div className="flex-1 w-full md:w-1/2 md:p-4 ">
+          <EventCategory />
+        </div>
+        {/* RentCategory takes 50% width on desktop */}
+        <div className="flex-1 w-full md:w-1/2 md:p-4">
+          <RentCategory />
+        </div>
+      </div>
 
       {/* <MiniCategories />
       <MobileCategories /> */}

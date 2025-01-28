@@ -55,7 +55,7 @@ export default function RootLayout({
           </div>
 
           {/* Bottom Navigation */}
-          {!isDashboardRoute && <BottomNavigation />}
+          {/* {!isDashboardRoute && <BottomNavigation />} */}
         </Provider>
       </body>
     </html>

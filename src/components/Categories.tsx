@@ -41,7 +41,7 @@ const Categories = () => {
   }
 
   return (
-    <section className=" my-5 md:my-12">
+    <section className=" my-12 md:my-12">
       {/* Grid Container */}
       <div className="grid grid-cols-5 sm:grid-cols-6 lg:grid-cols-10 gap-4 mt-4 px-4 md:px-0">
         {categories.map((category: EventCategory) => (

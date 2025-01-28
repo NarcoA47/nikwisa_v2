@@ -1,9 +1,11 @@
+"use client";
+
 import { fetchRentHireCategories } from "@/reducers/rent&hireSlice";
 import { AppDispatch, RootState } from "@/reducers/store";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 
 const RentCategory = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -13,62 +15,106 @@ const RentCategory = () => {
     (state: RootState) => state.rentHireProduct
   );
 
+  const [currentIndex, setCurrentIndex] = useState(0);
+
   useEffect(() => {
-    // Fetch all rent & hire categories when the component mounts
     if (status === "idle") {
       dispatch(fetchRentHireCategories());
     }
   }, [dispatch, status]);
 
-  console.log("Rent Hire Categories:", rent_hire_categories);
+  // Automatically change the displayed categories every 10 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => {
+        const totalSets = Math.ceil(rent_hire_categories.length / 3); // Adjusted for 3 items per set
+        return (prev + 1) % totalSets;
+      });
+    }, 10000); // Change interval to 10 seconds (10000 milliseconds)
+    return () => clearInterval(interval); // Cleanup the interval when the component unmounts
+  }, [rent_hire_categories.length]);
 
-  if (status === "loading") {
-    return <div>Loading...</div>;
+  // Handle dot click to manually change the current set of categories
+  const handleDotClick = (index: number) => {
+    setCurrentIndex(index);
+  };
+
+  // Break the categories into chunks of 3 for carousel display
+  const chunks = [];
+  for (let i = 0; i < rent_hire_categories.length; i += 3) {
+    chunks.push(rent_hire_categories.slice(i, i + 3));
   }
 
-  if (error) {
-    return <div>{error}</div>;
-  }
-
-  if (rent_hire_categories.length === 0) {
-    return <div>No additional categories available.</div>;
-  }
+  // Ensure exactly 3 dots are shown, even if there are fewer sets of categories
+  const totalDots = Math.max(3, chunks.length); // Ensures at least 3 dots are displayed
+  const visibleDots = new Array(totalDots).fill(0);
 
   return (
     <section>
-      {/* Desktop View */}
-      <div className="hidden md:grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-        <div className="border border-gray-300 rounded-lg p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">
-            Rent & Hire Categories
-          </h2>
-          <div className="grid grid-cols-3 gap-4">
-            {rent_hire_categories.map((category) => (
-              <Link
-                href={
-                  category.slug
-                    ? `/rent-hire/${category.slug
-                        .toLowerCase()
-                        .replace(/ /g, "-")}/`
-                    : "#"
-                }
-                key={category.id}
-                className={`flex flex-col items-center text-center ${
-                  !category.slug ? "cursor-not-allowed opacity-50" : ""
-                }`}
-                aria-disabled={!category.slug}
+      {/* Desktop View - Carousel */}
+      <div className="hidden md:block mt-8 w-full border border-gray-300 rounded-lg p-6 shadow-sm">
+        <h2 className="text-lg font-semibold text-gray-800 mb-4">
+          Rent & Hire Categories
+        </h2>
+        <div className="relative w-full overflow-hidden">
+          <div
+            className="flex transition-transform duration-1000"
+            style={{
+              transform: `translateX(-${currentIndex * 100}%)`, // Move by one set of categories
+            }}
+          >
+            {chunks.map((chunk, chunkIndex) => (
+              <div
+                key={chunkIndex}
+                className="w-full flex-shrink-0 flex justify-around items-center"
               >
-                <div className="relative w-32 h-32 lg:w-40 lg:h-40">
-                  <Image
-                    src={category.image}
-                    alt={category.title}
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className="object-cover rounded-lg"
-                  />
-                </div>
-                <p className="text-sm text-gray-700 mt-2">{category.title}</p>
-              </Link>
+                {chunk.map((category) => (
+                  <div
+                    key={category.id}
+                    className="w-1/3 flex items-center justify-center"
+                  >
+                    <Link
+                      href={
+                        category.slug
+                          ? `/rent-hire/${category.slug
+                              .toLowerCase()
+                              .replace(/ /g, "-")}/`
+                          : "#"
+                      }
+                      className={`flex flex-col items-center text-center ${
+                        !category.slug ? "cursor-not-allowed opacity-50" : ""
+                      }`}
+                      aria-disabled={!category.slug}
+                    >
+                      <div className="w-48 h-48 bg-gray-200 rounded flex items-center justify-center p-4">
+                        <Image
+                          src={category.image}
+                          alt={category.title}
+                          width={100}
+                          height={100}
+                          className="w-full h-full object-contain rounded p-2"
+                        />
+                      </div>
+                      <p className="text-sm text-gray-700 mt-2">
+                        {category.title}
+                      </p>
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+
+          {/* Dots Navigation */}
+          <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
+            {visibleDots.map((_, dotIndex) => (
+              <button
+                key={dotIndex}
+                onClick={() => handleDotClick(dotIndex)}
+                className={`h-3 w-3 rounded-full border-2 border-white ${
+                  currentIndex === dotIndex ? "bg-[#B8902E]" : "bg-gray-300"
+                }`}
+              />
             ))}
           </div>
         </div>
@@ -79,44 +125,67 @@ const RentCategory = () => {
         <h4 className="text-sm font-semibold text-gray-800 mb-4">
           Rent & Hire Categories
         </h4>
-        <div className="grid grid-cols-4 gap-2">
-          {rent_hire_categories.map((category) => (
-            <Link
-              href={
-                category.slug
-                  ? `/rent-hire/${category.slug
-                      .toLowerCase()
-                      .replace(/ /g, "-")}/`
-                  : "#"
-              }
-              key={category.id}
-              className={`flex flex-col items-center text-center ${
-                !category.slug ? "cursor-not-allowed opacity-50" : ""
-              }`}
-              aria-disabled={!category.slug}
-            >
-              <div className="relative w-full h-32 aspect-square rounded-lg overflow-hidden shadow-md">
-                {category.image ? (
-                  <Image
-                    src={category.image}
-                    alt={category.title}
-                    fill
-                    sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 15vw"
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="bg-gray-200 w-full h-full flex items-center justify-center">
-                    <span className="text-gray-500 text-sm">No Image</span>
+        <div className="relative w-full overflow-hidden">
+          <div
+            className="flex transition-transform duration-1000"
+            style={{
+              transform: `translateX(-${currentIndex * 100}%)`, // Move by one set of categories (3 items at a time)
+            }}
+          >
+            {chunks.map((chunk, chunkIndex) => (
+              <div
+                key={chunkIndex}
+                className="w-full flex-shrink-0 flex justify-around items-center"
+              >
+                {chunk.map((category) => (
+                  <div
+                    key={category.id}
+                    className="w-1/3 flex items-center justify-center"
+                  >
+                    <Link
+                      href={
+                        category.slug
+                          ? `/rent-hire/${category.slug
+                              .toLowerCase()
+                              .replace(/ /g, "-")}/`
+                          : "#"
+                      }
+                      className={`flex flex-col items-center text-center ${
+                        !category.slug ? "cursor-not-allowed opacity-50" : ""
+                      }`}
+                      aria-disabled={!category.slug}
+                    >
+                      <div className="w-24 h-24 bg-gray-200 rounded flex items-center justify-center p-4">
+                        <Image
+                          src={category.image}
+                          alt={category.title}
+                          width={60}
+                          height={60}
+                          className="w-full h-full object-contain rounded"
+                        />
+                      </div>
+                      <p className="text-xs text-gray-700 mt-2">
+                        {category.title}
+                      </p>
+                    </Link>
                   </div>
-                )}
-                <div className="absolute bottom-0 inset-x-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent">
-                  <p className="absolute bottom-2 mb-0 inset-x-0 text-center text-[10px] text-white">
-                    {category.title}
-                  </p>
-                </div>
+                ))}
               </div>
-            </Link>
-          ))}
+            ))}
+          </div>
+
+          {/* Dots Navigation */}
+          <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
+            {visibleDots.map((_, dotIndex) => (
+              <button
+                key={dotIndex}
+                onClick={() => handleDotClick(dotIndex)}
+                className={`h-3 w-3 rounded-full border-2 border-white ${
+                  currentIndex === dotIndex ? "bg-[#B8902E]" : "bg-gray-300"
+                }`}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -124,36 +193,3 @@ const RentCategory = () => {
 };
 
 export default RentCategory;
-
-// import { fetchRentHireCategories } from "@/reducers/rent&hireSlice";
-// import { AppDispatch, RootState } from "@/reducers/store";
-// import React, { useEffect, useState } from "react";
-// import { useDispatch, useSelector } from "react-redux";
-
-// const RentCategory = () => {
-//   const dispatch: AppDispatch = useDispatch();
-//   const rent_hire_categories = useSelector(
-//     (state: RootState) => state.rentHireProduct.rent_hire_categories
-//   );
-//   const status = useSelector(
-//     (state: RootState) => state.rentHireProduct.status
-//   );
-//   const error = useSelector((state: RootState) => state.rentHireProduct.error);
-//   const [isClient, setIsClient] = useState(false);
-
-//   useEffect(() => {
-//     setIsClient(true);
-//     dispatch(fetchRentHireCategories());
-//   }, [dispatch]);
-
-//   if (!isClient) return null;
-//   if (status === "loading") return <div>Loading...</div>;
-//   if (status === "failed") return <div>Error: {error}</div>;
-//   if (rent_hire_categories.length === 0)
-//     return <div>No additional categories available.</div>;
-
-//   console.log("Rent categories:", rent_hire_categories);
-//   return <div>RentCategory</div>;
-// };
-
-// export default RentCategory;

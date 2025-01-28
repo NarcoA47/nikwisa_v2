@@ -66,15 +66,25 @@ const Categories = () => {
             aria-disabled={!category.slug} // Optional: Accessibility
           >
             {/* Image */}
-            <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 xl:w-20 xl:h-20 bg-gray-200 rounded-full flex items-center justify-center">
+            {/* <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 xl:w-20 xl:h-20 bg-gray-200 rounded-full flex items-center justify-center p-1">
               <Image
                 src={category.image}
                 alt={category.title}
-                className="w-full h-full object-cover rounded-full"
+                className="w-full h-full object-contain rounded-full"
                 width={80} // Adjust width as needed
                 height={80} // Adjust height as needed
               />
+            </div> */}
+            <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 xl:w-20 xl:h-20 bg-gray-200 rounded-full flex items-center justify-center p-1">
+              <Image
+                src={category.image}
+                alt={category.title}
+                className="w-full h-full object-contain rounded p-2"
+                width={80} // Width can be adjusted as needed
+                height={80} // Height can be adjusted as needed
+              />
             </div>
+
             {/* Name */}
             <span className="mt-2 text-[8px] sm:text-[10px] lg:text-sm text-gray-700">
               {category.title}

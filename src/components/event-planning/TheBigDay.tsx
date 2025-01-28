@@ -70,13 +70,14 @@ const TheBigDay = () => {
                 aria-disabled={!category.slug} // Optional: Accessibility
               >
                 {/* Image Section */}
-                <div className="w-24 h-24 sm:w-28 sm:h-28 lg:w-40 lg:h-48 bg-gray-200 rounded-full flex items-center justify-center">
+                <div className="w-24 h-24 sm:w-28 sm:h-28 lg:w-40 lg:h-48 bg-gray-200 rounded flex items-center justify-center p-4">
+                  {/* Use Image component here */}
                   <Image
                     src={category.image}
                     alt={category.title}
-                    className="w-full h-full object-cover rounded-md"
-                    width={80} // Adjust width as needed
-                    height={80} // Adjust height as needed
+                    width={100} // Specify the width of the image
+                    height={100} // Specify the height of the image
+                    className="w-full h-full object-contain rounded p-2"
                   />
                 </div>
                 {/* Name Section */}
