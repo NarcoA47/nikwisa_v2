@@ -102,6 +102,33 @@ export const fetchStoresWithOfferings = createAsyncThunk(
   }
 );
 
+export const fetchEventCategoriesByCategory = createAsyncThunk(
+  "eventProduct/fetchEventCategoriesByCategory",
+  async (categoryIds: number[]) => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/eventcategory/`,
+        {
+          params: {
+            category_id: categoryIds.join(","), // Pass category IDs as a comma-separated string
+          },
+        }
+      );
+      console.log("Filtered event categories API response:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching event categories by category:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        throw Error(
+          error.response.data.message ||
+            "Failed to fetch event categories by category"
+        );
+      }
+      throw error;
+    }
+  }
+);
+
 const eventSlice = createSlice({
   name: "eventProduct",
   initialState,
@@ -156,6 +183,18 @@ const eventSlice = createSlice({
         state.stores = action.payload;
       })
       .addCase(fetchStoresWithOfferings.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message ?? null;
+      })
+      // Fetch event categories by category
+      .addCase(fetchEventCategoriesByCategory.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchEventCategoriesByCategory.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.event_categories = action.payload; // Update state with filtered event categories
+      })
+      .addCase(fetchEventCategoriesByCategory.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message ?? null;
       });

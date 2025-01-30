@@ -12,6 +12,7 @@ const Step3StoreDetails = ({ storeData, onPrevious, onSubmit }: any) => {
   const dispatch: AppDispatch = useDispatch();
   const router = useRouter();
 
+  console.log("storeData", storeData);
   const [data, setData] = useState(storeData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<any>({});

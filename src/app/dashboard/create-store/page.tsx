@@ -10,6 +10,7 @@ const CreateStoreSteps = () => {
   const [storeData, setStoreData] = useState({
     categories: [],
     event_planning_categories: [],
+    rent_hire_categories: [],
     name: "",
     phone_number: "",
     whats_app: "",
@@ -39,10 +40,19 @@ const CreateStoreSteps = () => {
       )}
       {step === 2 && (
         <Step2SubCategories
+          selectedCategories={storeData.categories}
           selectedEventCategories={storeData.event_planning_categories}
+          selectedRentHireCategories={storeData.rent_hire_categories}
           onPrevious={handlePrevious}
           onNext={handleNext}
         />
+
+        // <Step2SubCategories
+        //   selectedCategories={storeData.categories}
+        //   selectedEventCategories={storeData.event_planning_categories}
+        //   onPrevious={handlePrevious}
+        //   onNext={handleNext}
+        // />
       )}
       {step === 3 && (
         <Step3StoreDetails
