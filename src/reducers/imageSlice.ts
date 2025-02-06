@@ -102,11 +102,10 @@ export const uploadMultipleImages = createAsyncThunk(
       const data = response.data;
       console.log("Backend Response Data:", data); // Debugging
 
-      // Check if the response contains a success message inside 'detail'
+      // Check if the response contains a success message
       if (data && data.detail && typeof data.detail === "string") {
-        // If there's a success message in 'detail', handle it
-        console.log(data.detail); // Optional: For debugging purposes
-        return []; // Return an empty array as no new images are provided, but we received a success message
+        // If there's a success message, return an empty array to indicate success
+        return [];
       }
 
       // If the response contains an array of images, return it
@@ -196,26 +195,10 @@ const imagesSlice = createSlice({
       state.loading = true;
       state.error = null;
     });
-    builder.addCase(
-      uploadMultipleImages.fulfilled,
-      (state, action: PayloadAction<ImageData[]>) => {
-        if (Array.isArray(action.payload)) {
-          state.images = [
-            ...state.images,
-            ...action.payload.filter(
-              (newImage) =>
-                !state.images.some((image) => image.id === newImage.id)
-            ),
-          ];
-          state.loading = false;
-          state.error = null; // Reset error state on success
-        } else {
-          console.error("Invalid payload received:", action.payload);
-          state.loading = false; // Reset loading on invalid response
-        }
-      }
-    );
-
+    builder.addCase(uploadMultipleImages.fulfilled, (state) => {
+      state.loading = false;
+      state.error = null; // Reset error state on success
+    });
     builder.addCase(uploadMultipleImages.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
