@@ -26,7 +26,6 @@ const initialState: AuthState = {
   user: null,
 };
 
-
 // Inside the loginUser async thunk:
 export const loginUser = createAsyncThunk(
   "auth/login",
@@ -49,7 +48,8 @@ export const loginUser = createAsyncThunk(
       }
 
       const data = await response.json();
-      const decoded: { id: number; username: string; email: string } = jwtDecode(data.access); // Decode the access token to get user info
+      const decoded: { id: number; username: string; email: string } =
+        jwtDecode(data.access); // Decode the access token to get user info
 
       // Set user data in the store
       Cookies.set("access_token", data.access);
@@ -71,6 +71,55 @@ export const loginUser = createAsyncThunk(
   }
 );
 
+export const registerUser = createAsyncThunk(
+  "auth/register",
+  async (
+    {
+      username,
+      email,
+      password,
+      phone_number,
+      role = "client",
+    }: {
+      username: string;
+      email: string;
+      password: string;
+      phone_number: string;
+      role?: string;
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/users/`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username,
+            email,
+            password,
+            phone_number,
+            role,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Registration failed");
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
+    }
+  }
+);
 
 // Async Thunk for fetching user info
 export const fetchUser = createAsyncThunk(
@@ -190,6 +239,17 @@ const authSlice = createSlice({
         state.accessToken = action.payload.access;
       })
       .addCase(refreshToken.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(registerUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(registerUser.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

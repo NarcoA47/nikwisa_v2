@@ -399,3 +399,17 @@ export interface RentHireSubcategory {
   slug: string;
   categories: RentHireCategory[]; // Array of categories within this subcategory
 }
+
+export interface StoreData {
+  name: string;
+  overview: string;
+  location: string;
+  phone_number: string;
+  whats_app: string;
+  working_hours: string;
+  image: File | null; // Assuming image is a file (e.g., an image upload)
+  owner: string;
+  categories: Category[]; // Categories being passed
+  event_planning_categories: Category[]; // Event planning categories
+  rent_hire_categories: Category[]; // Rent/hire categories
+}

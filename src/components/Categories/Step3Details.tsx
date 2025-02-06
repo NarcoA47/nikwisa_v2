@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import { addStore } from "@/reducers/storeSlice"; // Import the addStore function from your slice
+import { Category } from "@/types/types";
 
 const Step3StoreDetails = ({ storeData, onPrevious, onSubmit }: any) => {
   const dispatch: AppDispatch = useDispatch();
@@ -87,17 +88,40 @@ const Step3StoreDetails = ({ storeData, onPrevious, onSubmit }: any) => {
     setIsSubmitting(true);
     try {
       const sanitizedData = sanitizePayload(data);
-      console.log("Form Data:", sanitizedData); // Logs the entire data object to the console
 
-      // Add store to Redux via dispatch
-      const response = await dispatch(addStore(sanitizedData));
+      // Manually append each category as a separate entry in FormData
+      const formData = new FormData();
+      formData.append("name", sanitizedData.name);
+      formData.append("overview", sanitizedData.overview);
+      formData.append("location", sanitizedData.location);
+      formData.append("phone_number", sanitizedData.phone_number);
+      formData.append("whats_app", sanitizedData.whats_app);
+      formData.append("working_hours", sanitizedData.working_hours);
+      formData.append("image", sanitizedData.image);
+      formData.append("owner", sanitizedData.owner); // Add owner
+      sanitizedData.categories.forEach((category: Category) => {
+        formData.append("categories", JSON.stringify(category)); // Convert category to string before appending
+      });
+      sanitizedData.event_planning_categories.forEach(
+        (eventCategory: Category) => {
+          formData.append(
+            "event_planning_categories",
+            JSON.stringify(eventCategory)
+          ); // Convert event category to string before appending
+        }
+      );
 
-      // Check if the store was successfully added (based on the action's result)
+      // If rent_hire_categories is not empty, append it too
+      sanitizedData.rent_hire_categories.forEach((rentCategory: Category) => {
+        formData.append("rent_hire_categories", JSON.stringify(rentCategory)); // Convert rent category to string before appending
+      });
+      console.log("Form Data:", formData);
+      // Send the request with FormData
+      const response = await dispatch(addStore(formData));
+
       if (response.type === "stores/addStore/fulfilled") {
-        // Redirect on successful store creation
         router.push("/dashboard/stores-lists");
       } else {
-        // Handle any errors that occurred during the store creation
         console.error("Store creation failed:", response.payload);
         setIsSubmitting(false);
       }

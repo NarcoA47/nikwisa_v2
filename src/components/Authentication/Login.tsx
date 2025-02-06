@@ -11,11 +11,11 @@ const LoginForm: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   interface UserData {
     username: string;
     email: string;
-    // Add other properties if needed
   }
 
   const [userData, setUserData] = useState<UserData | null>(null); // State to hold user data
@@ -42,6 +42,7 @@ const LoginForm: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setSuccess(null); // Clear any previous success messages
 
     try {
       const { access, refresh } = await fetchToken(username, password);
@@ -57,8 +58,13 @@ const LoginForm: React.FC = () => {
       // Fetch user data after successful login
       fetchUserData(access);
 
+      // Set success alert
+      setSuccess("Login successful! Redirecting to dashboard...");
+
       // Redirect to dashboard
-      router.push("/dashboard");
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 1000); // 1 second delay before redirecting
     } catch (err: unknown) {
       setError("Invalid username or password");
     } finally {
@@ -74,10 +80,15 @@ const LoginForm: React.FC = () => {
       >
         <h3 className="text-center text-4xl font-semibold">Login</h3>
 
-        {/* Alert */}
+        {/* Alerts */}
         {error && (
           <div className="mb-4 p-3 rounded-md text-center bg-red-100 text-red-800">
             {error}
+          </div>
+        )}
+        {success && (
+          <div className="mb-4 p-3 rounded-md text-center bg-green-100 text-green-800">
+            {success}
           </div>
         )}
 
@@ -90,7 +101,10 @@ const LoginForm: React.FC = () => {
             id="username"
             className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-yellow-500"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => {
+              setUsername(e.target.value);
+              setError(null); // Clear error when user changes the username
+            }}
             required
           />
         </div>
@@ -105,7 +119,10 @@ const LoginForm: React.FC = () => {
               id="password"
               className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-yellow-500"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setError(null); // Clear error when user changes the password
+              }}
               required
             />
             <div
@@ -121,8 +138,7 @@ const LoginForm: React.FC = () => {
           type="submit"
           className={`w-full bg-[#B88E2F] text-white p-3 rounded-lg mt-6 ${
             loading ? "opacity-50 cursor-not-allowed" : "hover:bg-[#B88E2F]"
-          }
-          `}
+          }`}
           disabled={loading}
         >
           {loading ? "Logging in..." : "Login"}
@@ -136,6 +152,12 @@ const LoginForm: React.FC = () => {
             Forgot Password?
           </button>
         </div>
+        <p className="text-center mt-4">
+          <span className="text-slate-400">Not a member? </span>
+          <a href="/signup" className="text-yellow-500 hover:underline">
+            Signup
+          </a>
+        </p>
       </form>
     </div>
   );

@@ -1,4 +1,10 @@
-import { Offering, Store, StoreState } from "@/types/types";
+import {
+  FormData,
+  Offering,
+  Store,
+  StoreData,
+  StoreState,
+} from "@/types/types";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -34,7 +40,7 @@ export const refreshAccessToken = async () => {
 
 export const addStore = createAsyncThunk(
   "stores/addStore",
-  async (storeData, thunkAPI) => {
+  async (storeData: StoreData, thunkAPI) => {
     try {
       // Retrieve the token from cookies (or wherever it's stored)
       let accessToken = Cookies.get("access_token");

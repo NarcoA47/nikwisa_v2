@@ -1,1195 +1,225 @@
-"use client";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { registerUser } from "../../reducers/authSlice";
+import { AppDispatch, RootState } from "@/reducers/store";
+import { registerUser } from "@/reducers/authSlice";
+import Alert from "@/components/forms/Alert"; // Import the Alert component
 
-export default function RegistrationForm() {
+const RegistrationForm = () => {
   const router = useRouter();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
+  const { loading, error } = useSelector((state: RootState) => state.auth);
 
-  // State to track the current step
-  const [step, setStep] = useState(1);
-
-  // Form data state
   const [formData, setFormData] = useState({
+    username: "",
+    email: "",
     phone_number: "",
-    otp: "",
     password: "",
-    confirm_password: "",
+    confirmPassword: "", // Add this field
+    role: "client",
   });
 
-  const [alert, setAlert] = useState<{ message: string; type: string } | null>(
-    null
-  );
-  const [loading, setLoading] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
+
+  const [alertMessage, setAlertMessage] = useState<string | null>(null); // State for alert message
+  const [alertType, setAlertType] = useState<"success" | "error" | null>(null); // State for alert type
+
+  const validate = () => {
+    const errors: Record<string, string> = {};
+    if (!formData.username) errors.username = "Username is required";
+    if (!formData.email) errors.email = "Email is required";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      errors.email = "Invalid email address";
+    }
+    if (!formData.phone_number)
+      errors.phone_number = "Phone number is required";
+    if (!formData.password) errors.password = "Password is required";
+    if (formData.password.length < 6) {
+      errors.password = "Password must be at least 6 characters";
+    }
+    if (!formData.confirmPassword) {
+      errors.confirmPassword = "Please confirm your password";
+    }
+    if (formData.password !== formData.confirmPassword) {
+      errors.confirmPassword = "Passwords do not match";
+    }
+    return errors;
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  const handleNext = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setAlert(null);
+    const errors = validate();
 
-    if (step === 1) {
-      // Handle phone number submission and OTP request
-      if (!formData.phone_number) {
-        setAlert({ message: "Phone number is required.", type: "error" });
-        return;
-      }
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      return;
+    }
 
-      try {
-        console.log("Requesting OTP for:", formData.phone_number);
-        setAlert({ message: "OTP sent successfully!", type: "success" });
-        setStep(2); // Move to the next step
-      } catch (error) {
-        console.error("OTP request failed:", error);
-        setAlert({
-          message: "Failed to send OTP. Please try again.",
-          type: "error",
-        });
+    try {
+      // Create a new object without confirmPassword
+      const { confirmPassword, ...registrationData } = formData;
+
+      const resultAction = await dispatch(registerUser(registrationData));
+      if (registerUser.fulfilled.match(resultAction)) {
+        setAlertMessage("Registration successful!");
+        setAlertType("success");
+        router.push("/signin");
       }
-    } else if (step === 2) {
-      // Validate OTP
-      if (formData.otp !== "1234") {
-        setAlert({ message: "Invalid OTP. Please try again.", type: "error" });
-        return;
-      }
-      setAlert({ message: "OTP verified!", type: "success" });
-      setStep(3); // Move to the next step
-    } else if (step === 3) {
-      // Validate password match
-      if (formData.password !== formData.confirm_password) {
-        setAlert({ message: "Passwords do not match.", type: "error" });
-        return;
-      }
-      setStep(4); // Move to the next step
-    } else if (step === 4) {
-      // Final submission
-      setLoading(true);
-      try {
-        // Simulate API call
-        console.log("Submitting registration:", formData);
-        setTimeout(() => {
-          setAlert({ message: "Registration successful!", type: "success" });
-          setLoading(false);
-          router.push("/signin");
-        }, 2000);
-      } catch (error) {
-        console.error("Registration failed:", error);
-        setAlert({
-          message: "Registration failed. Please try again.",
-          type: "error",
-        });
-        setLoading(false);
-      }
+    } catch (err) {
+      setAlertMessage("Registration failed: An unknown error occurred.");
+      setAlertType("error");
     }
   };
 
   return (
-    <form
-      onSubmit={handleNext}
-      className="w-full max-w-[400px] bg-white border-t-[5px] border-[#B88E2F] rounded-lg shadow-md p-6 mx-auto my-12"
-    >
-      <h3 className="text-center text-2xl font-semibold mb-4">Register</h3>
+    <div className="max-w-3xl mx-auto mt-8">
+      <form
+        onSubmit={handleSubmit}
+        className="w-full bg-white border-t-[5px] border-[#B88E2F] rounded-lg shadow-lg p-8 my-12 mx-auto"
+      >
+        <h3 className="text-center text-4xl font-semibold">Register</h3>
 
-      {/* Step Content */}
-      {step === 1 && (
-        <div className="form-row mt-6 mb-4">
+        {/* Display Alert based on success or error */}
+        {alertMessage && <Alert message={alertMessage} type={alertType!} />}
+
+        {error && (
+          <div className="mb-4 p-3 rounded-md text-center bg-red-100 text-red-800">
+            {error}
+          </div>
+        )}
+
+        <div className="form-row mt-6">
+          <label htmlFor="username" className="form-label">
+            Username
+          </label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring focus:ring-yellow-500 ${
+              validationErrors.username ? "border-red-500" : "border-gray-300"
+            }`}
+            value={formData.username}
+            onChange={handleChange}
+          />
+          {validationErrors.username && (
+            <p className="text-red-500 text-sm mt-1">
+              {validationErrors.username}
+            </p>
+          )}
+        </div>
+
+        <div className="form-row mt-6">
+          <label htmlFor="email" className="form-label">
+            Email
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring focus:ring-yellow-500 ${
+              validationErrors.email ? "border-red-500" : "border-gray-300"
+            }`}
+            value={formData.email}
+            onChange={handleChange}
+          />
+          {validationErrors.email && (
+            <p className="text-red-500 text-sm mt-1">
+              {validationErrors.email}
+            </p>
+          )}
+        </div>
+
+        <div className="form-row mt-6">
           <label htmlFor="phone_number" className="form-label">
             Phone Number
           </label>
           <input
-            type="text"
+            type="tel"
             id="phone_number"
             name="phone_number"
+            className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring focus:ring-yellow-500 ${
+              validationErrors.phone_number
+                ? "border-red-500"
+                : "border-gray-300"
+            }`}
             value={formData.phone_number}
             onChange={handleChange}
-            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-yellow-500"
-            required
           />
+          {validationErrors.phone_number && (
+            <p className="text-red-500 text-sm mt-1">
+              {validationErrors.phone_number}
+            </p>
+          )}
         </div>
-      )}
 
-      {step === 2 && (
-        <div className="mb-4">
-          <label
-            htmlFor="otp"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Enter OTP
+        <div className="form-row mt-6">
+          <label htmlFor="password" className="form-label">
+            Password
           </label>
           <input
-            type="text"
-            id="otp"
-            name="otp"
-            value={formData.otp}
+            type="password"
+            id="password"
+            name="password"
+            className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring focus:ring-yellow-500 ${
+              validationErrors.password ? "border-red-500" : "border-gray-300"
+            }`}
+            value={formData.password}
             onChange={handleChange}
-            className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm"
-            required
           />
+          {validationErrors.password && (
+            <p className="text-red-500 text-sm mt-1">
+              {validationErrors.password}
+            </p>
+          )}
         </div>
-      )}
-
-      {step === 3 && (
-        <>
-          <div className="mb-4">
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm"
-              required
-            />
-          </div>
-
-          <div className="mb-4">
-            <label
-              htmlFor="confirm_password"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Confirm Password
-            </label>
-            <input
-              type="password"
-              id="confirm_password"
-              name="confirm_password"
-              value={formData.confirm_password}
-              onChange={handleChange}
-              className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm"
-              required
-            />
-          </div>
-        </>
-      )}
-
-      {step === 4 && (
-        <div className="mb-4">
-          <p className="text-center text-sm mb-2">
-            Registration successful! Please log in.
-          </p>
+        <div className="form-row mt-6">
+          <label htmlFor="confirmPassword" className="form-label">
+            Confirm Password
+          </label>
+          <input
+            type="password"
+            id="confirmPassword"
+            name="confirmPassword"
+            className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring focus:ring-yellow-500 ${
+              validationErrors.confirmPassword
+                ? "border-red-500"
+                : "border-gray-300"
+            }`}
+            value={formData.confirmPassword}
+            onChange={handleChange}
+          />
+          {validationErrors.confirmPassword && (
+            <p className="text-red-500 text-sm mt-1">
+              {validationErrors.confirmPassword}
+            </p>
+          )}
         </div>
-      )}
 
-      {/* Alert Message */}
-      {alert && (
-        <div
-          className={`mb-4 p-3 rounded-md text-center ${
-            alert.type === "success"
-              ? "bg-green-100 text-green-800"
-              : "bg-red-100 text-red-800"
+        <button
+          type="submit"
+          className={`w-full bg-[#B88E2F] text-white py-3 rounded-md mt-6 ${
+            loading ? "cursor-not-allowed opacity-50" : ""
           }`}
+          disabled={loading}
         >
-          {alert.message}
-        </div>
-      )}
-
-      {/* Submit/Next Button */}
-      <button
-        type="submit"
-        className={`w-full bg-[#B88E2F] text-white py-2 px-4 rounded-md ${
-          loading ? "opacity-50 cursor-not-allowed" : "hover:bg-[#B88E2F]"
-        }`}
-        disabled={loading}
-      >
-        {loading ? "Processing..." : step === 4 ? "Register" : "Next"}
-      </button>
-
-      <p className="text-center mt-4 text-sm">
-        Already a member?{" "}
-        <a href="/signin" className="text-yellow-500 hover:underline">
-          Sign in
-        </a>
-      </p>
-    </form>
+          {loading ? "Registering..." : "Register"}
+        </button>
+      </form>
+    </div>
   );
-}
-// "use client";
-// import { useState } from "react";
-// import { useRouter } from "next/navigation";
-// import { useDispatch } from "react-redux";
-// import { registerUser } from "../../reducers/authSlice";
+};
 
-// export default function RegistrationForm() {
-//   const router = useRouter();
-//   const dispatch = useDispatch();
-
-//   // State to track the current step
-//   const [step, setStep] = useState(1);
-
-//   // Form data state
-//   const [formData, setFormData] = useState({
-//     phone_number: "",
-//     otp: "",
-//     password: "",
-//     confirm_password: "",
-//     username: "",
-//     email: "",
-//     dob: "",
-//   });
-
-//   const [alert, setAlert] = useState<{ message: string; type: string } | null>(
-//     null
-//   );
-
-//   const [loading, setLoading] = useState(false);
-
-//   const handleChange = (
-//     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-//   ) => {
-//     const { name, value } = e.target;
-//     setFormData((prev) => ({ ...prev, [name]: value }));
-//   };
-
-//   const handleNext = async (e: React.FormEvent<HTMLFormElement>) => {
-//     e.preventDefault();
-//     setAlert(null);
-
-//     if (step === 1) {
-//       // Handle phone number submission and OTP request
-//       if (!formData.phone_number) {
-//         setAlert({ message: "Phone number is required.", type: "error" });
-//         return;
-//       }
-
-//       try {
-//         console.log("Requesting OTP for:", formData.phone_number);
-//         setAlert({ message: "OTP sent successfully!", type: "success" });
-//         setStep(2); // Move to the next step
-//       } catch (error) {
-//         console.error("OTP request failed:", error);
-//         setAlert({
-//           message: "Failed to send OTP. Please try again.",
-//           type: "error",
-//         });
-//       }
-//     } else if (step === 2) {
-//       // Validate OTP
-//       if (formData.otp !== "1234") {
-//         setAlert({ message: "Invalid OTP. Please try again.", type: "error" });
-//         return;
-//       }
-//       setAlert({ message: "OTP verified!", type: "success" });
-//       setStep(3); // Move to the next step
-//     } else if (step === 3) {
-//       // Validate password match
-//       if (formData.password !== formData.confirm_password) {
-//         setAlert({ message: "Passwords do not match.", type: "error" });
-//         return;
-//       }
-//       setStep(4); // Move to the next step
-//     } else if (step === 4) {
-//       // Final submission
-//       if (!formData.username || !formData.email || !formData.dob) {
-//         setAlert({ message: "All fields are required.", type: "error" });
-//         return;
-//       }
-
-//       setLoading(true);
-//       try {
-//         // Simulate API call
-//         console.log("Submitting registration:", formData);
-//         setTimeout(() => {
-//           setAlert({ message: "Registration successful!", type: "success" });
-//           setLoading(false);
-//           router.push("/signin");
-//         }, 2000);
-//       } catch (error) {
-//         console.error("Registration failed:", error);
-//         setAlert({
-//           message: "Registration failed. Please try again.",
-//           type: "error",
-//         });
-//         setLoading(false);
-//       }
-//     }
-//   };
-
-//   return (
-//     <form
-//       onSubmit={handleNext}
-//       className="w-full max-w-[400px] bg-white border-t-[5px] border-[#B88E2F] rounded-lg shadow-md p-6 mx-auto my-12"
-//     >
-//       <h3 className="text-center text-2xl font-semibold mb-4">Register</h3>
-
-//       {/* Step Content */}
-//       {step === 1 && (
-//         <div className="form-row mt-6 mb-4">
-//           <label htmlFor="phone_number" className="form-label">
-//             Phone Number
-//           </label>
-//           <input
-//             type="text"
-//             id="phone_number"
-//             name="phone_number"
-//             value={formData.phone_number}
-//             onChange={handleChange}
-//             className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-yellow-500"
-//             required
-//           />
-//         </div>
-//       )}
-
-//       {step === 2 && (
-//         <div className="form-row mt-6 mb-4">
-//           <label htmlFor="otp" className="form-label">
-//             Enter OTP
-//           </label>
-//           <input
-//             type="text"
-//             id="otp"
-//             name="otp"
-//             value={formData.otp}
-//             onChange={handleChange}
-//             className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-yellow-500"
-//             required
-//           />
-//         </div>
-//       )}
-
-//       {step === 3 && (
-//         <>
-//           <div className="form-row mt-6 mb-4">
-//             <label htmlFor="password" className="form-label">
-//               Password
-//             </label>
-//             <input
-//               type="password"
-//               id="password"
-//               name="password"
-//               value={formData.password}
-//               onChange={handleChange}
-//               className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-yellow-500"
-//               required
-//             />
-//           </div>
-
-//           <div className="form-row mt-6 mb-4">
-//             <label htmlFor="confirm_password" className="form-label">
-//               Confirm Password
-//             </label>
-//             <input
-//               type="password"
-//               id="confirm_password"
-//               name="confirm_password"
-//               value={formData.confirm_password}
-//               onChange={handleChange}
-//               className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-yellow-500"
-//               required
-//             />
-//           </div>
-//         </>
-//       )}
-
-//       {step === 4 && (
-//         <>
-//           <div className="form-row mt-6 mb-4">
-//             <label htmlFor="username" className="form-label">
-//               Username
-//             </label>
-//             <input
-//               type="text"
-//               id="username"
-//               name="username"
-//               value={formData.username}
-//               onChange={handleChange}
-//               className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-yellow-500"
-//               required
-//             />
-//           </div>
-
-//           <div className="form-row mt-6 mb-4">
-//             <label htmlFor="email" className="form-label">
-//               Email
-//             </label>
-//             <input
-//               type="email"
-//               id="email"
-//               name="email"
-//               value={formData.email}
-//               onChange={handleChange}
-//               className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-yellow-500"
-//               required
-//             />
-//           </div>
-
-//           <div className="form-row mt-6 mb-4">
-//             <label htmlFor="dob" className="form-label">
-//               Date of Birth
-//             </label>
-//             <input
-//               type="date"
-//               id="dob"
-//               name="dob"
-//               value={formData.dob}
-//               onChange={handleChange}
-//               className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-yellow-500"
-//               required
-//             />
-//           </div>
-//         </>
-//       )}
-
-//       {/* Alert Message */}
-//       {alert && (
-//         <div
-//           className={`mb-4 p-3 rounded-md text-center ${
-//             alert.type === "success"
-//               ? "bg-green-100 text-green-800"
-//               : "bg-red-100 text-red-800"
-//           }`}
-//         >
-//           {alert.message}
-//         </div>
-//       )}
-
-//       {/* Submit/Next Button */}
-//       <button
-//         type="submit"
-//         className={`w-full bg-[#B88E2F] text-white py-2 px-4 rounded-md ${
-//           loading ? "opacity-50 cursor-not-allowed" : "hover:bg-[#B88E2F]"
-//         }`}
-//         disabled={loading}
-//       >
-//         {loading ? "Processing..." : step === 4 ? "Register" : "Next"}
-//       </button>
-
-//       <p className="text-center mt-4 text-sm">
-//         Already a member?{" "}
-//         <a href="/signin" className="text-yellow-500 hover:underline">
-//           Sign in
-//         </a>
-//       </p>
-//     </form>
-//   );
-// }
-
-// "use client";
-// import { useState } from "react";
-// import { useRouter } from "next/navigation";
-// import { useDispatch, useSelector } from "react-redux";
-// import { registerUser } from "../../reducers/authSlice";
-
-// export default function RegistrationForm() {
-//   const router = useRouter();
-//   const dispatch = useDispatch();
-
-//   // State to track the current step
-//   const [step, setStep] = useState(1);
-
-//   // Form data state
-//   const [formData, setFormData] = useState({
-//     phone_number: "",
-//     otp: "",
-//     password: "",
-//     confirm_password: "",
-//     username: "",
-//     email: "",
-//     dob: "",
-//   });
-
-//   const [alert, setAlert] = useState<{ message: string; type: string } | null>(
-//     null
-//   );
-
-//   const [loading, setLoading] = useState(false);
-
-//   const handleChange = (
-//     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-//   ) => {
-//     const { name, value } = e.target;
-//     setFormData((prev) => ({ ...prev, [name]: value }));
-//   };
-
-//   const handleNext = async (e: React.FormEvent<HTMLFormElement>) => {
-//     e.preventDefault();
-//     setAlert(null);
-
-//     if (step === 1) {
-//       // Handle phone number submission and OTP request
-//       if (!formData.phone_number) {
-//         setAlert({ message: "Phone number is required.", type: "error" });
-//         return;
-//       }
-
-//       try {
-//         console.log("Requesting OTP for:", formData.phone_number);
-//         setAlert({ message: "OTP sent successfully!", type: "success" });
-//         setStep(2); // Move to the next step
-//       } catch (error) {
-//         console.error("OTP request failed:", error);
-//         setAlert({
-//           message: "Failed to send OTP. Please try again.",
-//           type: "error",
-//         });
-//       }
-//     } else if (step === 2) {
-//       // Validate OTP
-//       if (formData.otp !== "1234") {
-//         setAlert({ message: "Invalid OTP. Please try again.", type: "error" });
-//         return;
-//       }
-//       setAlert({ message: "OTP verified!", type: "success" });
-//       setStep(3); // Move to the next step
-//     } else if (step === 3) {
-//       // Validate password match
-//       if (formData.password !== formData.confirm_password) {
-//         setAlert({ message: "Passwords do not match.", type: "error" });
-//         return;
-//       }
-//       setStep(4); // Move to the next step
-//     } else if (step === 4) {
-//       // Final submission
-//       if (!formData.username || !formData.email || !formData.dob) {
-//         setAlert({ message: "All fields are required.", type: "error" });
-//         return;
-//       }
-
-//       setLoading(true);
-//       try {
-//         // Simulate API call
-//         console.log("Submitting registration:", formData);
-//         setTimeout(() => {
-//           setAlert({ message: "Registration successful!", type: "success" });
-//           setLoading(false);
-//           router.push("/signin");
-//         }, 2000);
-//       } catch (error) {
-//         console.error("Registration failed:", error);
-//         setAlert({
-//           message: "Registration failed. Please try again.",
-//           type: "error",
-//         });
-//         setLoading(false);
-//       }
-//     }
-//   };
-
-//   return (
-//     <form
-//       onSubmit={handleNext}
-//       className="w-full max-w-[400px] bg-white border-t-[5px] border-[#B88E2F] rounded-lg shadow-md p-6 mx-auto my-12"
-//     >
-//       <h3 className="text-center text-2xl font-semibold mb-4">Register</h3>
-
-//       {/* Step Content */}
-//       {step === 1 && (
-
-//         <div className="form-row mt-6 mb-4">
-//           <label htmlFor="phone_number" className="form-label">
-//             Phone Number
-//           </label>
-//           <input
-//             type="text"
-//             id="phone_number"
-//             name="phone_number"
-//             value={formData.phone_number}
-//             onChange={handleChange}
-//             className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-yellow-500"
-//             required
-//           />
-//         </div>
-//       )}
-
-//       {step === 2 && (
-//         <div className="mb-4">
-//           <label
-//             htmlFor="otp"
-//             className="block text-sm font-medium text-gray-700"
-//           >
-//             Enter OTP
-//           </label>
-//           <input
-//             type="text"
-//             id="otp"
-//             name="otp"
-//             value={formData.otp}
-//             onChange={handleChange}
-//             className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm"
-//             required
-//           />
-//         </div>
-//       )}
-
-//       {step === 3 && (
-//         <>
-//           <div className="mb-4">
-//             <label
-//               htmlFor="password"
-//               className="block text-sm font-medium text-gray-700"
-//             >
-//               Password
-//             </label>
-//             <input
-//               type="password"
-//               id="password"
-//               name="password"
-//               value={formData.password}
-//               onChange={handleChange}
-//               className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm"
-//               required
-//             />
-//           </div>
-
-//           <div className="mb-4">
-//             <label
-//               htmlFor="confirm_password"
-//               className="block text-sm font-medium text-gray-700"
-//             >
-//               Confirm Password
-//             </label>
-//             <input
-//               type="password"
-//               id="confirm_password"
-//               name="confirm_password"
-//               value={formData.confirm_password}
-//               onChange={handleChange}
-//               className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm"
-//               required
-//             />
-//           </div>
-//         </>
-//       )}
-
-//       {step === 4 && (
-//         <>
-//           <div className="mb-4">
-//             <label
-//               htmlFor="username"
-//               className="block text-sm font-medium text-gray-700"
-//             >
-//               Username
-//             </label>
-//             <input
-//               type="text"
-//               id="username"
-//               name="username"
-//               value={formData.username}
-//               onChange={handleChange}
-//               className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm"
-//               required
-//             />
-//           </div>
-
-//           <div className="mb-4">
-//             <label
-//               htmlFor="email"
-//               className="block text-sm font-medium text-gray-700"
-//             >
-//               Email
-//             </label>
-//             <input
-//               type="email"
-//               id="email"
-//               name="email"
-//               value={formData.email}
-//               onChange={handleChange}
-//               className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm"
-//               required
-//             />
-//           </div>
-
-//           <div className="mb-4">
-//             <label
-//               htmlFor="dob"
-//               className="block text-sm font-medium text-gray-700"
-//             >
-//               Date of Birth
-//             </label>
-//             <input
-//               type="date"
-//               id="dob"
-//               name="dob"
-//               value={formData.dob}
-//               onChange={handleChange}
-//               className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm"
-//               required
-//             />
-//           </div>
-//         </>
-//       )}
-
-//       {/* Alert Message */}
-//       {alert && (
-//         <div
-//           className={`mb-4 p-3 rounded-md text-center ${
-//             alert.type === "success"
-//               ? "bg-green-100 text-green-800"
-//               : "bg-red-100 text-red-800"
-//           }`}
-//         >
-//           {alert.message}
-//         </div>
-//       )}
-
-//       {/* Submit/Next Button */}
-//       <button
-//         type="submit"
-//         className={`w-full bg-[#B88E2F] text-white py-2 px-4 rounded-md ${
-//           loading ? "opacity-50 cursor-not-allowed" : "hover:bg-[#B88E2F]"
-//         }`}
-//         disabled={loading}
-//       >
-//         {loading ? "Processing..." : step === 4 ? "Register" : "Next"}
-//       </button>
-
-//       <p className="text-center mt-4 text-sm">
-//         Already a member?{" "}
-//         <a href="/signin" className="text-yellow-500 hover:underline">
-//           Sign in
-//         </a>
-//       </p>
-//     </form>
-//   );
-// }
-
-// "use client";
-// import { useState } from "react";
-// import { useDispatch, useSelector } from "react-redux";
-// import { useRouter } from "next/navigation";
-// import type { AppDispatch } from "../../../reducers/store";
-// import { RootState } from "../../../reducers/store";
-// import { createUserProfile } from "@/reducers/authSlice";
-
-// export default function RegistrationForm() {
-//   const dispatch: AppDispatch = useDispatch();
-//   const router = useRouter();
-//   const loading = useSelector((state: RootState) => state.auth.loading);
-
-//   // State to track the current step
-//   const [step, setStep] = useState(1);
-
-//   // Form data state
-//   const [formData, setFormData] = useState({
-//     phone_number: "",
-//     otp: "",
-//     password: "",
-//     confirm_password: "",
-//     role: "Customer",
-//     username: "",
-//     email: "",
-//     dob: "",
-//   });
-
-//   const [alert, setAlert] = useState<{ message: string; type: string } | null>(
-//     null
-//   );
-
-//   const handleChange = (
-//     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-//   ) => {
-//     const { name, value } = e.target;
-//     setFormData((prev) => ({ ...prev, [name]: value }));
-//   };
-
-//   const handleNext = async (e: React.FormEvent<HTMLFormElement>) => {
-//     e.preventDefault();
-//     setAlert(null);
-
-//     if (step === 1) {
-//       // Handle phone number submission and OTP request
-//       try {
-//         // Simulate an OTP request
-//         console.log("Requesting OTP for:", formData.phone_number);
-//         setAlert({ message: "OTP sent successfully!", type: "success" });
-//         setStep(2); // Move to the next step
-//       } catch (error) {
-//         console.error("OTP request failed:", error);
-//         setAlert({
-//           message: "Failed to send OTP. Please try again.",
-//           type: "error",
-//         });
-//       }
-//     } else if (step === 2) {
-//       // Validate OTP
-//       if (formData.otp === "1234") {
-//         setAlert({ message: "OTP verified!", type: "success" });
-//         setStep(3); // Move to the next step
-//       } else {
-//         setAlert({ message: "Invalid OTP. Please try again.", type: "error" });
-//       }
-//     } else if (step === 3) {
-//       // Validate password match
-//       if (formData.password !== formData.confirm_password) {
-//         setAlert({ message: "Passwords do not match.", type: "error" });
-//         return;
-//       }
-//       setStep(4); // Move to the next step
-//     } else if (step === 4) {
-//       // Final submission
-//       try {
-//         const response = await dispatch(createUserProfile(formData)).unwrap();
-//         setAlert({ message: response.message, type: "success" });
-//         setTimeout(() => {
-//           router.push("/signin");
-//         }, 2000);
-//       } catch (error) {
-//         console.error("Registration failed:", error);
-//         setAlert({
-//           message: "Registration failed. Please try again.",
-//           type: "error",
-//         });
-//       }
-//     }
-//   };
-
-//   return (
-//     <form
-//       onSubmit={handleNext}
-//       className="w-full max-w-[400px] bg-white border-t-[5px] border-[#B88E2F] rounded-lg shadow-md p-6 mx-auto my-12"
-//     >
-//       <h3 className="text-center text-2xl font-semibold mb-4">Register</h3>
-
-//       {/* Step Content */}
-//       {step === 1 && (
-//         <div className="mb-4">
-//           <label
-//             htmlFor="phone_number"
-//             className="block text-sm font-medium text-gray-700"
-//           >
-//             Phone Number
-//           </label>
-//           <input
-//             type="text"
-//             id="phone_number"
-//             name="phone_number"
-//             value={formData.phone_number}
-//             onChange={handleChange}
-//             className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm"
-//             required
-//           />
-//         </div>
-//       )}
-
-//       {step === 2 && (
-//         <div className="mb-4">
-//           <label
-//             htmlFor="otp"
-//             className="block text-sm font-medium text-gray-700"
-//           >
-//             Enter OTP
-//           </label>
-//           <input
-//             type="text"
-//             id="otp"
-//             name="otp"
-//             value={formData.otp}
-//             onChange={handleChange}
-//             className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm"
-//             required
-//           />
-//         </div>
-//       )}
-
-//       {step === 3 && (
-//         <>
-//           <div className="mb-4">
-//             <label
-//               htmlFor="password"
-//               className="block text-sm font-medium text-gray-700"
-//             >
-//               Password
-//             </label>
-//             <input
-//               type="password"
-//               id="password"
-//               name="password"
-//               value={formData.password}
-//               onChange={handleChange}
-//               className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm"
-//               required
-//             />
-//           </div>
-
-//           <div className="mb-4">
-//             <label
-//               htmlFor="confirm_password"
-//               className="block text-sm font-medium text-gray-700"
-//             >
-//               Confirm Password
-//             </label>
-//             <input
-//               type="password"
-//               id="confirm_password"
-//               name="confirm_password"
-//               value={formData.confirm_password}
-//               onChange={handleChange}
-//               className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm"
-//               required
-//             />
-//           </div>
-//         </>
-//       )}
-
-//       {step === 4 && (
-//         <>
-//           <div className="mb-4">
-//             <label
-//               htmlFor="username"
-//               className="block text-sm font-medium text-gray-700"
-//             >
-//               Username
-//             </label>
-//             <input
-//               type="text"
-//               id="username"
-//               name="username"
-//               value={formData.username}
-//               onChange={handleChange}
-//               className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm"
-//               required
-//             />
-//           </div>
-
-//           <div className="mb-4">
-//             <label
-//               htmlFor="email"
-//               className="block text-sm font-medium text-gray-700"
-//             >
-//               Email
-//             </label>
-//             <input
-//               type="email"
-//               id="email"
-//               name="email"
-//               value={formData.email}
-//               onChange={handleChange}
-//               className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm"
-//               required
-//             />
-//           </div>
-
-//           <div className="mb-4">
-//             <label
-//               htmlFor="dob"
-//               className="block text-sm font-medium text-gray-700"
-//             >
-//               Date of Birth
-//             </label>
-//             <input
-//               type="date"
-//               id="dob"
-//               name="dob"
-//               value={formData.dob}
-//               onChange={handleChange}
-//               className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm"
-//               required
-//             />
-//           </div>
-//         </>
-//       )}
-
-//       {/* Alert Message */}
-//       {alert && (
-//         <div
-//           className={`mb-4 p-3 rounded-md text-center ${
-//             alert.type === "success"
-//               ? "bg-green-100 text-green-800"
-//               : "bg-red-100 text-red-800"
-//           }`}
-//         >
-//           {alert.message}
-//         </div>
-//       )}
-
-//       {/* Submit/Next Button */}
-//       <button
-//         type="submit"
-//         className={`w-full bg-[#B88E2F] text-white py-2 px-4 rounded-md ${
-//           loading ? "opacity-50 cursor-not-allowed" : "hover:bg-[#B88E2F]"
-//         }`}
-//         disabled={loading}
-//       >
-//         {loading ? "Processing..." : step === 4 ? "Register" : "Next"}
-//       </button>
-
-//       <p className="text-center mt-4 text-sm">
-//         Already a member?{" "}
-//         <a href="/signin" className="text-yellow-500 hover:underline">
-//           Sign in
-//         </a>
-//       </p>
-//     </form>
-//   );
-// }
-
-// "use client";
-// import { useState } from "react";
-// import { useDispatch, useSelector } from "react-redux";
-// import { useRouter } from "next/navigation";
-// import type { AppDispatch } from "../../../reducers/store";
-// import { RootState } from "../../../reducers/store";
-// import { createUserProfile } from "@/reducers/authSlice";
-
-// export default function RegistrationForm() {
-//   const dispatch: AppDispatch = useDispatch();
-//   const router = useRouter();
-//   const loading = useSelector((state: RootState) => state.auth.loading);
-
-//   const [formData, setFormData] = useState({
-//     role: "Customer",
-//     username: "",
-//     phone_number: "",
-//     password: "",
-//   });
-
-//   const [alert, setAlert] = useState<{ message: string; type: string } | null>(
-//     null
-//   );
-
-//   const handleChange = (
-//     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-//   ) => {
-//     const { name, value } = e.target;
-//     setFormData((prev) => ({ ...prev, [name]: value }));
-//   };
-
-//   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-//     e.preventDefault();
-//     setAlert(null);
-
-//     try {
-//       const response = await dispatch(createUserProfile(formData)).unwrap();
-//       setAlert({ message: response.message, type: "success" });
-//       setTimeout(() => {
-//         router.push("/signin");
-//       }, 2000);
-//     } catch (error) {
-//       console.error("Registration failed:", error);
-//       setAlert({
-//         message: "Registration failed. Please try again.",
-//         type: "error",
-//       });
-//     }
-//   };
-
-//   return (
-//     <form
-//       onSubmit={handleSubmit}
-//       className="w-full max-w-[400px] bg-white border-t-[5px] border-[#B88E2F] rounded-lg shadow-md p-6 mx-auto my-12"
-//     >
-//       <h3 className="text-center text-2xl font-semibold mb-4">Register</h3>
-
-//       {/* Role Selection */}
-//       <div className="mb-4">
-//         <label
-//           htmlFor="role"
-//           className="block text-sm font-medium text-gray-700"
-//         >
-//           Role
-//         </label>
-//         <select
-//           id="role"
-//           name="role"
-//           value={formData.role}
-//           onChange={handleChange}
-//           className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm"
-//         >
-//           <option value="Customer">Customer</option>
-//           <option value="Tasker">Tasker</option>
-//           <option value="Merchant">Merchant</option>
-//         </select>
-//       </div>
-
-//       {/* Username */}
-//       <div className="mb-4">
-//         <label
-//           htmlFor="username"
-//           className="block text-sm font-medium text-gray-700"
-//         >
-//           Username
-//         </label>
-//         <input
-//           type="text"
-//           id="username"
-//           name="username"
-//           value={formData.username}
-//           onChange={handleChange}
-//           className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm"
-//           required
-//         />
-//       </div>
-
-//       {/* Email */}
-//       <div className="mb-4">
-//         <label
-//           htmlFor="phone_number"
-//           className="block text-sm font-medium text-gray-700"
-//         >
-//           Phone
-//         </label>
-//         <input
-//           type="phone_number"
-//           id="phone_number"
-//           name="phone_number"
-//           value={formData.phone_number}
-//           onChange={handleChange}
-//           className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm"
-//           required
-//         />
-//       </div>
-
-//       {/* Password */}
-//       <div className="mb-4">
-//         <label
-//           htmlFor="password"
-//           className="block text-sm font-medium text-gray-700"
-//         >
-//           Password
-//         </label>
-//         <input
-//           type="password"
-//           id="password"
-//           name="password"
-//           value={formData.password}
-//           onChange={handleChange}
-//           className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm"
-//           required
-//         />
-//       </div>
-
-//       {/* Alert Message */}
-//       {alert && (
-//         <div
-//           className={`mb-4 p-3 rounded-md text-center ${
-//             alert.type === "success"
-//               ? "bg-green-100 text-green-800"
-//               : "bg-red-100 text-red-800"
-//           }`}
-//         >
-//           {alert.message}
-//         </div>
-//       )}
-
-//       {/* Submit Button */}
-//       <button
-//         type="submit"
-//         className={`w-full bg-[#B88E2F] text-white py-2 px-4 rounded-md ${
-//           loading ? "opacity-50 cursor-not-allowed" : "hover:bg-[#B88E2F]"
-//         }`}
-//         disabled={loading}
-//       >
-//         {loading ? "Registering..." : "Register"}
-//       </button>
-
-//       <p className="text-center mt-4 text-sm">
-//         Already a member?{" "}
-//         <a href="/signin" className="text-yellow-500 hover:underline">
-//           Sign in
-//         </a>
-//       </p>
-//     </form>
-//   );
-// }
+export default RegistrationForm;
