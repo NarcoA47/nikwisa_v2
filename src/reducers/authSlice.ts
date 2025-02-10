@@ -1,29 +1,27 @@
+import { User } from "@/types/types";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 
-// Define the shape of the auth state
 interface AuthState {
   loading: boolean;
   error: string | null;
   isAuthenticated: boolean;
   accessToken: string | null;
   refreshToken: string | null;
-  user: {
-    id: number | null;
-    username: string | null;
-    email: string | null;
-  } | null;
+  user: User | null; // <-- Change this to use User interface
+  users: User[];
 }
 
-// Initial state
 const initialState: AuthState = {
   loading: false,
   error: null,
   isAuthenticated: false,
   accessToken: null,
   refreshToken: null,
-  user: null,
+  user: null, // This should now match the full User structure
+  users: [],
 };
 
 // Inside the loginUser async thunk:
@@ -178,6 +176,101 @@ export const refreshToken = createAsyncThunk(
   }
 );
 
+// Fetch all users
+export const fetchAllUsers = createAsyncThunk(
+  "auth/fetchAllUsers",
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const state = getState() as { auth: AuthState };
+      const accessToken = state.auth.accessToken;
+      if (!accessToken) throw new Error("No access token available");
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/users/`,
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch users");
+      }
+
+      return await response.json();
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Fetch user by ID
+export const fetchUserById = createAsyncThunk(
+  "auth/fetchUserById",
+  async (userId: number, thunkAPI) => {
+    try {
+      let accessToken = Cookies.get("access_token");
+
+      if (!accessToken) {
+        return thunkAPI.rejectWithValue("User not authenticated");
+      }
+
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/users/${userId}/`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      console.log("User fetched:", response.data);
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        console.log("Error Response:", error.response);
+
+        if (error.response.status === 401) {
+          return thunkAPI.rejectWithValue("Unauthorized access - Token issue");
+        }
+
+        return thunkAPI.rejectWithValue(
+          error.response.data.message || "An error occurred"
+        );
+      }
+
+      return thunkAPI.rejectWithValue("An unknown error occurred");
+    }
+  }
+);
+
+export const updateProfile = createAsyncThunk(
+  "auth/updateProfile",
+  async ({ userId, userData }: { userData: User }, thunkAPI) => {
+    try {
+      const accessToken = Cookies.get("access_token");
+      if (!accessToken) {
+        console.error("Access token is missing");
+        return thunkAPI.rejectWithValue("User not authenticated");
+      }
+      const response = await axios.patch(
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/users/${userId}/`,
+        userData,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      return response.data as User;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        return thunkAPI.rejectWithValue(error.response.data.message);
+      }
+      return thunkAPI.rejectWithValue("An unknown error occurred");
+    }
+  }
+);
 // Slice definition
 const authSlice = createSlice({
   name: "auth",
@@ -250,6 +343,44 @@ const authSlice = createSlice({
         state.loading = false;
       })
       .addCase(registerUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(fetchAllUsers.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAllUsers.fulfilled, (state, action) => {
+        state.loading = false;
+        state.users = action.payload;
+      })
+      .addCase(fetchAllUsers.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(fetchUserById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchUserById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+      })
+      .addCase(fetchUserById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      // Update Profile
+      .addCase(updateProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        // Update user in state after successful profile update
+        state.user = action.payload;
+      })
+      .addCase(updateProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

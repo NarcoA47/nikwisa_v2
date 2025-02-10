@@ -3,9 +3,13 @@ import { useRouter } from "next/navigation";
 import { fetchToken } from "../../utils/api";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState, AppDispatch } from "@/reducers/store";
+import { fetchUserById } from "@/reducers/authSlice";
 
 const LoginForm: React.FC = () => {
   const router = useRouter();
+  const dispatch: AppDispatch = useDispatch();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -13,26 +17,29 @@ const LoginForm: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  interface UserData {
-    username: string;
-    email: string;
-  }
+  // Get user details from Redux store
+  const { user, loading: userLoading } = useSelector(
+    (state: RootState) => state.auth
+  );
 
-  const [userData, setUserData] = useState<UserData | null>(null); // State to hold user data
+  console.log("user", user);
 
   useEffect(() => {
-    // Check if access token is available in cookies
     const token = Cookies.get("access_token");
+    console.log("Token:", token);
     if (token) {
-      fetchUserData(token); // Fetch user data on token presence
-      router.push("/dashboard"); // Redirect to dashboard if token is found
+      fetchUserData(token);
     }
-  }, [router]);
+  }, []);
 
   const fetchUserData = (token: string) => {
     try {
-      const decoded: any = jwtDecode(token); // Decode the JWT to extract user data
-      setUserData(decoded); // Set user data from decoded token
+      const decoded: any = jwtDecode(token);
+      console.log("Decoded token:", decoded);
+
+      if (decoded?.user_id) {
+        dispatch(fetchUserById(decoded.user_id)); // Fetch user by ID
+      }
     } catch (err) {
       console.error("Failed to decode token", err);
     }
@@ -42,7 +49,7 @@ const LoginForm: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    setSuccess(null); // Clear any previous success messages
+    setSuccess(null);
 
     try {
       const { access, refresh } = await fetchToken(username, password);
@@ -51,26 +58,23 @@ const LoginForm: React.FC = () => {
         throw new Error("No token found");
       }
 
-      // Store tokens in cookies
       Cookies.set("access_token", access);
       Cookies.set("refresh_token", refresh);
 
-      // Fetch user data after successful login
-      fetchUserData(access);
+      fetchUserData(access); // Fetch user after login
 
-      // Set success alert
       setSuccess("Login successful! Redirecting to dashboard...");
-
-      // Redirect to dashboard
       setTimeout(() => {
         router.push("/dashboard");
-      }, 1000); // 1 second delay before redirecting
+      }, 1000);
     } catch (err: unknown) {
       setError("Invalid username or password");
     } finally {
       setLoading(false);
     }
   };
+
+  console.log("logged in user", user);
 
   return (
     <div className="max-w-3xl mx-auto mt-8">
@@ -80,7 +84,6 @@ const LoginForm: React.FC = () => {
       >
         <h3 className="text-center text-4xl font-semibold">Login</h3>
 
-        {/* Alerts */}
         {error && (
           <div className="mb-4 p-3 rounded-md text-center bg-red-100 text-red-800">
             {error}
@@ -103,7 +106,7 @@ const LoginForm: React.FC = () => {
             value={username}
             onChange={(e) => {
               setUsername(e.target.value);
-              setError(null); // Clear error when user changes the username
+              setError(null);
             }}
             required
           />
@@ -121,7 +124,7 @@ const LoginForm: React.FC = () => {
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
-                setError(null); // Clear error when user changes the password
+                setError(null);
               }}
               required
             />
@@ -145,19 +148,24 @@ const LoginForm: React.FC = () => {
         </button>
 
         <div className="flex justify-between items-center mt-4">
-          <button
-            // onClick={handleForgotPassword}
-            className="text-yellow-500 hover:underline text-sm"
-          >
+          <button className="text-yellow-500 hover:underline text-sm">
             Forgot Password?
           </button>
         </div>
+
         <p className="text-center mt-4">
           <span className="text-slate-400">Not a member? </span>
           <a href="/signup" className="text-yellow-500 hover:underline">
             Signup
           </a>
         </p>
+
+        {/* Show user data after fetching */}
+        {userLoading ? (
+          <p>Loading user data...</p>
+        ) : (
+          user && <p className="text-center mt-4">Welcome, {user.username}!</p>
+        )}
       </form>
     </div>
   );

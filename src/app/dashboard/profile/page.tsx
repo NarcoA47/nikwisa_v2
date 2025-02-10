@@ -1,67 +1,103 @@
 "use client";
 
+import { fetchUserById } from "@/reducers/authSlice";
+import { AppDispatch, RootState } from "@/reducers/store";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { jwtDecode } from "jwt-decode";
+import Cookies from "js-cookie";
 
 const ProfilePage = () => {
   const router = useRouter();
-  const profileData = {
-    profileImage: "/ExpI1.jpg", // Replace with actual path
-    firstName: "Jeremy",
-    lastName: "Rose",
-    email: "hello@jeremyrose.com",
-    dob: "June 5, 1992",
-    gender: "Male",
-    address: "525 E 68th Street, New York, NY 10065",
-    phone: "+1 123 456 7890",
+  const dispatch: AppDispatch = useDispatch();
+  const { user, loading: userLoading } = useSelector(
+    (state: RootState) => state.auth
+  );
+
+  useEffect(() => {
+    const token = Cookies.get("access_token");
+    if (token) {
+      fetchUserData(token);
+    }
+  }, []);
+
+  const fetchUserData = (token: string) => {
+    try {
+      const decoded: any = jwtDecode(token);
+      if (decoded?.user_id) {
+        dispatch(fetchUserById(decoded.user_id));
+      }
+    } catch (err) {
+      console.error("Failed to decode token", err);
+    }
   };
 
   const handleEditProfileClick = () => {
-    router.push("/dashboard/edit-profile"); // Navigate to the dashboard/create-store page
+    router.push(`/dashboard/profile/${user?.id}`);
   };
 
   return (
-    <div className="container mx-auto p-8">
-      <div className="flex justify-between mb-4">
-        <h1 className="text-2xl font-bold mb-4">My Stores</h1>
-        <button
-          className="bg-[#B8902E] text-white py-2 px-4 rounded mt-4"
-          onClick={handleEditProfileClick}
-        >
-          Edit Profile
-        </button>
-      </div>
-      <div className="bg-[#FAF4EB] p-4 sm:p-6 shadow-lg max-w-4xl mx-auto flex flex-row items-center text-lg rounded-lg">
-        {/* Profile Image */}
-        <img
-          src={profileData.profileImage}
-          alt={`${profileData.firstName} ${profileData.lastName}`}
-          className="w-32 h-32 sm:w-48 sm:h-48 object-cover mr-6 rounded-full"
-        />
+    <div className="container mx-auto p-4 md:p-8 ">
+      <div className="flex flex-col md:flex-row gap-6">
+        {/* Left Profile Card */}
+        <div className="w-full md:w-1/3 min-h-full">
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="flex flex-col items-center">
+              <img
+                src={user?.profile_image || "/default-avatar.jpg"}
+                alt={user?.username || "User Profile"}
+                className="w-32 h-32 object-cover rounded-full mb-4"
+              />
+              <h3 className="text-xl font-semibold mb-2">
+                {user?.first_name || "N/A"} {user?.last_name || "N/A"}
+              </h3>
+              <p className="text-gray-600 mb-2">{user?.email || "N/A"}</p>
+              <p className="text-gray-600 mb-4">
+                {user?.phone_number || "N/A"}
+              </p>
+              <button
+                onClick={handleEditProfileClick}
+                className="bg-[#B8902E] text-white py-2 px-6 rounded-full w-full max-w-xs"
+              >
+                Edit Profile
+              </button>
+            </div>
+          </div>
+        </div>
 
-        {/* Profile Info */}
-        <div className="flex flex-col justify-center text-left">
-          <h3 className="text-xl sm:text-2xl font-semibold mb-2 text-black">
-            {profileData.firstName} {profileData.lastName}
-          </h3>
-
-          {/* Contact and Basic Info */}
-          <div>
-            <p className="text-sm sm:text-base text-gray-700 mb-1">
-              <strong>Phone:</strong> {profileData.phone}
-            </p>
-            <p className="text-sm sm:text-base text-gray-700 mb-1">
-              <strong>Address:</strong> {profileData.address}
-            </p>
-            <p className="text-sm sm:text-base text-gray-700 mb-1">
-              <strong>Email:</strong> {profileData.email}
-            </p>
-            <p className="text-sm sm:text-base text-gray-700 mb-1">
-              <strong>Date of Birth:</strong> {profileData.dob}
-            </p>
-            <p className="text-sm sm:text-base text-gray-700">
-              <strong>Gender:</strong> {profileData.gender}
-            </p>
+        {/* Right Column - Stacked Cards */}
+        <div className="w-full md:w-2/3 flex flex-col gap-6 min-h-full">
+          {/* Top Card - Account Information */}
+          <div className="bg-white rounded-xl shadow-lg p-6 flex-1">
+            <h2 className="text-xl font-semibold mb-4">Account Information</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <p className="text-gray-600 mb-2">
+                  <strong>Username:</strong> {user?.username || "N/A"}
+                </p>
+                <p className="text-gray-600 mb-2">
+                  <strong>Address:</strong> {user?.address_line || "N/A"}
+                </p>
+                <p className="text-gray-600 mb-2">
+                  <strong>City:</strong> {user?.city || "N/A"}
+                </p>
+                <p className="text-gray-600 mb-2">
+                  <strong>State:</strong> {user?.state || "N/A"}
+                </p>
+              </div>
+              <div>
+                <p className="text-gray-600 mb-2">
+                  <strong>Country:</strong> {user?.country || "N/A"}
+                </p>
+                <p className="text-gray-600 mb-2">
+                  <strong>Date of Birth:</strong> {user?.date_of_birth || "N/A"}
+                </p>
+                <p className="text-gray-600 mb-2">
+                  <strong>Gender:</strong> {user?.gender || "N/A"}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -73,63 +109,101 @@ export default ProfilePage;
 
 // "use client";
 
-// import React from "react";
+// import { fetchUserById } from "@/reducers/authSlice";
+// import { AppDispatch, RootState } from "@/reducers/store";
+// import { useRouter } from "next/navigation";
+// import React, { useEffect } from "react";
+// import { useDispatch, useSelector } from "react-redux";
+// import { jwtDecode } from "jwt-decode";
+// import Cookies from "js-cookie";
 
 // const ProfilePage = () => {
-//   const profileData = {
-//     profileImage: "/ExpI1.jpg", // Replace with actual path
-//     firstName: "Jeremy",
-//     lastName: "Rose",
-//     email: "hello@jeremyrose.com",
-//     dob: "June 5, 1992",
-//     gender: "Male",
-//     address: "525 E 68th Street, New York, NY 10065",
-//     phone: "+1 123 456 7890",
+//   const router = useRouter();
+//   const dispatch: AppDispatch = useDispatch();
+//   const { user, loading: userLoading } = useSelector(
+//     (state: RootState) => state.auth
+//   );
+
+//   useEffect(() => {
+//     const token = Cookies.get("access_token");
+//     if (token) {
+//       fetchUserData(token);
+//     }
+//   }, []);
+
+//   const fetchUserData = (token: string) => {
+//     try {
+//       const decoded: any = jwtDecode(token);
+//       if (decoded?.user_id) {
+//         dispatch(fetchUserById(decoded.user_id));
+//       }
+//     } catch (err) {
+//       console.error("Failed to decode token", err);
+//     }
+//   };
+
+//   const handleEditProfileClick = () => {
+//     router.push(`/dashboard/profile/${user?.id}`);
 //   };
 
 //   return (
-//     <div className="min-h-screen bg-blue-50 py-10">
-//       <div className="bg-white max-w-4xl mx-auto shadow-lg rounded-lg overflow-hidden">
-//         {/* Profile Section */}
-//         <div className="p-6">
-//           <div className="flex items-center space-x-6">
-//             {/* Profile Image */}
-//             <div className="flex-shrink-0">
+//     <div className="container mx-auto p-4 md:p-8 bg-red-700">
+//       <div className="flex flex-col md:flex-row gap-6">
+//         {/* Left Profile Card */}
+//         <div className="w-full md:w-1/3">
+//           <div className="bg-white rounded-xl shadow-lg p-6">
+//             <div className="flex flex-col items-center">
 //               <img
-//                 src={profileData.profileImage}
-//                 alt={`${profileData.firstName} ${profileData.lastName}`}
-//                 className="w-32 h-32 sm:w-48 sm:h-48 object-cover mr-6"
+//                 src={user?.profile_image || "/default-avatar.jpg"}
+//                 alt={user?.username || "User Profile"}
+//                 className="w-32 h-32 object-cover rounded-full mb-4"
 //               />
+//               <h3 className="text-xl font-semibold mb-2">
+//                 {user?.first_name || "N/A"} {user?.last_name || "N/A"}
+//               </h3>
+//               <p className="text-gray-600 mb-2">{user?.email || "N/A"}</p>
+//               <p className="text-gray-600 mb-4">
+//                 {user?.phone_number || "N/A"}
+//               </p>
+//               <button
+//                 onClick={handleEditProfileClick}
+//                 className="bg-[#B8902E] text-white py-2 px-6 rounded-full w-full max-w-xs"
+//               >
+//                 Edit Profile
+//               </button>
 //             </div>
+//           </div>
+//         </div>
 
-//             {/* Profile Info */}
-//             <div>
-//               <h2 className="text-2xl font-bold">
-//                 {profileData.firstName} {profileData.lastName}
-//               </h2>
+//         {/* Right Column - Stacked Cards */}
+//         <div className="w-full md:w-1/2 flex flex-col gap-6 ">
+//           {/* Top Card - Account Information */}
+//           <div className="bg-white rounded-xl shadow-lg p-6">
+//             <h2 className="text-xl font-semibold mb-4">Account Information</h2>
+//             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 //               <div>
-//                 <h4 className="text-gray-600 font-semibold">
-//                   Contact Information
-//                 </h4>
-//                 <p className="mt-2 text-gray-700">
-//                   <strong>Phone:</strong> {profileData.phone}
+//                 <p className="text-gray-600 mb-2">
+//                   <strong>Username:</strong> {user?.username || "N/A"}
 //                 </p>
-//                 <p className="mt-2 text-gray-700">
-//                   <strong>Address:</strong> {profileData.address}
+//                 <p className="text-gray-600 mb-2">
+//                   <strong>Address:</strong> {user?.address_line || "N/A"}
 //                 </p>
-//                 <p className="mt-2 text-gray-700">
-//                   <strong>Email:</strong> {profileData.email}
+//                 <p className="text-gray-600 mb-2">
+//                   <strong>City:</strong> {user?.city || "N/A"}
+//                 </p>
+//                 <p className="text-gray-600 mb-2">
+//                   <strong>State:</strong> {user?.state || "N/A"}
 //                 </p>
 //               </div>
 //               <div>
-//                 <h4 className="text-gray-600 font-semibold">
-//                   Basic Information
-//                 </h4>
-//                 <p className="mt-2 text-gray-700">
-//                   <strong>Date of Birth:</strong> {profileData.dob}
+//                 <p className="text-gray-600 mb-2">
+//                   <strong>Country:</strong> {user?.country || "N/A"}
 //                 </p>
-//                 <p className="mt-2 text-gray-700">
-//                   <strong>Gender:</strong> {profileData.gender}
+//                 <p className="text-gray-600 mb-2">
+//                   <strong>Date of Birth:</strong> {user?.date_of_birth || "N/A"}
+//                 </p>
+//                 <p className="text-gray-600 mb-2">
+//                   <strong>Gender:</strong> {user?.gender || "N/A"}
 //                 </p>
 //               </div>
 //             </div>

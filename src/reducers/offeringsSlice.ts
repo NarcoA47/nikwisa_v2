@@ -88,36 +88,6 @@ export const addOffering = createAsyncThunk(
   }
 );
 
-// export const addOffering = createAsyncThunk(
-//   "offerings/addOffering",
-//   async (offeringData: Offering, thunkAPI) => {
-//     try {
-//       const accessToken = Cookies.get("access_token");
-//       if (!accessToken) {
-//         console.error("Access token is missing");
-//         return thunkAPI.rejectWithValue("User not authenticated");
-//       }
-
-//       const response = await axios.post(
-//         `${process.env.NEXT_PUBLIC_API_ENDPOINT}/offerings/`,
-//         offeringData,
-//         {
-//           headers: {
-//             Authorization: `Bearer ${accessToken}`,
-//             "Content-Type": "application/json",
-//           },
-//         }
-//       );
-//       return response.data as Offering;
-//     } catch (error) {
-//       if (axios.isAxiosError(error) && error.response) {
-//         return thunkAPI.rejectWithValue(error.response.data.message);
-//       }
-//       return thunkAPI.rejectWithValue("An unknown error occurred");
-//     }
-//   }
-// );
-
 // Update an existing offering (partial edit)
 export const updateOffering = createAsyncThunk(
   "offerings/updateOffering",

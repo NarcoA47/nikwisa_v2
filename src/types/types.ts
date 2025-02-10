@@ -188,6 +188,46 @@ export interface UserProfile {
   role: string;
 }
 
+export interface User {
+  id: number;
+  profile_completion: number;
+  last_login: string | null;
+  email: string;
+  username: string;
+  first_name: string | null;
+  last_name: string | null;
+  date_of_birth: string | null;
+  gender: string | null;
+  role: string | null;
+  user_type: string | null;
+  is_verified: boolean;
+  email_verified: boolean;
+  phone_verified: boolean;
+  is_active: boolean;
+  phone_number: string | null;
+  alternate_phone: string | null;
+  emergency_contact: string | null;
+  address_line: string | null;
+  landmark: string | null;
+  city: string | null;
+  state: string | null;
+  country: string | null;
+  pincode: string | null;
+  notification_preferences: Record<string, any>;
+  facebook_profile: string | null;
+  instagram_handle: string | null;
+  twitter_handle: string | null;
+  linkedin_profile: string | null;
+  last_login_ip: string | null;
+  created_at: string | null;
+  last_updated: string | null;
+  last_password_change: string | null;
+  failed_login_attempts: number;
+  profile_image: string | null;
+  id_proof_type: string | null;
+  id_proof_number: string | null;
+}
+
 export interface AuthState {
   initialState: {
     id: string;
