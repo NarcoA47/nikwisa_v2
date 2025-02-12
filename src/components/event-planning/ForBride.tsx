@@ -21,7 +21,7 @@ const ForBride = () => {
   }, [dispatch, status]);
 
   const filteredSubcategories = event_subcategories.filter((subcategory) =>
-    subcategory.title.toLowerCase().includes("for bride")
+    subcategory.title.toLowerCase().includes("bride")
   );
 
   if (status === "loading") return <div>Loading...</div>;

@@ -159,13 +159,6 @@ const LoginForm: React.FC = () => {
             Signup
           </a>
         </p>
-
-        {/* Show user data after fetching */}
-        {userLoading ? (
-          <p>Loading user data...</p>
-        ) : (
-          user && <p className="text-center mt-4">Welcome, {user.username}!</p>
-        )}
       </form>
     </div>
   );

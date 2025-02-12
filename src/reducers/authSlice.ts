@@ -24,6 +24,10 @@ const initialState: AuthState = {
   users: [],
 };
 
+const isTokenExpired = (token: string) => {
+  const decoded: any = jwtDecode(token);
+  return decoded.exp * 1000 < Date.now();
+};
 // Inside the loginUser async thunk:
 export const loginUser = createAsyncThunk(
   "auth/login",
@@ -152,10 +156,13 @@ export const refreshToken = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const refreshToken = Cookies.get("refresh_token");
-      if (!refreshToken) throw new Error("No refresh token available");
+
+      if (!refreshToken) {
+        throw new Error("No refresh token available");
+      }
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/refresh/`,
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/token/refresh/`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -169,7 +176,7 @@ export const refreshToken = createAsyncThunk(
 
       const data = await response.json();
       Cookies.set("access_token", data.access);
-      return data;
+      return data.access;
     } catch (error: any) {
       return rejectWithValue(error.message);
     }

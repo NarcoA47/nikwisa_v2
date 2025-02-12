@@ -24,7 +24,7 @@ const PreEvent = () => {
 
   // Filter subcategories containing "prevent"
   const filteredSubcategories = event_subcategories.filter((subcategory) =>
-    subcategory.title.toLowerCase().includes("prevent")
+    subcategory.title.toLowerCase().includes("preevent")
   );
 
   if (status === "loading") {

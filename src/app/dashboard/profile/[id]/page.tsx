@@ -22,6 +22,7 @@ type UserProfileData = {
   gender: string;
   profile_image: File | null;
   role?: string;
+  user_type: string;
 };
 
 const EditProfilePage = () => {
@@ -45,6 +46,7 @@ const EditProfilePage = () => {
     gender: "",
     profile_image: null,
     role: "",
+    user_type: "",
   });
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -85,6 +87,7 @@ const EditProfilePage = () => {
         gender: user.gender || "",
         profile_image: null,
         role: user.role || "",
+        user_type: user.user_type || "",
       });
       if (user.profile_image) {
         setImagePreview(user.profile_image);
@@ -158,6 +161,12 @@ const EditProfilePage = () => {
     {
       label: "User Role",
       id: "role",
+      type: "select",
+      options: ["Merchant", "client"],
+    },
+    {
+      label: "User Type",
+      id: "user_type",
       type: "select",
       options: ["Merchant", "client"],
     },

@@ -9,8 +9,6 @@ import Link from "next/link";
 
 const RentCategory = () => {
   const dispatch: AppDispatch = useDispatch();
-
-  // Retrieve rent & hire categories from Redux store
   const { rent_hire_categories, status, error } = useSelector(
     (state: RootState) => state.rentHireProduct
   );
@@ -27,11 +25,11 @@ const RentCategory = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prev) => {
-        const totalSets = Math.ceil(rent_hire_categories.length / 3); // Adjusted for 3 items per set
+        const totalSets = Math.ceil(rent_hire_categories.length / 3);
         return (prev + 1) % totalSets;
       });
-    }, 10000); // Change interval to 10 seconds (10000 milliseconds)
-    return () => clearInterval(interval); // Cleanup the interval when the component unmounts
+    }, 10000);
+    return () => clearInterval(interval);
   }, [rent_hire_categories.length]);
 
   // Handle dot click to manually change the current set of categories
@@ -39,14 +37,14 @@ const RentCategory = () => {
     setCurrentIndex(index);
   };
 
-  // Break the categories into chunks of 3 for carousel display
+  // Break the categories into chunks of 3 for mobile display
   const chunks = [];
   for (let i = 0; i < rent_hire_categories.length; i += 3) {
     chunks.push(rent_hire_categories.slice(i, i + 3));
   }
 
-  // Ensure exactly 3 dots are shown, even if there are fewer sets of categories
-  const totalDots = Math.max(3, chunks.length); // Ensures at least 3 dots are displayed
+  // Ensure exactly 3 dots are shown
+  const totalDots = Math.max(3, chunks.length);
   const visibleDots = new Array(totalDots).fill(0);
 
   return (
@@ -60,13 +58,13 @@ const RentCategory = () => {
           <div
             className="flex transition-transform duration-1000"
             style={{
-              transform: `translateX(-${currentIndex * 100}%)`, // Move by one set of categories
+              transform: `translateX(-${currentIndex * 100}%)`,
             }}
           >
             {chunks.map((chunk, chunkIndex) => (
               <div
                 key={chunkIndex}
-                className="w-full flex-shrink-0 flex justify-around items-center"
+                className="w-full flex-shrink-0 flex justify-around items-center transition-all duration-1000"
               >
                 {chunk.map((category) => (
                   <div
@@ -86,7 +84,7 @@ const RentCategory = () => {
                       }`}
                       aria-disabled={!category.slug}
                     >
-                      <div className="w-48 h-48 bg-gray-200 rounded flex items-center justify-center p-4">
+                      <div className="w-48 h-48 md:w-36 md:h-36 bg-gray-200 rounded flex items-center justify-center p-4">
                         <Image
                           src={category.image}
                           alt={category.title}
@@ -129,7 +127,7 @@ const RentCategory = () => {
           <div
             className="flex transition-transform duration-1000"
             style={{
-              transform: `translateX(-${currentIndex * 100}%)`, // Move by one set of categories (3 items at a time)
+              transform: `translateX(-${currentIndex * 100}%)`,
             }}
           >
             {chunks.map((chunk, chunkIndex) => (
@@ -150,7 +148,7 @@ const RentCategory = () => {
                               .replace(/ /g, "-")}/`
                           : "#"
                       }
-                      className={`flex flex-col items-center text-center ${
+                      className={`flex flex-col items-center text-center p-4 ${
                         !category.slug ? "cursor-not-allowed opacity-50" : ""
                       }`}
                       aria-disabled={!category.slug}

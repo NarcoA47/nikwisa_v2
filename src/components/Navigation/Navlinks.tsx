@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation"; // To track the active route
 import { AiOutlineHome } from "react-icons/ai";
-import { MdQueryStats } from "react-icons/md";
+import { FaUser } from "react-icons/fa";
 import { RiGitClosePullRequestFill, RiStore2Fill } from "react-icons/ri";
 
 export const links = [
@@ -10,19 +10,13 @@ export const links = [
     id: 2,
     text: "Profile",
     path: "/dashboard/profile",
-    icon: <RiGitClosePullRequestFill />,
+    icon: <FaUser />,
   },
   {
     id: 3,
     text: "My Stores",
     path: "/dashboard/stores-lists",
     icon: <RiStore2Fill />,
-  },
-  {
-    id: 4,
-    text: "All Offerings",
-    path: "/dashboard/all-offerings",
-    icon: <MdQueryStats />,
   },
 ];
 

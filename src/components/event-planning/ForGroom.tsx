@@ -21,7 +21,7 @@ const ForGroom = () => {
   }, [dispatch, status]);
 
   const filteredSubcategories = event_subcategories.filter((subcategory) =>
-    subcategory.title.toLowerCase().includes("for groom")
+    subcategory.title.toLowerCase().includes("groom")
   );
 
   if (status === "loading") return <div>Loading...</div>;

@@ -217,6 +217,12 @@ const RegistrationForm = () => {
         >
           {loading ? "Registering..." : "Register"}
         </button>
+        <p className="text-center mt-4">
+          <span className="text-slate-400">Already a member? </span>
+          <a href="/signin" className="text-yellow-500 hover:underline">
+            Signin
+          </a>
+        </p>
       </form>
     </div>
   );
