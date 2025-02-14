@@ -1,111 +1,174 @@
-import React, { useEffect, useState } from "react";
+// Previous components remain the same...
+
+// components/Categories/EditStep2SubCategories.tsx
+import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchEventCategories } from "@/reducers/eventSlice";
+import { fetchRentHireCategories } from "@/reducers/rent&hireSlice";
 import { RootState, AppDispatch } from "@/reducers/store";
 import Image from "next/image";
 
-const Step2 = ({ selectedEventCategories, onPrevious, onNext }: any) => {
+interface Step2Payload {
+  event_planning_categories?: string[];
+  rent_hire_categories?: string[];
+}
+
+const EditStep2SubCategories = ({
+  selectedCategories,
+  selectedEventCategories,
+  selectedRentHireCategories,
+  onPrevious,
+  onNext,
+}: any) => {
   const dispatch: AppDispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchEventCategories());
+    dispatch(fetchRentHireCategories());
+  }, [dispatch]);
+
   const eventCategories = useSelector(
     (state: RootState) => state.eventProduct.event_categories
   );
-  const [selected, setSelected] = useState<string[]>([]);
+  const rentHireCategories = useSelector(
+    (state: RootState) => state.rentHireProduct.rent_hire_categories
+  );
 
-  useEffect(() => {
-    console.log("Fetching event categories...");
-    dispatch(fetchEventCategories());
-  }, [dispatch]);
+  const [selectedEvents, setSelectedEvents] = useState<string[]>(
+    selectedEventCategories || []
+  );
+  const [selectedRentals, setSelectedRentals] = useState<string[]>(
+    selectedRentHireCategories || []
+  );
 
+  // Update selected values when props change
   useEffect(() => {
-    // Map slugs to IDs after event categories are fetched
-    if (eventCategories.length > 0) {
-      console.log("Fetched Event Categories:", eventCategories); // Log fetched event categories
-      console.log(
-        "Selected Event Category Slugs (from Props):",
-        selectedEventCategories
-      ); // Log passed slugs
-      const initialSelectedIds = selectedEventCategories
-        .map(
-          (slug: string) =>
-            eventCategories.find((category) => category.slug === slug)?.id
-        )
-        .filter((id): id is string => Boolean(id)); // Filter out undefined IDs
-      console.log("Mapped Event Category IDs:", initialSelectedIds); // Log mapped IDs
-      setSelected(initialSelectedIds);
-    }
-  }, [eventCategories, selectedEventCategories]);
+    setSelectedEvents(selectedEventCategories || []);
+    setSelectedRentals(selectedRentHireCategories || []);
+  }, [selectedEventCategories, selectedRentHireCategories]);
+
+  const filteredEventCategories = useMemo(() => {
+    return eventCategories.filter((eventCategory) =>
+      eventCategory.categories.some((categoryId: number) =>
+        selectedCategories.includes(categoryId)
+      )
+    );
+  }, [eventCategories, selectedCategories]);
+
+  const filteredRentHireCategories = useMemo(() => {
+    return rentHireCategories.filter((rentCategory) =>
+      rentCategory.categories?.some((categoryId: number) =>
+        selectedCategories.includes(categoryId)
+      )
+    );
+  }, [rentHireCategories, selectedCategories]);
 
   const toggleEventCategory = (categoryId: string) => {
-    setSelected((prev) => {
-      const newSelected = prev.includes(categoryId)
+    setSelectedEvents((prev) =>
+      prev.includes(categoryId)
         ? prev.filter((id) => id !== categoryId)
-        : [...prev, categoryId];
-      console.log("Updated Selected Event Categories:", newSelected); // Log updated selection
-      return newSelected;
-    });
+        : [...prev, categoryId]
+    );
+  };
+
+  const toggleRentHireCategory = (categoryId: string) => {
+    setSelectedRentals((prev) =>
+      prev.includes(categoryId)
+        ? prev.filter((id) => id !== categoryId)
+        : [...prev, categoryId]
+    );
   };
 
   const handleNext = () => {
-    if (selected.length === 0) {
-      alert("Please select at least one event category.");
+    if (selectedEvents.length === 0 && selectedRentals.length === 0) {
+      alert("Please select at least one category.");
       return;
     }
 
-    const selectedCategories = eventCategories
-      .filter((category) => selected.includes(category.id))
-      .map((category) => category.slug);
+    const payload = {
+      event_planning_categories: selectedEvents,
+      rent_hire_categories: selectedRentals,
+    };
 
-    console.log("Selected Event Categories:", selectedCategories); // Debug log
-
-    onNext({ event_planning_categories: selectedCategories });
+    onNext(payload);
   };
 
   return (
     <div>
-      <h2 className="text-lg font-bold mb-4">
-        Select Event Planning Categories
-      </h2>
-      <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-4 mt-4 px-4 md:px-0">
-        {eventCategories.map((category) => (
-          <div
-            key={category.id}
-            className={`flex flex-col items-center text-center cursor-pointer p-4 rounded-lg transition duration-300 border-2 ${
-              selected.includes(category.id)
-                ? "border-[#B8902E] bg-[#F5F5F5]" // Highlight selected category with border and background
-                : "border-gray-300 bg-white"
-            }`}
-            onClick={() => toggleEventCategory(category.id)}
-          >
-            {/* Image */}
-            <div
-              className={`w-8 h-8 sm:w-24 sm:h-24 flex items-center justify-center overflow-hidden rounded-lg bg-gray-100 sm:rounded-md sm:border sm:border-gray-300 hover:scale-105 transition duration-300`}
-            >
-              <Image
-                src={category.image || "/fallback-image.png"}
-                alt={category.title}
-                className="object-cover"
-                width={80}
-                height={80}
-              />
-            </div>
+      <h2 className="text-lg font-bold mb-4">Edit Subcategories</h2>
 
-            {/* Name */}
-            <span className="mt-2 text-[8px] sm:text-[10px] lg:text-sm text-gray-700">
-              {category.title}
-            </span>
+      {filteredEventCategories.length > 0 && (
+        <div className="border border-gray-300 rounded-lg my-4 p-6 shadow-sm">
+          <span className="md:text-md text-base font-normal m-4">
+            Event Planning Categories
+          </span>
+          <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-4 mt-4">
+            {filteredEventCategories.map((category) => (
+              <div
+                key={category.id}
+                className={`flex flex-col items-center text-center cursor-pointer p-4 rounded-lg border-2 transition duration-300 ${
+                  selectedEvents.includes(category.id)
+                    ? "border-[#B8902E] bg-[#F5F5F5]"
+                    : "border-gray-300 bg-white"
+                }`}
+                onClick={() => toggleEventCategory(category.id)}
+              >
+                <Image
+                  src={category.image || "/fallback-image.png"}
+                  alt={category.title}
+                  width={80}
+                  height={80}
+                />
+                <span className="text-[8px] sm:text-[10px] lg:text-sm text-gray-700 mt-2">
+                  {category.title}
+                </span>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-      <div className="flex justify-between mt-4">
+        </div>
+      )}
+
+      {filteredRentHireCategories.length > 0 && (
+        <div className="border border-gray-300 rounded-lg my-4 p-6 shadow-sm">
+          <span className="md:text-md text-base font-normal m-4">
+            Rent & Hire Categories
+          </span>
+          <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-4 mt-4">
+            {filteredRentHireCategories.map((category) => (
+              <div
+                key={category.id}
+                className={`flex flex-col items-center text-center cursor-pointer p-4 rounded-lg border-2 transition duration-300 ${
+                  selectedRentals.includes(category.id)
+                    ? "border-[#B8902E] bg-[#F5F5F5]"
+                    : "border-gray-300 bg-white"
+                }`}
+                onClick={() => toggleRentHireCategory(category.id)}
+              >
+                <Image
+                  src={category.image || "/fallback-image.png"}
+                  alt={category.title}
+                  width={80}
+                  height={80}
+                />
+                <span className="text-[8px] sm:text-[10px] lg:text-sm text-gray-700 mt-2">
+                  {category.title}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="flex justify-between mt-6">
         <button
           onClick={onPrevious}
-          className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+          className="bg-gray-500 text-white px-4 py-2 rounded"
         >
           Previous
         </button>
         <button
           onClick={handleNext}
-          className="bg-[#B8902E] text-white px-4 py-2 rounded hover:bg-[#9c7a1e]"
+          className="bg-[#B8902E] text-white px-4 py-2 rounded"
         >
           Next
         </button>
@@ -114,4 +177,6 @@ const Step2 = ({ selectedEventCategories, onPrevious, onNext }: any) => {
   );
 };
 
-export default Step2;
+export default EditStep2SubCategories;
+
+// Rest of the components remain the same...

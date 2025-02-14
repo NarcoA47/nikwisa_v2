@@ -40,6 +40,7 @@ const Categories = () => {
     );
   }
 
+  console.log("categories", categories);
   return (
     <section className=" my-12 md:my-12">
       {/* Grid Container */}

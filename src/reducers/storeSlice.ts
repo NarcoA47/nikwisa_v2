@@ -231,26 +231,112 @@ export const fetchStoresByUserId = createAsyncThunk(
 );
 
 // Update an existing store
+
 export const updateStore = createAsyncThunk(
   "stores/updateStore",
   async (
-    { storeId, storeData }: { storeId: string; storeData: Store },
+    { storeId, storeData }: { storeId: string; storeData: StoreData },
     thunkAPI
   ) => {
     try {
-      const response = await axios.put(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/store_list/${storeId}/`,
-        storeData
-      );
-      return response.data as Store;
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        return thunkAPI.rejectWithValue(error.response.data.message);
+      // Retrieve the token from cookies
+      let accessToken = Cookies.get("access_token");
+
+      if (!accessToken) {
+        return thunkAPI.rejectWithValue("User not authenticated");
       }
+
+      // Log the access token to ensure it's being retrieved
+      console.log("Access Token:", accessToken);
+
+      // Ensure storeData is of the correct type (i.e., FormData or JSON)
+      const isFormData = storeData instanceof FormData;
+
+      // Send the request with the token in the Authorization header
+      const response = await axios.put(
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/stores/${storeId}/`,
+        storeData, // This should be the storeData (either FormData or JSON)
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": isFormData
+              ? "multipart/form-data"
+              : "application/json", // Adjust content-type based on the type
+          },
+        }
+      );
+
+      // Log the response to see if the request is successful
+      console.log("Store updated:", response.data);
+
+      return response.data; // Return the updated store data from the response
+    } catch (error) {
+      // Check if the error is an Axios error and has a response
+      if (axios.isAxiosError(error) && error.response) {
+        console.log("Error Response:", error.response); // Log the full response for debugging
+
+        // Handle 401 Unauthorized - Token issues
+        if (error.response.status === 401) {
+          return thunkAPI.rejectWithValue("Unauthorized access - Token issue");
+        }
+
+        // Handle any other errors from the server
+        return thunkAPI.rejectWithValue(
+          error.response.data.message || "An error occurred"
+        );
+      }
+
+      // Handle unexpected errors that are not Axios-specific
       return thunkAPI.rejectWithValue("An unknown error occurred");
     }
   }
 );
+
+// export const updateStore = createAsyncThunk(
+//   "stores/updateStore",
+//   async (
+//     { storeId, storeData }: { storeId: string; storeData: Store },
+//     thunkAPI
+//   ) => {
+//     try {
+//       // Retrieve the token from cookies
+//       let accessToken = Cookies.get("access_token");
+
+//       if (!accessToken) {
+//         return thunkAPI.rejectWithValue("User not authenticated");
+//       }
+
+//       // Log the access token to debug authentication issues
+//       console.log("Access Token:", accessToken);
+
+//       const response = await axios.put(
+//         `${process.env.NEXT_PUBLIC_API_ENDPOINT}/stores/${storeId}/`,
+//         storeData, // Ensure storeData is properly formatted (JSON or FormData)
+//         {
+//           headers: {
+//             Authorization: `Bearer ${accessToken}`,
+//             "Content-Type":
+//               storeData instanceof FormData
+//                 ? "multipart/form-data"
+//                 : "application/json",
+//           },
+//         }
+//       );
+
+//       // Log success response
+//       console.log("Store updated:", response.data);
+
+//       return response.data as Store;
+//     } catch (error) {
+//       // Log the full error response for debugging
+//       if (axios.isAxiosError(error) && error.response) {
+//         console.log("Error Response:", error.response);
+//         return thunkAPI.rejectWithValue(error.response.data.message);
+//       }
+//       return thunkAPI.rejectWithValue("An unknown error occurred");
+//     }
+//   }
+// );
 
 // Partial update a store
 export const partialUpdateStore = createAsyncThunk(
