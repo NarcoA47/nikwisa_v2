@@ -48,7 +48,10 @@ const StoreCard: React.FC<StoreCardProps> = ({
   };
 
   return (
-    <div className="flex border-2 border-black rounded-lg overflow-hidden shadow-sm p-2 mt-5">
+    <div
+      className="flex border-2 border-black rounded-lg overflow-hidden shadow-sm p-2 mt-5 cursor-pointer"
+      onClick={handleNavigation} // Click anywhere on the card
+    >
       <div className="w-1/3 relative">
         {image ? (
           <Image
@@ -81,7 +84,10 @@ const StoreCard: React.FC<StoreCardProps> = ({
         <div className="mt-4">
           <button
             className="bg-[#B8902E] text-white py-2 px-4 rounded mt-4"
-            onClick={handleNavigation}
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent parent div click event
+              handleNavigation();
+            }}
           >
             Enter Store
           </button>

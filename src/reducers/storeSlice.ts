@@ -1,10 +1,4 @@
-import {
-  FormData,
-  Offering,
-  Store,
-  StoreData,
-  StoreState,
-} from "@/types/types";
+import { Offering, Store, StoreData, StoreState } from "@/types/types";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import Cookies from "js-cookie";
