@@ -74,22 +74,6 @@ const Step2SubCategories = ({
     );
   };
 
-  // const handleNext = () => {
-  //   if (selectedEvents.length === 0 && selectedRentals.length === 0) {
-  //     alert("Please select at least one category.");
-  //     return;
-  //   }
-
-  //   const payload: Step2Payload = {
-  //     event_planning_categories:
-  //       selectedEvents.length > 0 ? selectedEvents : undefined,
-  //     rent_hire_categories:
-  //       selectedRentals.length > 0 ? selectedRentals : undefined,
-  //   };
-
-  //   onNext(payload);
-  // };
-
   // In Step2SubCategories
   const handleNext = () => {
     if (selectedEvents.length === 0 && selectedRentals.length === 0) {

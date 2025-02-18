@@ -246,6 +246,7 @@ export const updateStore = createAsyncThunk(
       // Ensure storeData is of the correct type (i.e., FormData or JSON)
       const isFormData = storeData instanceof FormData;
 
+      console.log("Store Data in hook:", storeData);
       // Send the request with the token in the Authorization header
       const response = await axios.put(
         `${process.env.NEXT_PUBLIC_API_ENDPOINT}/stores/${storeId}/`,
@@ -285,52 +286,6 @@ export const updateStore = createAsyncThunk(
     }
   }
 );
-
-// export const updateStore = createAsyncThunk(
-//   "stores/updateStore",
-//   async (
-//     { storeId, storeData }: { storeId: string; storeData: Store },
-//     thunkAPI
-//   ) => {
-//     try {
-//       // Retrieve the token from cookies
-//       let accessToken = Cookies.get("access_token");
-
-//       if (!accessToken) {
-//         return thunkAPI.rejectWithValue("User not authenticated");
-//       }
-
-//       // Log the access token to debug authentication issues
-//       console.log("Access Token:", accessToken);
-
-//       const response = await axios.put(
-//         `${process.env.NEXT_PUBLIC_API_ENDPOINT}/stores/${storeId}/`,
-//         storeData, // Ensure storeData is properly formatted (JSON or FormData)
-//         {
-//           headers: {
-//             Authorization: `Bearer ${accessToken}`,
-//             "Content-Type":
-//               storeData instanceof FormData
-//                 ? "multipart/form-data"
-//                 : "application/json",
-//           },
-//         }
-//       );
-
-//       // Log success response
-//       console.log("Store updated:", response.data);
-
-//       return response.data as Store;
-//     } catch (error) {
-//       // Log the full error response for debugging
-//       if (axios.isAxiosError(error) && error.response) {
-//         console.log("Error Response:", error.response);
-//         return thunkAPI.rejectWithValue(error.response.data.message);
-//       }
-//       return thunkAPI.rejectWithValue("An unknown error occurred");
-//     }
-//   }
-// );
 
 // Partial update a store
 export const partialUpdateStore = createAsyncThunk(
