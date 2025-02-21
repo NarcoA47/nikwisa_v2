@@ -12,7 +12,8 @@ import Image from "next/image";
 const AddOfferingPage = () => {
   const dispatch: AppDispatch = useDispatch();
   const router = useRouter();
-  const { id: storeId } = useParams(); // Rename `id` to `storeId` for clarity.
+  const { id } = useParams();
+  const storeId = Array.isArray(id) ? id[0] : id; // Ensure storeId is a string
 
   const [formData, setFormData] = useState<Omit<Offering, "id">>({
     name: "",
@@ -90,7 +91,7 @@ const AddOfferingPage = () => {
           handleChange={handleInputChange}
           labelText="Offering Name"
           placeholder="Enter offering name"
-          required
+          // required
         />
 
         <FormRow
@@ -114,7 +115,7 @@ const AddOfferingPage = () => {
         <FormRow
           type="tel"
           name="phone_number"
-          value={formData.phone_number}
+          value={formData.phone_number || ""}
           handleChange={handleInputChange}
           labelText="Phone Number"
           placeholder="Enter phone number"
@@ -123,7 +124,7 @@ const AddOfferingPage = () => {
         <FormRow
           type="tel"
           name="whatsapp_number"
-          value={formData.whatsapp_number}
+          value={formData.whatsapp_number || ""}
           handleChange={handleInputChange}
           labelText="WhatsApp Number"
           placeholder="Enter WhatsApp number"

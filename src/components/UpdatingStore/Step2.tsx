@@ -4,7 +4,13 @@ import { fetchEventCategories } from "@/reducers/eventSlice";
 import { RootState, AppDispatch } from "@/reducers/store";
 import Image from "next/image";
 
-const Step2 = ({ selectedEventCategories, onPrevious, onNext }: unknown) => {
+interface Step2Props {
+  selectedEventCategories: string[];
+  onPrevious: () => void;
+  onNext: (data: { event_planning_categories: string[] }) => void;
+}
+
+const Step2 = ({ selectedEventCategories, onPrevious, onNext }: Step2Props) => {
   const dispatch: AppDispatch = useDispatch();
   const eventCategories = useSelector(
     (state: RootState) => state.eventProduct.event_categories
@@ -29,9 +35,9 @@ const Step2 = ({ selectedEventCategories, onPrevious, onNext }: unknown) => {
           (slug: string) =>
             eventCategories.find((category) => category.slug === slug)?.id
         )
-        .filter((id): id is string => Boolean(id)); // Filter out undefined IDs
+        .filter((id): id is number => Boolean(id)); // Filter out undefined IDs
       console.log("Mapped Event Category IDs:", initialSelectedIds); // Log mapped IDs
-      setSelected(initialSelectedIds);
+      setSelected(initialSelectedIds.map(String));
     }
   }, [eventCategories, selectedEventCategories]);
 
@@ -52,7 +58,7 @@ const Step2 = ({ selectedEventCategories, onPrevious, onNext }: unknown) => {
     }
 
     const selectedCategories = eventCategories
-      .filter((category) => selected.includes(category.id))
+      .filter((category) => selected.includes(category.id.toString()))
       .map((category) => category.slug);
 
     console.log("Selected Event Categories:", selectedCategories); // Debug log
@@ -70,11 +76,11 @@ const Step2 = ({ selectedEventCategories, onPrevious, onNext }: unknown) => {
           <div
             key={category.id}
             className={`flex flex-col items-center text-center cursor-pointer p-4 rounded-lg transition duration-300 border-2 ${
-              selected.includes(category.id)
+              selected.includes(category.id.toString())
                 ? "border-[#B8902E] bg-[#F5F5F5]" // Highlight selected category with border and background
                 : "border-gray-300 bg-white"
             }`}
-            onClick={() => toggleEventCategory(category.id)}
+            onClick={() => toggleEventCategory(category.id.toString())}
           >
             {/* Image */}
             <div

@@ -16,18 +16,12 @@ import { jwtDecode } from "jwt-decode";
 import OfferingsAdmin from "@/components/event-planning/tabs/OfferingsAdmin";
 import PhotosGalleryAdmin from "@/components/event-planning/tabs/PhotoGalleryAdmin";
 
-interface User {
-  id: number;
-  username: string;
-  email: string;
-  user_id: number;
-  store_id: number;
-}
+import { User } from "@/types/types";
 
 const StoreDetailPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
-  const { id } = useParams(); // Get store ID from URL params
+  const { id } = useParams<{ id: string }>(); // Get store ID from URL params
 
   const { store, loading, error } = useSelector(
     (state: RootState) => state.stores
@@ -56,14 +50,14 @@ const StoreDetailPage: React.FC = () => {
   // Fetch store by storeId from the URL params
   useEffect(() => {
     if (id) {
-      dispatch(fetchStoreById(parseInt(id, 10))); // Fetch store based on the store ID in the URL
+      dispatch(fetchStoreById(parseInt(id as string, 10))); // Fetch store based on the store ID in the URL
     }
   }, [dispatch, id]);
 
   // Fetch reviews based on the store ID
   useEffect(() => {
     if (id) {
-      dispatch(fetchReviewsByStoreId(parseInt(id, 10))); // Fetch reviews for the selected store
+      dispatch(fetchReviewsByStoreId(parseInt(id as string, 10))); // Fetch reviews for the selected store
     }
   }, [dispatch, id]);
 

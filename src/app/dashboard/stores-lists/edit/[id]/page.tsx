@@ -5,11 +5,12 @@ import Step2 from "@/components/UpdatingStore/Step2";
 import Step3 from "@/components/UpdatingStore/Step3";
 import { AppDispatch, RootState } from "@/reducers/store";
 import { fetchStoreById } from "@/reducers/storeSlice";
+import { Store } from "@/types/types";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-const defaultStoreData = {
+const defaultStoreData: Store = {
   name: "",
   categories: [],
   event_planning_categories: [],
@@ -21,6 +22,16 @@ const defaultStoreData = {
   working_hours: null,
   is_verified: false,
   is_responsive: false,
+  id: 0,
+  rating: 0,
+  reviews_count: 0,
+  photos: [],
+  createdAt: "",
+  updatedAt: "",
+  offerings: [],
+  reviews: [],
+  rent_hire_categories: [],
+  owner: ""
 };
 
 const EditStore = () => {
@@ -31,7 +42,7 @@ const EditStore = () => {
   const [storeData, setStoreData] = useState(defaultStoreData);
 
   useEffect(() => {
-    if (id) dispatch(fetchStoreById(id));
+    if (id) dispatch(fetchStoreById(Number(id)));
   }, [dispatch, id]);
 
   useEffect(() => {
@@ -39,7 +50,7 @@ const EditStore = () => {
   }, [store]);
 
   const handleNext = (data: Partial<typeof defaultStoreData>) => {
-    setStoreData((prev) => ({ ...prev, ...data }));
+    setStoreData((prev: typeof defaultStoreData) => ({ ...prev, ...data }));
     setStep((prev) => prev + 1);
   };
 

@@ -55,25 +55,18 @@ export interface User {
 export interface Store {
   id: number;
   name: string;
-  location: string;
-  phone_number?: string;
-  whats_app?: string;
-  overview: string;
   rating: number;
   reviews_count: number;
+  location: string;
+  overview: string;
   image: string;
-  photos: string[]; // If you plan to use photos for the store
-  createdAt: string;
-  updatedAt: string;
-  offerings: Offering[]; // Assuming you have an Offering interface
-  reviews: Review[]; // Assuming you have a Review interface
-  event_planning_categories: string[]; // Array of event planning category titles
+  phone_number?: string;
+  whats_app?: string;
+  working_hours: string | null;
+  is_verified: boolean;
+  is_responsive: boolean;
+  event_planning_categories: string[];
   rent_hire_categories: string[];
-  categories: string[]; // Array of category titles
-  owner: string; // Owner's username
-  working_hours: string | null; // New field for working hours
-  is_verified: boolean; // Boolean indicating if the business is verified
-  is_responsive: boolean; // Boolean indicating if the business is responsive
 }
 
 export interface StoreState {
@@ -136,6 +129,7 @@ export interface ReviewsTabProps {
 
 export interface AddReviewProps {
   storeId: number;
+  user: User | null;
   onSubmit: (newReview: { rating: number; reviewText: string }) => void;
 }
 
@@ -337,8 +331,9 @@ export interface StoreCardProps {
   id: number;
   name: string;
   image: string;
-  rating: number; // String rating format
+  rating: number;
   reviews_count: number;
+  working_hours: string | null;
   location: string;
   event_planning_categories: string[];
   rent_hire_categories: string[];

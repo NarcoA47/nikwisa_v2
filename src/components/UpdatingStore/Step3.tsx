@@ -4,13 +4,21 @@ import { AppDispatch } from "@/reducers/store";
 import FormRow from "@/components/forms/FormRow";
 import { partialUpdateStore } from "@/reducers/storeSlice";
 import { useRouter } from "next/navigation";
+import { Store } from "@/types/types";
 
-const Step3 = ({ storeData, onPrevious, onSubmit, storeId }: unknown) => {
+interface Step3Props {
+  storeData: Store;
+  storeId: string | string[] | undefined;
+  onPrevious: () => void;
+  onSubmit: (data: Store) => void;
+}
+
+const Step3: React.FC<Step3Props> = ({ storeData, storeId, onPrevious, onSubmit }) => {
   const dispatch: AppDispatch = useDispatch();
   const router = useRouter();
-  const [data, setData] = useState(storeData);
+  const [data, setData] = useState<Store>(storeData);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState<unknown>({});
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const handleInputChange = (field: string, value: unknown) => {
     setData((prev) => ({ ...prev, [field]: value }));
@@ -19,12 +27,16 @@ const Step3 = ({ storeData, onPrevious, onSubmit, storeId }: unknown) => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.length) {
       const file = e.target.files[0];
-      setData({ ...data, image: file });
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setData({ ...data, image: reader.result as string });
+      };
+      reader.readAsDataURL(file);
     }
   };
 
   const validateFields = () => {
-    const newErrors: unknown = {};
+    const newErrors: { [key: string]: string } = {};
     const phoneRegex = /^[+]*[0-9]{10,13}$/;
 
     if (data.phone_number && !phoneRegex.test(data.phone_number)) {
@@ -39,15 +51,21 @@ const Step3 = ({ storeData, onPrevious, onSubmit, storeId }: unknown) => {
     return newErrors;
   };
 
-  const sanitizePayload = (data: unknown) => {
+  const sanitizePayload = (data: Store): Store => {
     return {
-      ...(data.name && { name: data.name }),
-      ...(data.overview && { overview: data.overview }),
-      ...(data.phone_number && { phone_number: data.phone_number }),
-      ...(data.location && { location: data.location }),
-      ...(data.whats_app && { whats_app: data.whats_app }),
-      ...(data.working_hours && { working_hours: data.working_hours }),
-      ...(data.image && { image: data.image }),
+      ...data,
+      name: data.name || "",
+      overview: data.overview || "",
+      phone_number: data.phone_number || "",
+      location: data.location || "",
+      whats_app: data.whats_app || "",
+      working_hours: data.working_hours || "",
+      image: data.image || "",
+      id: data.id,
+      rating: data.rating,
+      reviews_count: data.reviews_count,
+      // photos: data.photos,
+      // Add other required properties here
     };
   };
 
@@ -64,7 +82,7 @@ const Step3 = ({ storeData, onPrevious, onSubmit, storeId }: unknown) => {
     try {
       await dispatch(
         partialUpdateStore({
-          storeId,
+          storeId: Array.isArray(storeId) ? storeId[0] : storeId || "",
           partialData: sanitizedData,
         })
       ).unwrap();
@@ -86,7 +104,7 @@ const Step3 = ({ storeData, onPrevious, onSubmit, storeId }: unknown) => {
       <FormRow
         type="text"
         name="name"
-        value={data.name}
+        value={data.name || ""}
         handleChange={(e) => handleInputChange("name", e.target.value)}
         labelText="Store Name"
         placeholder="Enter store name"
@@ -96,7 +114,7 @@ const Step3 = ({ storeData, onPrevious, onSubmit, storeId }: unknown) => {
       <FormRow
         type="textarea"
         name="overview"
-        value={data.overview}
+        value={data.overview || ""}
         handleChange={(e) => handleInputChange("overview", e.target.value)}
         labelText="Store Overview"
         placeholder="Enter a brief description"
@@ -106,7 +124,7 @@ const Step3 = ({ storeData, onPrevious, onSubmit, storeId }: unknown) => {
       <FormRow
         type="text"
         name="location"
-        value={data.location}
+        value={data.location || ""}
         handleChange={(e) => handleInputChange("location", e.target.value)}
         labelText="Location"
         placeholder="Enter location"
@@ -116,7 +134,7 @@ const Step3 = ({ storeData, onPrevious, onSubmit, storeId }: unknown) => {
       <FormRow
         type="text"
         name="phone_number"
-        value={data.phone_number}
+        value={data.phone_number || ""}
         handleChange={(e) => handleInputChange("phone_number", e.target.value)}
         labelText="Phone Number"
         placeholder="Enter phone number"
@@ -126,7 +144,7 @@ const Step3 = ({ storeData, onPrevious, onSubmit, storeId }: unknown) => {
       <FormRow
         type="text"
         name="whats_app"
-        value={data.whats_app}
+        value={data.whats_app || ""}
         handleChange={(e) => handleInputChange("whats_app", e.target.value)}
         labelText="WhatsApp Number"
         placeholder="Enter WhatsApp number"
@@ -136,7 +154,7 @@ const Step3 = ({ storeData, onPrevious, onSubmit, storeId }: unknown) => {
       <FormRow
         type="text"
         name="working_hours"
-        value={data.working_hours}
+        value={data.working_hours || ""}
         handleChange={(e) => handleInputChange("working_hours", e.target.value)}
         labelText="Working Hours"
         placeholder="Enter working hours"
