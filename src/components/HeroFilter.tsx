@@ -6,6 +6,7 @@ import PhotographyAd from "./event-planning/PhotographyAdd";
 
 const EventSlider = () => {
   // Create the array of components
+  // eslint-disable-next-line react/jsx-key
   const components = [<HairAdd />, <HoneymoonAdd />, <PhotographyAd />];
 
   return (

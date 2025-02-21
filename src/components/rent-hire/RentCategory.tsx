@@ -9,7 +9,7 @@ import Link from "next/link";
 
 const RentCategory = () => {
   const dispatch: AppDispatch = useDispatch();
-  const { rent_hire_categories, status, error } = useSelector(
+  const { rent_hire_categories, status } = useSelector(
     (state: RootState) => state.rentHireProduct
   );
 

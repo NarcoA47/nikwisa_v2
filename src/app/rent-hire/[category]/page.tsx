@@ -7,7 +7,7 @@ import { RootState, AppDispatch } from "@/reducers/store";
 import { fetchStoresWithOfferings } from "@/reducers/storeSlice";
 import { useParams } from "next/navigation";
 
-const page = () => {
+const CategoryID = () => {
   const dispatch: AppDispatch = useDispatch();
   const { stores, loading, error } = useSelector(
     (state: RootState) => state.stores
@@ -78,4 +78,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default CategoryID;

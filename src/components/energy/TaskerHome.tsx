@@ -1,6 +1,7 @@
 //
 
 import { taskers } from "@/data";
+import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
 
@@ -44,10 +45,12 @@ const TaskerHome = () => {
               className="bg-[#FAF3EA] p-4 rounded-lg shadow-md flex items-center w-full md:w-1/2 lg:w-1/3 hover:bg-gray-100 transition flex-shrink-0"
             >
               {/* Tasker Image */}
-              <img
+              <Image
                 src="/ExpI1.jpg"
                 alt={tasker.name}
                 className="w-24 h-24 rounded-full object-cover mr-4"
+                width={128}
+                height={128}
               />
 
               {/* Tasker Details */}

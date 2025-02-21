@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import React, {  useState } from "react";
+// import { useRouter } from "next/navigation";
 import { AppDispatch } from "@/reducers/store";
 import { useDispatch } from "react-redux";
 import { addReview } from "@/reducers/reviewSlice";
@@ -7,7 +7,7 @@ import ReviewForm from "@/components/forms/ReviewForm";
 
 const AddReview: React.FC<{ storeId: number }> = ({ storeId }) => {
   const dispatch: AppDispatch = useDispatch();
-  const router = useRouter();
+  // const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (data: { rating: number; comment: string }) => {

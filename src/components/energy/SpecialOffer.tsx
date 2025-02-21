@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
 const SpecialOffer = () => {
@@ -45,7 +46,7 @@ const SpecialOffer = () => {
       <div className="relative mt-4 w-full h-[10rem] sm:h-[10rem] md:h-[25rem] overflow-hidden rounded-lg shadow">
         {/* Displaying images */}
         {specialImages.map((image, index) => (
-          <img
+          <Image
             key={index}
             src={image}
             alt={`Sale ${index + 1}`}
@@ -58,6 +59,8 @@ const SpecialOffer = () => {
               left: 0,
               objectFit: "cover",
             }}
+            width={128}
+            height={128}
           />
         ))}
       </div>

@@ -23,7 +23,7 @@ const OfferingsCardAdmin = ({ offering, storeId }: OfferingCardProps) => {
     try {
       await dispatch(deleteOffering(offeringId)); // Correct ID is passed here
       toast.success("Offering deleted successfully!");
-    } catch (error) {
+    } catch {
       toast.error("Failed to delete offering. Please try again."); // Corrected message
     }
   };
@@ -38,6 +38,8 @@ const OfferingsCardAdmin = ({ offering, storeId }: OfferingCardProps) => {
           layout="fill" // This ensures the image covers the area, similar to the 'object-cover' style
           objectFit="cover" // This mimics the behavior of 'object-cover'
           className="absolute inset-0"
+          width={128}
+            height={128}
         />
       </div>
 

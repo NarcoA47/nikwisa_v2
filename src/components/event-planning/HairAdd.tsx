@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React from "react";
 
 const HairAdd = () => {
@@ -5,10 +6,12 @@ const HairAdd = () => {
     <section className="relative w-full h-40 md:h-64 lg:h-80 overflow-hidden my-8">
       {/* Background Image */}
       <div className="absolute inset-0">
-        <img
+        <Image
           src="/assets/home/hairBg.png"
           alt="Hair Dresser Banner"
           className="w-full h-full object-cover"
+          width={100}
+          height={100}
         />
       </div>
 

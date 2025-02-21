@@ -5,14 +5,14 @@ import FormRow from "@/components/forms/FormRow";
 import { partialUpdateStore } from "@/reducers/storeSlice";
 import { useRouter } from "next/navigation";
 
-const Step3 = ({ storeData, onPrevious, onSubmit, storeId }: any) => {
+const Step3 = ({ storeData, onPrevious, onSubmit, storeId }: unknown) => {
   const dispatch: AppDispatch = useDispatch();
   const router = useRouter();
   const [data, setData] = useState(storeData);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState<any>({});
+  const [errors, setErrors] = useState<unknown>({});
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: string, value: unknown) => {
     setData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -24,7 +24,7 @@ const Step3 = ({ storeData, onPrevious, onSubmit, storeId }: any) => {
   };
 
   const validateFields = () => {
-    const newErrors: any = {};
+    const newErrors: unknown = {};
     const phoneRegex = /^[+]*[0-9]{10,13}$/;
 
     if (data.phone_number && !phoneRegex.test(data.phone_number)) {
@@ -39,7 +39,7 @@ const Step3 = ({ storeData, onPrevious, onSubmit, storeId }: any) => {
     return newErrors;
   };
 
-  const sanitizePayload = (data: any) => {
+  const sanitizePayload = (data: unknown) => {
     return {
       ...(data.name && { name: data.name }),
       ...(data.overview && { overview: data.overview }),

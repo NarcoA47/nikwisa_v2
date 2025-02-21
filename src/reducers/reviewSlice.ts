@@ -51,8 +51,8 @@ export const addReview = createAsyncThunk(
 
       // Debug token
 
-      const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
-      const tokenPayload = JSON.parse(atob(accessToken.split(".")[1]));
+      // const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+     // const tokenPayload = JSON.parse(atob(accessToken.split(".")[1]));
 
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_ENDPOINT}/reviews/`,
@@ -117,7 +117,7 @@ export const updateReview = createAsyncThunk(
 
 export const deleteReview = createAsyncThunk(
   "reviews/deleteReview",
-  async (reviewId: Number, thunkAPI) => {
+  async (reviewId: number, thunkAPI) => {
     try {
       // Retrieve the token from cookies (or wherever it's stored)
       const accessToken = Cookies.get("access_token");
@@ -159,7 +159,7 @@ export const partialUpdateReview = createAsyncThunk(
   ) => {
     try {
       // Retrieve the token
-      let accessToken = Cookies.get("access_token");
+      const accessToken = Cookies.get("access_token");
 
       if (!accessToken) {
         return thunkAPI.rejectWithValue("User not authenticated");

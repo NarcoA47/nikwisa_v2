@@ -36,7 +36,7 @@ const EventCategoryMobile = () => {
   }
 
   if (filteredSubcategories.length === 0) {
-    return <div>No subcategories found containing "prevent".</div>;
+    return <div>No subcategories found containing &quot;prevent&quot;.</div>;
   }
   return (
     <section className="md:hidden  space-y-6">
@@ -69,6 +69,8 @@ const EventCategoryMobile = () => {
                     alt={category.title}
                     fill
                     className="object-cover"
+                    width={128}
+                    height={128}
                   />
                 ) : (
                   <div className="bg-gray-200 w-full h-full flex items-center justify-center">

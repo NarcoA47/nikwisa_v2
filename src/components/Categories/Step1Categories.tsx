@@ -4,7 +4,12 @@ import { fetchCategories } from "@/reducers/categorySlice";
 import { RootState, AppDispatch } from "@/reducers/store";
 import Image from "next/image";
 
-const Step1Categories = ({ selectedCategories, onNext }: any) => {
+interface Step1CategoriesProps {
+  selectedCategories: number[];
+  onNext: (data: { categories: number[] }) => void;
+}
+
+const Step1Categories = ({ selectedCategories, onNext }: Step1CategoriesProps) => {
   const dispatch: AppDispatch = useDispatch();
   const categories = useSelector(
     (state: RootState) => state.categories.categories

@@ -7,22 +7,46 @@ import { AppDispatch, RootState } from "@/reducers/store";
 import { fetchUserById, updateProfile } from "@/reducers/authSlice"; // Import the updateProfile action
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
+import Image from "next/image";
 
 type UserProfileData = {
-  first_name: string;
-  last_name: string;
+  id: number;
+  first_name: string | null;
+  last_name: string | null;
   email: string;
-  phone_number: string;
+  phone_number: string | null;
   username: string;
-  address_line: string;
-  city: string;
-  state: string;
-  country: string;
-  date_of_birth: string;
-  gender: string;
-  profile_image: File | null;
-  role?: string;
-  user_type: string;
+  address_line: string | null;
+  city: string | null;
+  state: string | null;
+  country: string | null;
+  date_of_birth: string | null;
+  gender: string | null;
+  profile_image: string | null; // Allowing null for profile_image and File type
+  role: string;
+  user_type: string | null;
+  profile_completion: number;
+  last_login: string | null;
+  is_verified: boolean;
+  email_verified: boolean;
+  phone_verified: boolean;
+  is_active: boolean;
+  alternate_phone: string | null;
+  emergency_contact: string | null;
+  landmark: string | null;
+  pincode: string | null;
+  notification_preferences: Record<string, unknown>; // Changed to non-optional
+  facebook_profile: string | null;
+  instagram_handle: string | null;
+  twitter_handle: string | null;
+  linkedin_profile: string | null;
+  last_login_ip: string | null;
+  last_updated: string;
+  created_at: string;
+  last_password_change: string | null;
+  id_proof_type: string | null;
+  id_proof_number: string | null;
+  failed_login_attempts: number;
 };
 
 const EditProfilePage = () => {
@@ -33,6 +57,7 @@ const EditProfilePage = () => {
   );
 
   const [profileData, setProfileData] = useState<UserProfileData>({
+    id: 0,
     first_name: "",
     last_name: "",
     email: "",
@@ -47,9 +72,32 @@ const EditProfilePage = () => {
     profile_image: null,
     role: "",
     user_type: "",
+    profile_completion: 0,
+    last_login: "",
+    is_verified: false,
+    email_verified: true,
+    phone_verified: true,
+    is_active: true,
+    alternate_phone: "",
+    emergency_contact: "",
+    landmark: "",
+    pincode: "",
+    notification_preferences: {}, // Ensure this is always initialized
+    facebook_profile: "",
+    instagram_handle: "",
+    twitter_handle: "",
+    linkedin_profile: "",
+    last_login_ip: "",
+    last_updated: "",
+    created_at: "",
+    last_password_change: "",
+    id_proof_type: "",
+    id_proof_number: "",
+    failed_login_attempts: 0,
   });
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
 
   // Fetch user data on component mount
   useEffect(() => {
@@ -57,13 +105,13 @@ const EditProfilePage = () => {
     if (token) {
       fetchUserData(token);
     }
-  }, []);
+  });
 
   const fetchUserData = (token: string) => {
     try {
-      const decoded: any = jwtDecode(token);
+      const decoded: { user_id: string } = jwtDecode(token);
       if (decoded?.user_id) {
-        dispatch(fetchUserById(decoded.user_id)); // Dispatch action to fetch user
+        dispatch(fetchUserById(Number(decoded.user_id))); // Dispatch action to fetch user
       }
     } catch (err) {
       console.error("Failed to decode token", err);
@@ -74,6 +122,7 @@ const EditProfilePage = () => {
   useEffect(() => {
     if (user) {
       setProfileData({
+        id: user.id,
         first_name: user.first_name || "",
         last_name: user.last_name || "",
         email: user.email || "",
@@ -88,6 +137,28 @@ const EditProfilePage = () => {
         profile_image: null,
         role: user.role || "",
         user_type: user.user_type || "",
+        profile_completion: user.profile_completion || 0,
+        last_login: user.last_login ? new Date(user.last_login).toISOString() : new Date().toISOString(),
+        is_verified: user.is_verified || false,
+        email_verified: user.email_verified || false,
+        phone_verified: user.phone_verified || false,
+        is_active: user.is_active || false,
+        alternate_phone: user.alternate_phone || "",
+        emergency_contact: user.emergency_contact || "",
+        landmark: user.landmark || "",
+        pincode: user.pincode || "",
+        notification_preferences: typeof user.notification_preferences === 'string' ? JSON.parse(user.notification_preferences) : user.notification_preferences || {}, // Ensure this is always initialized
+        facebook_profile: user.facebook_profile || "",
+        instagram_handle: user.instagram_handle || "",
+        twitter_handle: user.twitter_handle || "",
+        linkedin_profile: user.linkedin_profile || "",
+        last_login_ip: user.last_login_ip || "",
+        last_updated: user.last_updated ? new Date(user.last_updated).toISOString() : new Date().toISOString(),
+        created_at: user.created_at ? new Date(user.created_at).toISOString() : new Date().toISOString(),
+        last_password_change: user.last_password_change ? new Date(user.last_password_change).toISOString() : new Date().toISOString(),
+        id_proof_type: user.id_proof_type || "",
+        id_proof_number: user.id_proof_number || "",
+        failed_login_attempts: user.failed_login_attempts
       });
       if (user.profile_image) {
         setImagePreview(user.profile_image);
@@ -98,12 +169,15 @@ const EditProfilePage = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
     if (file) {
-      setProfileData((prev) => ({
-        ...prev,
-        profile_image: file,
-      }));
+      setProfileImageFile(file);
       const reader = new FileReader();
-      reader.onloadend = () => setImagePreview(reader.result as string);
+      reader.onloadend = () => {
+        setProfileData((prev) => ({
+          ...prev,
+          profile_image: reader.result as string,
+        }));
+        setImagePreview(reader.result as string);
+      };
       reader.readAsDataURL(file);
     }
   };
@@ -123,21 +197,30 @@ const EditProfilePage = () => {
       return;
     }
 
-    const formData = new FormData();
-    Object.keys(profileData).forEach((key) => {
-      if (key === "profile_image" && profileData.profile_image) {
-        formData.append(key, profileData.profile_image);
-      } else {
-        formData.append(key, profileData[key as keyof UserProfileData]);
-      }
-    });
+    const updatedProfileData = { ...profileData };
 
-    try {
-      console.log("profileData", profileData);
-      await dispatch(updateProfile({ userId: user.id, userData: profileData })); // Ensure user.id is passed
-      router.push("/dashboard/profile");
-    } catch (error) {
-      console.error("Error updating profile:", error);
+    if (profileImageFile) {
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        updatedProfileData.profile_image = reader.result as string;
+
+        try {
+          console.log("profileData", updatedProfileData);
+          await dispatch(updateProfile({ userId: user.id, userData: updatedProfileData })); // Ensure user.id is passed
+          router.push("/dashboard/profile");
+        } catch (error) {
+          console.error("Error updating profile:", error);
+        }
+      };
+      reader.readAsDataURL(profileImageFile);
+    } else {
+      try {
+        console.log("profileData", updatedProfileData);
+        await dispatch(updateProfile({ userId: user.id, userData: updatedProfileData })); // Ensure user.id is passed
+        router.push("/dashboard/profile");
+      } catch (error) {
+        console.error("Error updating profile:", error);
+      }
     }
   };
 
@@ -188,10 +271,12 @@ const EditProfilePage = () => {
           </label>
           <div className="mt-2 flex items-center gap-4">
             {imagePreview && (
-              <img
+              <Image
                 src={imagePreview}
                 alt="Profile Preview"
                 className="w-32 h-32 object-cover rounded-full"
+                width={128}
+                height={128}
               />
             )}
             <input
@@ -199,6 +284,7 @@ const EditProfilePage = () => {
               onChange={handleImageChange}
               accept="image/*"
               className="w-full p-4 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2  focus:ring-customGold"
+            
             />
           </div>
         </div>

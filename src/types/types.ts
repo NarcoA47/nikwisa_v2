@@ -213,7 +213,7 @@ export interface User {
   state: string | null;
   country: string | null;
   pincode: string | null;
-  notification_preferences: Record<string, any>;
+  notification_preferences: Record<string, unknown>;
   facebook_profile: string | null;
   instagram_handle: string | null;
   twitter_handle: string | null;

@@ -3,6 +3,7 @@
 import { fetchCategories } from "@/reducers/productSlice";
 import { AppDispatch, RootState } from "@/reducers/store";
 import { Category } from "@/types/types";
+import Image from "next/image";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -51,10 +52,12 @@ const CategoriesFilter = () => {
               className="flex flex-col  text-center md:w-1/12"
             >
               <div className="md:w-24 md:h-24 w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-                <img
+                <Image
                   src={category.image}
                   alt={category.name}
                   className="w-full h-full object-cover rounded-full"
+                  width={128}
+                  height={128}
                 />
               </div>
               <span className="mt-2 text-[8px] md:text-sm text-gray-700">

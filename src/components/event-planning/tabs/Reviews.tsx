@@ -16,6 +16,7 @@ import ReviewForm from "@/components/forms/ReviewForm";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const Reviews: React.FC<ReviewsProps> = ({ storeId }) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -54,12 +55,12 @@ const Reviews: React.FC<ReviewsProps> = ({ storeId }) => {
     try {
       await dispatch(deleteReview(reviewId));
       toast.success("Review deleted successfully!");
-    } catch (error) {
+    } catch {
       toast.error("Failed to delete review. Please try again.");
     }
   };
 
-  const handleEdit = (reviewId: string, rating: string, comment: string) => {
+  const handleEdit = (reviewId: string) => {
     setEditingReviewId(reviewId);
   };
 
@@ -76,7 +77,7 @@ const Reviews: React.FC<ReviewsProps> = ({ storeId }) => {
       );
       toast.success("Review updated successfully!");
       setEditingReviewId(null); // Exit edit mode
-    } catch (error) {
+    } catch {
       toast.error("Failed to update review. Please try again.");
     } finally {
       setIsSubmitting(false);
@@ -101,10 +102,12 @@ const Reviews: React.FC<ReviewsProps> = ({ storeId }) => {
             key={review.id}
             className="flex items-start gap-4 p-4 border-b border-gray-300 bg-[#D9D9D9] max-w-3xl mx-auto md:ml-0 md:mr-auto rounded-lg"
           >
-            <img
+            <Image
               src={review.user.profile_image}
               alt={review.user.username}
               className="w-16 h-16 rounded-full object-cover"
+              width={128}
+              height={128}
             />
             <div className="flex-1">
               <h3 className="text-lg font-semibold">{review.user.username}</h3>

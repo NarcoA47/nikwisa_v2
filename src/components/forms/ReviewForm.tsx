@@ -15,7 +15,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
 }) => {
   const [formData, setFormData] = useState(initialData);
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: string, value: unknown) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 

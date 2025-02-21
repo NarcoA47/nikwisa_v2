@@ -14,7 +14,7 @@ const Categories = () => {
   const categoryStatus = useSelector(
     (state: RootState) => state.categories.status
   );
-  const error = useSelector((state: RootState) => state.categories.error);
+  // const error = useSelector((state: RootState) => state.categories.error);
 
   useEffect(() => {
     dispatch(fetchCategories());
@@ -61,6 +61,7 @@ const Categories = () => {
                 className="object-cover"
                 width={80}
                 height={80}
+                
               />
             </div>
 

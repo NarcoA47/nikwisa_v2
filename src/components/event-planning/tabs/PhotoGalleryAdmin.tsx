@@ -28,9 +28,9 @@ export default function PhotosGalleryAdmin({ storeId }: { storeId: number }) {
     return <div>Error: {error}</div>;
   }
 
-  const handleAddImagesClick = () => {
-    router.push("/dashboard/create-store");
-  };
+  // const handleAddImagesClick = () => {
+  //   router.push("/dashboard/create-store");
+  // };
   // Safely access the nested `images` array
   const imageUrls = images?.images || []; // Fallback to an empty array if `images` or `images.images` is undefined
 

@@ -10,15 +10,15 @@ const defaultProfileData = {
   date_of_birth: "",
   gender: "",
   address: "",
-  profile_picture: null,
+  profile_picture: null as File | null,
 };
 
-const page: React.FC = () => {
+function EditProfile () {
   const [profileData, setProfileData] = useState(defaultProfileData);
-  const [errors, setErrors] = useState<any>({});
+  const [, setErrors] = useState<unknown>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: string, value: unknown) => {
     setProfileData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -30,7 +30,7 @@ const page: React.FC = () => {
   };
 
   const validateFields = () => {
-    const newErrors: any = {};
+    const newErrors: { [key: string]: string } = {};
     if (!profileData.first_name)
       newErrors.first_name = "First name is required.";
     if (!profileData.last_name) newErrors.last_name = "Last name is required.";
@@ -144,4 +144,4 @@ const page: React.FC = () => {
   );
 };
 
-export default page;
+export default EditProfile;

@@ -9,7 +9,7 @@ import Link from "next/link";
 
 const EventCategory = () => {
   const dispatch: AppDispatch = useDispatch();
-  const { event_categories, status, error } = useSelector(
+  const { event_categories, status } = useSelector(
     (state: RootState) => state.eventProduct
   );
 

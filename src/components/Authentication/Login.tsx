@@ -18,7 +18,7 @@ const LoginForm: React.FC = () => {
   const [success, setSuccess] = useState<string | null>(null);
 
   // Get user details from Redux store
-  const { user, loading: userLoading } = useSelector(
+  const { user } = useSelector(
     (state: RootState) => state.auth
   );
 
@@ -30,11 +30,11 @@ const LoginForm: React.FC = () => {
     if (token) {
       fetchUserData(token);
     }
-  }, []);
+  });
 
   const fetchUserData = (token: string) => {
     try {
-      const decoded: any = jwtDecode(token);
+      const decoded: unknown = jwtDecode(token);
       console.log("Decoded token:", decoded);
 
       if (decoded?.user_id) {
@@ -67,7 +67,7 @@ const LoginForm: React.FC = () => {
       setTimeout(() => {
         router.push("/dashboard");
       }, 1000);
-    } catch (err: unknown) {
+    } catch  {
       setError("Invalid username or password");
     } finally {
       setLoading(false);

@@ -30,9 +30,9 @@ const ImageSlider = ({ storeId }: { storeId: number }) => {
   }, [images.length]);
 
   // Handle dot click to manually change the image
-  const handleDotClick = (index: number) => {
-    setCurrentImage(index);
-  };
+  // const handleDotClick = (index: number) => {
+  //   setCurrentImage(index);
+  // };
 
   // Show loading state
   if (loading) {

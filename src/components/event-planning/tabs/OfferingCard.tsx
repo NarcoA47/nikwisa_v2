@@ -24,6 +24,8 @@ const OfferingCard = ({ offering }: OfferingCardProps) => {
           layout="fill" // This makes the image cover the container dimensions
           objectFit="cover" // This ensures the image covers the container while maintaining aspect ratio
           className="absolute inset-0 w-full h-full"
+          width={128}
+          height={128}
         />
         {/* Heart Icon */}
         <div className="absolute top-2 left-2 bg-white p-1 rounded-full shadow-md">

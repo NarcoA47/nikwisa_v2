@@ -24,10 +24,10 @@ const initialState: AuthState = {
   users: [],
 };
 
-const isTokenExpired = (token: string) => {
-  const decoded: any = jwtDecode(token);
-  return decoded.exp * 1000 < Date.now();
-};
+// const isTokenExpired = (token: string) => {
+//   const decoded: any = jwtDecode(token);
+//   return decoded.exp * 1000 < Date.now();
+// };
 // Inside the loginUser async thunk:
 export const loginUser = createAsyncThunk(
   "auth/login",
@@ -144,7 +144,7 @@ export const fetchUser = createAsyncThunk(
       }
 
       return await response.json();
-    } catch (error: any) {
+    } catch (error: unknown) {
       return rejectWithValue(error.message);
     }
   }
@@ -177,7 +177,7 @@ export const refreshToken = createAsyncThunk(
       const data = await response.json();
       Cookies.set("access_token", data.access);
       return data.access;
-    } catch (error: any) {
+    } catch (error: unknown) {
       return rejectWithValue(error.message);
     }
   }
@@ -204,8 +204,8 @@ export const fetchAllUsers = createAsyncThunk(
       }
 
       return await response.json();
-    } catch (error: any) {
-      return rejectWithValue(error.message);
+    } catch (error: unknown) {
+      return rejectWithValue(error?.message);
     }
   }
 );
@@ -215,7 +215,7 @@ export const fetchUserById = createAsyncThunk(
   "auth/fetchUserById",
   async (userId: number, thunkAPI) => {
     try {
-      let accessToken = Cookies.get("access_token");
+      const accessToken = Cookies.get("access_token");
 
       if (!accessToken) {
         return thunkAPI.rejectWithValue("User not authenticated");

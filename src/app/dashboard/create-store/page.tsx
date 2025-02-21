@@ -5,9 +5,24 @@ import Step2SubCategories from "@/components/Categories/Step2SubCategories";
 import Step3StoreDetails from "@/components/Categories/Step3Details";
 import React, { useState } from "react";
 
+// Define the Step2Payload type
+type Step2Payload = {
+  categories?: number[];
+  event_planning_categories?: string[];
+  rent_hire_categories?: string[];
+  name?: string;
+  phone_number?: string;
+  whats_app?: string;
+  image?: string;
+  overview?: string;
+  location?: string;
+  working_hours?: string;
+  owner?: unknown;
+};
+
 const CreateStoreSteps = () => {
   const [step, setStep] = useState(1);
-  const [storeData, setStoreData] = useState({
+  const [storeData, setStoreData] = useState<Step2Payload>({
     categories: [],
     event_planning_categories: [],
     rent_hire_categories: [],
@@ -21,7 +36,7 @@ const CreateStoreSteps = () => {
     owner: null,
   });
 
-  const handleNext = (newData: any) => {
+  const handleNext = (newData: Step2Payload) => {
     setStoreData((prev) => ({ ...prev, ...newData }));
     setStep((prev) => prev + 1);
   };
@@ -34,15 +49,15 @@ const CreateStoreSteps = () => {
     <div className="p-6">
       {step === 1 && (
         <Step1Categories
-          selectedCategories={storeData.categories}
+          selectedCategories={storeData.categories || []}
           onNext={handleNext}
         />
       )}
       {step === 2 && (
         <Step2SubCategories
-          selectedCategories={storeData.categories}
-          selectedEventCategories={storeData.event_planning_categories}
-          selectedRentHireCategories={storeData.rent_hire_categories}
+          selectedCategories={storeData.categories || []}
+          selectedEventCategories={storeData.event_planning_categories || []}
+          selectedRentHireCategories={storeData.rent_hire_categories || []}
           onPrevious={handlePrevious}
           onNext={handleNext}
         />

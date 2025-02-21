@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState, AppDispatch } from "@/reducers/store";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/reducers/store";
 import FormRow from "@/components/forms/FormRow";
 import { fetchEventCategories } from "@/reducers/eventSlice";
 import { useRouter } from "next/navigation";
@@ -8,15 +8,22 @@ import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import { addStore } from "@/reducers/storeSlice"; // Import the addStore function from your slice
 import { Category } from "@/types/types";
+import { Step2Payload } from "./Step2SubCategories";
 
-const Step3StoreDetails = ({ storeData, onPrevious, onSubmit }: any) => {
+type Step3StoreDetailsProps = {
+  storeData: Step2Payload;
+  onPrevious: () => void;
+  onSubmit: () => void;
+};
+
+const Step3StoreDetails: React.FC<Step3StoreDetailsProps> = ({ storeData, onPrevious }) => {
   const dispatch: AppDispatch = useDispatch();
   const router = useRouter();
 
   console.log("storeData", storeData);
   const [data, setData] = useState(storeData);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState<any>({});
+  const [ setErrors] = useState<unknown>({});
   const [user, setUser] = useState<{ user_id: string } | null>(null); // Make sure to capture user_id
 
   useEffect(() => {
@@ -39,7 +46,7 @@ const Step3StoreDetails = ({ storeData, onPrevious, onSubmit }: any) => {
     dispatch(fetchEventCategories());
   }, [dispatch]);
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: string, value: unknown) => {
     setData((prev: typeof storeData) => ({ ...prev, [field]: value }));
   };
 
@@ -51,7 +58,7 @@ const Step3StoreDetails = ({ storeData, onPrevious, onSubmit }: any) => {
   };
 
   const validateFields = () => {
-    const newErrors: any = {};
+    const newErrors: unknown = {};
     const phoneRegex = /^[+]*[0-9]{10,13}$/;
 
     if (data.phone_number && !phoneRegex.test(data.phone_number)) {

@@ -57,7 +57,10 @@ const StoreCard: React.FC<StoreCardProps> = ({
             layout="fill"
             objectFit="cover"
             className="rounded"
-            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+            // sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+            width={128}
+            height={128}
+            
           />
         ) : (
           <div className="w-full h-full bg-gray-200 flex items-center justify-center">

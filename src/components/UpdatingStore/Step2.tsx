@@ -4,7 +4,7 @@ import { fetchEventCategories } from "@/reducers/eventSlice";
 import { RootState, AppDispatch } from "@/reducers/store";
 import Image from "next/image";
 
-const Step2 = ({ selectedEventCategories, onPrevious, onNext }: any) => {
+const Step2 = ({ selectedEventCategories, onPrevious, onNext }: unknown) => {
   const dispatch: AppDispatch = useDispatch();
   const eventCategories = useSelector(
     (state: RootState) => state.eventProduct.event_categories

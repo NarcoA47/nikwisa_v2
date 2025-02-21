@@ -17,7 +17,7 @@ const AdminNav: React.FC<AdminNavProps> = ({ toggleSidebar }) => {
   const router = useRouter();
   const dispatch = useDispatch(); // Initialize Redux dispatch
   const [showLogout, setShowLogout] = useState(false);
-  const user = useSelector((state: any) => state.auth.user); // Access user from Redux store
+  const user = useSelector((state: unknown) => state.auth.user); // Access user from Redux store
 
   useEffect(() => {
     const accessToken = Cookies.get("access_token");

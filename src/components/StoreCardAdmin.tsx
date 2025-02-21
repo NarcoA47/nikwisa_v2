@@ -15,7 +15,7 @@ const StoreCardAdmin: React.FC<StoreCardProps> = ({
   rating,
   reviews_count,
   location,
-  event_planning_categories,
+  // event_planning_categories,
 }) => {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>(); // Use the correct dispatch type for TypeScript
@@ -36,8 +36,8 @@ const StoreCardAdmin: React.FC<StoreCardProps> = ({
       await dispatch(deleteStore(id.toString())).unwrap(); // Dispatch and unwrap the promise
       toast.success("Store deleted successfully!"); // Optional: Show success notification
       window.location.reload(); // Reload the page after deletion
-    } catch (error: any) {
-      toast.error(error || "Failed to delete store."); // Optional: Show error notification
+    } catch (error: unknown) {
+      toast.error(error); // Optional: Show error notification
     }
   };
 
@@ -54,6 +54,8 @@ const StoreCardAdmin: React.FC<StoreCardProps> = ({
             layout="fill" // Ensures the image covers the container
             objectFit="cover" // Ensures proper scaling
             className="rounded"
+            width={128}
+            height={128}
           />
         ) : (
           <div className="bg-gray-200 w-full h-full flex items-center justify-center rounded">

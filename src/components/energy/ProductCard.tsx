@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 const ProductCard = ({ product }) => {
   return (
     <div className="w-full max-w-[14rem] bg-white shadow-md rounded-lg border border-gray-200 overflow-hidden">
@@ -5,10 +7,12 @@ const ProductCard = ({ product }) => {
       <div className="p-2">
         {/* Product Image */}
         <div className="relative w-full aspect-square bg-gray-100 rounded-md overflow-hidden">
-          <img
+          <Image
             src={product.image}
             alt={product.title}
             className="absolute inset-0 w-full h-full object-cover"
+            width={128}
+                height={128}
           />
         </div>
 
