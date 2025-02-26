@@ -15,7 +15,10 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
 }) => {
   const [formData, setFormData] = useState(initialData);
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (
+    field: "rating" | "comment",
+    value: string | number
+  ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -36,7 +39,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
         id="rating"
         value={formData.rating || ""}
         options={ratingOptions}
-        onChange={(id, value) => handleInputChange("rating", value)}
+        onChange={(id, value) => handleInputChange("rating", Number(value))}
       />
 
       <FormRow

@@ -23,7 +23,7 @@ const OfferingsCardAdmin = ({ offering, storeId }: OfferingCardProps) => {
     try {
       await dispatch(deleteOffering(offeringId)); // Correct ID is passed here
       toast.success("Offering deleted successfully!");
-    } catch (error) {
+    } catch {
       toast.error("Failed to delete offering. Please try again."); // Corrected message
     }
   };

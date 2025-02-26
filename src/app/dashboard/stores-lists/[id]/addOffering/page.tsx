@@ -7,6 +7,7 @@ import { Offering } from "@/types/types";
 import { addOffering } from "@/reducers/offeringsSlice";
 import { FormRow } from "@/components/FormRow";
 import { AppDispatch } from "@/reducers/store";
+import Image from "next/image";
 
 const AddOfferingPage = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -140,9 +141,11 @@ const AddOfferingPage = () => {
           />
           {imagePreview && (
             <div className="mt-2">
-              <img
+              <Image
                 src={imagePreview}
                 alt="Preview"
+                width={150} // Set appropriate width
+                height={150} // Set appropriate height
                 className="max-w-xs rounded-lg"
               />
             </div>

@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { fetchStoreById } from "@/reducers/storeSlice";
-import { Category } from "@/types/types";
 import EditStep1Categories from "@/components/UpdatingStore/Step1";
 import EditStep2SubCategories from "@/components/UpdatingStore/Step2";
 import EditStep3StoreDetails from "@/components/UpdatingStore/Step3";

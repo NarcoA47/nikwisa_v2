@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React from "react";
 
 const PhotographyAd = () => {
@@ -18,10 +19,12 @@ const PhotographyAd = () => {
 
       {/* Right Content (Image) */}
       <div className="flex-1 px-2 sm:px-4">
-        <img
+        <Image
           src="/assets/home/weddingPhoto.png"
           alt="Couple"
           className="rounded-lg w-full h-auto max-h-[150px] sm:max-h-[300px] object-cover"
+          width={150} // Set appropriate width
+          height={150} // Set appropriate height
         />
       </div>
     </div>

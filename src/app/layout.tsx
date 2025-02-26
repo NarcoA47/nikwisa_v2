@@ -4,7 +4,6 @@ import { usePathname } from "next/navigation"; // Import Next.js router
 import { Poppins, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
-import BottomNavigation from "@/components/BottomNavigation";
 import { Provider } from "react-redux";
 import store from "@/reducers/store";
 

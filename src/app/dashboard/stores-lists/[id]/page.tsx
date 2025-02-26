@@ -2,7 +2,6 @@
 
 import StoreDetailsHeader from "@/components/event-planning/StoreDetailsHeader";
 import AddReview from "@/components/event-planning/tabs/AddReview";
-import Offerings from "@/components/event-planning/tabs/Offerings";
 import Overview from "@/components/event-planning/tabs/Overview";
 import Reviews from "@/components/event-planning/tabs/Reviews";
 import { AppDispatch, RootState } from "@/reducers/store";
@@ -102,7 +101,7 @@ const StoreDetailPage: React.FC = () => {
               <AddReview
                 storeId={store.id} // Pass storeId to AddReview
                 user={user} // Pass decoded user details
-                onSubmit={(newReview) => {
+                onSubmit={() => {
                   dispatch(fetchReviewsByStoreId(store.id)); // Refresh reviews after adding
                   setShowAddReviewForm(false); // Hide form after submission
                 }}

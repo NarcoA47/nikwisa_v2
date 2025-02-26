@@ -6,71 +6,42 @@ import Step3StoreDetails from "@/components/Categories/Step3Details";
 import React, { useState } from "react";
 
 interface StoreData {
-  categories: string[];
-  event_planning_categories: string[];
-  rent_hire_categories: string[];
+  categories: string[]; // Categories are strings
+  event_planning_categories: string[]; // Subcategories are strings
+  rent_hire_categories: string[]; // Subcategories are strings
   name: string;
   phone_number: string;
   whats_app: string;
-  image: File | null;
+  image: File | null; // Changed from string to File | null
   overview: string;
   location: string;
   working_hours: string;
-  owner: string | null;
+  owner: null | string;
 }
-
-const initialStoreData: StoreData = {
-  categories: [],
-  event_planning_categories: [],
-  rent_hire_categories: [],
-  name: "",
-  phone_number: "",
-  whats_app: "",
-  image: null,
-  overview: "",
-  location: "",
-  working_hours: "",
-  owner: null,
-};
 
 const CreateStoreSteps = () => {
   const [step, setStep] = useState(1);
-  const [storeData, setStoreData] = useState<StoreData>(initialStoreData);
-
-  // Debug logging
-  console.log("Current step:", step);
-  console.log("Current store data:", storeData);
+  const [storeData, setStoreData] = useState<StoreData>({
+    categories: [], // Categories are strings
+    event_planning_categories: [], // Subcategories are strings
+    rent_hire_categories: [], // Subcategories are strings
+    name: "",
+    phone_number: "",
+    whats_app: "",
+    image: null, // Changed from empty string to null
+    overview: "",
+    location: "",
+    working_hours: "",
+    owner: null,
+  });
 
   const handleNext = (newData: Partial<StoreData>) => {
-    setStoreData((prev) => {
-      const updated = {
-        ...prev,
-        ...newData,
-        // Ensure arrays are properly handled
-        categories: newData.categories || prev.categories,
-        event_planning_categories:
-          newData.event_planning_categories || prev.event_planning_categories,
-        rent_hire_categories:
-          newData.rent_hire_categories || prev.rent_hire_categories,
-      };
-      console.log("Updating store data:", updated);
-      return updated;
-    });
+    setStoreData((prev) => ({ ...prev, ...newData }));
     setStep((prev) => prev + 1);
   };
 
   const handlePrevious = () => {
     setStep((prev) => prev - 1);
-  };
-
-  const handleSubmit = async (finalData: Partial<StoreData>) => {
-    // Combine all data for final submission
-    const completeData = {
-      ...storeData,
-      ...finalData,
-    };
-    console.log("Submitting complete data:", completeData);
-    // Handle submission logic here
   };
 
   return (
@@ -85,27 +56,23 @@ const CreateStoreSteps = () => {
       )}
       {step === 2 && (
         <Step2SubCategories
-          selectedCategories={storeData.categories}
-          selectedEventCategories={storeData.event_planning_categories}
-          selectedRentHireCategories={storeData.rent_hire_categories}
+          selectedCategories={storeData.categories} // Pass string[]
+          selectedEventCategories={storeData.event_planning_categories} // Pass string[]
+          selectedRentHireCategories={storeData.rent_hire_categories} // Pass string[]
           onPrevious={handlePrevious}
           onNext={(data: {
-            event_planning_categories?: string[];
-            rent_hire_categories?: string[];
+            event_planning_categories: string[];
+            rent_hire_categories: string[];
           }) =>
             handleNext({
-              event_planning_categories: data.event_planning_categories || [],
-              rent_hire_categories: data.rent_hire_categories || [],
+              event_planning_categories: data.event_planning_categories,
+              rent_hire_categories: data.rent_hire_categories,
             })
           }
         />
       )}
       {step === 3 && (
-        <Step3StoreDetails
-          storeData={storeData}
-          onPrevious={handlePrevious}
-          onSubmit={handleSubmit}
-        />
+        <Step3StoreDetails storeData={storeData} onPrevious={handlePrevious} />
       )}
     </div>
   );
@@ -120,12 +87,26 @@ export default CreateStoreSteps;
 // import Step3StoreDetails from "@/components/Categories/Step3Details";
 // import React, { useState } from "react";
 
+// interface StoreData {
+//   categories: string[]; // Categories are strings
+//   event_planning_categories: string[]; // Subcategories are strings
+//   rent_hire_categories: string[]; // Subcategories are strings
+//   name: string;
+//   phone_number: string;
+//   whats_app: string;
+//   image: string;
+//   overview: string;
+//   location: string;
+//   working_hours: string;
+//   owner: null | string;
+// }
+
 // const CreateStoreSteps = () => {
 //   const [step, setStep] = useState(1);
-//   const [storeData, setStoreData] = useState({
-//     categories: [],
-//     event_planning_categories: [],
-//     rent_hire_categories: [],
+//   const [storeData, setStoreData] = useState<StoreData>({
+//     categories: [], // Categories are strings
+//     event_planning_categories: [], // Subcategories are strings
+//     rent_hire_categories: [], // Subcategories are strings
 //     name: "",
 //     phone_number: "",
 //     whats_app: "",
@@ -136,7 +117,7 @@ export default CreateStoreSteps;
 //     owner: null,
 //   });
 
-//   const handleNext = (newData: any) => {
+//   const handleNext = (newData: Partial<StoreData>) => {
 //     setStoreData((prev) => ({ ...prev, ...newData }));
 //     setStep((prev) => prev + 1);
 //   };
@@ -150,24 +131,27 @@ export default CreateStoreSteps;
 //       {step === 1 && (
 //         <Step1Categories
 //           selectedCategories={storeData.categories}
-//           onNext={handleNext}
+//           onNext={(data: { categories: string[] }) =>
+//             handleNext({ categories: data.categories })
+//           }
 //         />
 //       )}
 //       {step === 2 && (
 //         <Step2SubCategories
-//           selectedCategories={storeData.categories}
-//           selectedEventCategories={storeData.event_planning_categories}
-//           selectedRentHireCategories={storeData.rent_hire_categories}
+//           selectedCategories={storeData.categories} // Pass string[]
+//           selectedEventCategories={storeData.event_planning_categories} // Pass string[]
+//           selectedRentHireCategories={storeData.rent_hire_categories} // Pass string[]
 //           onPrevious={handlePrevious}
-//           onNext={handleNext}
+//           onNext={(data: {
+//             event_planning_categories: string[];
+//             rent_hire_categories: string[];
+//           }) =>
+//             handleNext({
+//               event_planning_categories: data.event_planning_categories,
+//               rent_hire_categories: data.rent_hire_categories,
+//             })
+//           }
 //         />
-
-//         // <Step2SubCategories
-//         //   selectedCategories={storeData.categories}
-//         //   selectedEventCategories={storeData.event_planning_categories}
-//         //   onPrevious={handlePrevious}
-//         //   onNext={handleNext}
-//         // />
 //       )}
 //       {step === 3 && (
 //         <Step3StoreDetails

@@ -23,7 +23,7 @@ export const refreshAccessToken = async () => {
     const { access } = response.data;
     Cookies.set("access_token", access);
     return access;
-  } catch (error) {
+  } catch {
     throw new Error("Failed to refresh access token");
   }
 };
@@ -37,7 +37,7 @@ export const addStore = createAsyncThunk(
   async (storeData: StoreData, thunkAPI) => {
     try {
       // Retrieve the token from cookies (or wherever it's stored)
-      let accessToken = Cookies.get("access_token");
+      const accessToken = Cookies.get("access_token");
 
       if (!accessToken) {
         return thunkAPI.rejectWithValue("User not authenticated");
@@ -234,7 +234,7 @@ export const updateStore = createAsyncThunk(
   ) => {
     try {
       // Retrieve the token from cookies
-      let accessToken = Cookies.get("access_token");
+      const accessToken = Cookies.get("access_token");
 
       if (!accessToken) {
         return thunkAPI.rejectWithValue("User not authenticated");
@@ -296,7 +296,7 @@ export const partialUpdateStore = createAsyncThunk(
   ) => {
     try {
       // Retrieve the token from cookies (or wherever it's stored)
-      let accessToken = Cookies.get("access_token");
+      const accessToken = Cookies.get("access_token");
 
       if (!accessToken) {
         return thunkAPI.rejectWithValue("User not authenticated");
@@ -330,7 +330,7 @@ export const deleteStore = createAsyncThunk(
   async (storeId: string, thunkAPI) => {
     try {
       // Retrieve the token from cookies (or wherever it's stored)
-      let accessToken = Cookies.get("access_token");
+      const accessToken = Cookies.get("access_token");
 
       if (!accessToken) {
         return thunkAPI.rejectWithValue("User not authenticated");

@@ -27,7 +27,7 @@ const ForBride = () => {
   if (status === "loading") return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
   if (filteredSubcategories.length === 0)
-    return <div>No subcategories found containing "bride".</div>;
+    return <div>No subcategories found containing &quot;bride&quot;.</div>;
 
   const brideCategories = filteredSubcategories.flatMap(
     (subcategory) => subcategory.categories || []

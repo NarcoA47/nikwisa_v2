@@ -28,7 +28,7 @@ const StorePage: React.FC = () => {
   // Extract user ID from token
   useEffect(() => {
     const fetchUserData = async () => {
-      let accessToken = Cookies.get("access_token");
+      const accessToken = Cookies.get("access_token");
       if (!accessToken) {
         router.push("/signin");
         return;

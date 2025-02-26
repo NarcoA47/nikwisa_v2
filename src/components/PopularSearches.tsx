@@ -67,7 +67,7 @@ const PopularSearches = () => {
           className="flex md:hidden gap-4 overflow-x-scroll scrollbar-hide"
           onScroll={handleScroll} // Update the active slide on scroll
         >
-          {searches.map((item, index) => (
+          {searches.map((item) => (
             <div
               key={item.id}
               className="flex-shrink-0 w-1/3 bg-[#F2E5D4] shadow-md rounded-lg overflow-hidden flex flex-col"

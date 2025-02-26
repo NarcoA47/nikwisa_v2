@@ -38,7 +38,9 @@ const TheBigDay = () => {
   }
 
   if (filteredSubcategories.length === 0) {
-    return <div>No subcategories found containing "For Big Day".</div>;
+    return (
+      <div>No subcategories found containing &quot;For Big Day&quot;.</div>
+    );
   }
 
   return (

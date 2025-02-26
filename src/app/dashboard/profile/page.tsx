@@ -3,16 +3,33 @@
 import { fetchUserById } from "@/reducers/authSlice";
 import { AppDispatch, RootState } from "@/reducers/store";
 import { useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
+import Image from "next/image";
+import { DecodedToken } from "@/types/types";
+
+// Define a type for the decoded JWT token
 
 const ProfilePage = () => {
   const router = useRouter();
   const dispatch: AppDispatch = useDispatch();
-  const { user, loading: userLoading } = useSelector(
-    (state: RootState) => state.auth
+  const { user } = useSelector((state: RootState) => state.auth);
+
+  // Function to fetch user data
+  const fetchUserData = useCallback(
+    (token: string) => {
+      try {
+        const decoded: DecodedToken = jwtDecode<DecodedToken>(token);
+        if (decoded?.user_id) {
+          dispatch(fetchUserById(decoded.user_id));
+        }
+      } catch (err) {
+        console.error("Failed to decode token", err);
+      }
+    },
+    [dispatch]
   );
 
   useEffect(() => {
@@ -20,18 +37,7 @@ const ProfilePage = () => {
     if (token) {
       fetchUserData(token);
     }
-  }, []);
-
-  const fetchUserData = (token: string) => {
-    try {
-      const decoded: any = jwtDecode(token);
-      if (decoded?.user_id) {
-        dispatch(fetchUserById(decoded.user_id));
-      }
-    } catch (err) {
-      console.error("Failed to decode token", err);
-    }
-  };
+  }, [fetchUserData]);
 
   const handleEditProfileClick = () => {
     router.push(`/dashboard/profile/${user?.id}`);
@@ -44,9 +50,11 @@ const ProfilePage = () => {
         <div className="w-full md:w-1/3 min-h-full">
           <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="flex flex-col items-center">
-              <img
+              <Image
                 src={user?.profile_image || "/default-avatar.jpg"}
                 alt={user?.username || "User Profile"}
+                width={128}
+                height={128}
                 className="w-32 h-32 object-cover rounded-full mb-4"
               />
               <h3 className="text-xl font-semibold mb-2">
@@ -147,10 +155,10 @@ export default ProfilePage;
 //   };
 
 //   return (
-//     <div className="container mx-auto p-4 md:p-8 bg-red-700">
+//     <div className="container mx-auto p-4 md:p-8 ">
 //       <div className="flex flex-col md:flex-row gap-6">
 //         {/* Left Profile Card */}
-//         <div className="w-full md:w-1/3">
+//         <div className="w-full md:w-1/3 min-h-full">
 //           <div className="bg-white rounded-xl shadow-lg p-6">
 //             <div className="flex flex-col items-center">
 //               <img
@@ -176,9 +184,9 @@ export default ProfilePage;
 //         </div>
 
 //         {/* Right Column - Stacked Cards */}
-//         <div className="w-full md:w-1/2 flex flex-col gap-6 ">
+//         <div className="w-full md:w-2/3 flex flex-col gap-6 min-h-full">
 //           {/* Top Card - Account Information */}
-//           <div className="bg-white rounded-xl shadow-lg p-6">
+//           <div className="bg-white rounded-xl shadow-lg p-6 flex-1">
 //             <h2 className="text-xl font-semibold mb-4">Account Information</h2>
 //             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 //               <div>

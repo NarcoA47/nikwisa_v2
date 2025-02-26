@@ -2,7 +2,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation"; // To track the active route
 import { AiOutlineHome } from "react-icons/ai";
 import { FaUser } from "react-icons/fa";
-import { RiGitClosePullRequestFill, RiStore2Fill } from "react-icons/ri";
+import { RiStore2Fill } from "react-icons/ri";
 
 export const links = [
   { id: 1, text: "Home", path: "/dashboard", icon: <AiOutlineHome /> },

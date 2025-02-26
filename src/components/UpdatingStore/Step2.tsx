@@ -18,6 +18,14 @@ interface Props {
   onNext: (payload: Step2Payload) => void;
 }
 
+interface Category {
+  id: number;
+  title: string;
+  slug: string;
+  categories?: number[];
+  image?: string;
+}
+
 const EditStep2SubCategories: React.FC<Props> = ({
   selectedCategories = [],
   selectedEventCategories = [],
@@ -27,25 +35,27 @@ const EditStep2SubCategories: React.FC<Props> = ({
 }) => {
   const dispatch: AppDispatch = useDispatch();
 
+  // Move useSelector to the top level
+  const eventCategories = useSelector(
+    (state: RootState) => state.eventProduct.event_categories
+  );
+  const rentHireCategories = useSelector(
+    (state: RootState) => state.rentHireProduct.rent_hire_categories
+  );
+
+  const [selectedEvents, setSelectedEvents] = useState<number[]>([]);
+  const [selectedRentals, setSelectedRentals] = useState<number[]>([]);
+
   useEffect(() => {
     dispatch(fetchEventCategories());
     dispatch(fetchRentHireCategories());
   }, [dispatch]);
 
-  const eventCategories =
-    useSelector((state: RootState) => state.eventProduct.event_categories) ??
-    [];
-
-  const rentHireCategories =
-    useSelector(
-      (state: RootState) => state.rentHireProduct.rent_hire_categories
-    ) ?? [];
-
-  const [selectedEvents, setSelectedEvents] = useState<number[]>([]);
-  const [selectedRentals, setSelectedRentals] = useState<number[]>([]);
-
   // Function to extract IDs from mixed string/number array
-  const extractIds = (categories: any[], categoryList: any[]): number[] => {
+  const extractIds = (
+    categories: (string | number)[],
+    categoryList: Category[]
+  ): number[] => {
     return categories
       .map((cat) => {
         // If it's already a number or can be converted to a number
@@ -66,13 +76,16 @@ const EditStep2SubCategories: React.FC<Props> = ({
   // Initialize selected categories from props
   useEffect(() => {
     if (Array.isArray(selectedEventCategories)) {
-      const eventIds = extractIds(selectedEventCategories, eventCategories);
+      const eventIds = extractIds(
+        selectedEventCategories,
+        eventCategories || []
+      );
       setSelectedEvents(eventIds);
     }
     if (Array.isArray(selectedRentHireCategories)) {
       const rentalIds = extractIds(
         selectedRentHireCategories,
-        rentHireCategories
+        rentHireCategories || []
       );
       setSelectedRentals(rentalIds);
     }
@@ -83,6 +96,7 @@ const EditStep2SubCategories: React.FC<Props> = ({
     rentHireCategories,
   ]);
 
+  // Memoize filtered event categories
   const filteredEventCategories = useMemo(() => {
     if (!Array.isArray(selectedCategories) || !Array.isArray(eventCategories))
       return [];
@@ -94,6 +108,7 @@ const EditStep2SubCategories: React.FC<Props> = ({
     );
   }, [eventCategories, selectedCategories]);
 
+  // Memoize filtered rent/hire categories
   const filteredRentHireCategories = useMemo(() => {
     if (
       !Array.isArray(selectedCategories) ||
@@ -224,9 +239,6 @@ const EditStep2SubCategories: React.FC<Props> = ({
 
 export default EditStep2SubCategories;
 
-// // Previous components remain the same...
-
-// // components/Categories/EditStep2SubCategories.tsx
 // import React, { useEffect, useState, useMemo } from "react";
 // import { useDispatch, useSelector } from "react-redux";
 // import { fetchEventCategories } from "@/reducers/eventSlice";
@@ -235,17 +247,25 @@ export default EditStep2SubCategories;
 // import Image from "next/image";
 
 // interface Step2Payload {
-//   event_planning_categories?: string[];
-//   rent_hire_categories?: string[];
+//   event_planning_categories: number[];
+//   rent_hire_categories: number[];
 // }
 
-// const EditStep2SubCategories = ({
-//   selectedCategories,
-//   selectedEventCategories,
-//   selectedRentHireCategories,
+// interface Props {
+//   selectedCategories: number[];
+//   selectedEventCategories: (string | number)[];
+//   selectedRentHireCategories: (string | number)[];
+//   onPrevious: () => void;
+//   onNext: (payload: Step2Payload) => void;
+// }
+
+// const EditStep2SubCategories: React.FC<Props> = ({
+//   selectedCategories = [],
+//   selectedEventCategories = [],
+//   selectedRentHireCategories = [],
 //   onPrevious,
 //   onNext,
-// }: any) => {
+// }) => {
 //   const dispatch: AppDispatch = useDispatch();
 
 //   useEffect(() => {
@@ -253,43 +273,83 @@ export default EditStep2SubCategories;
 //     dispatch(fetchRentHireCategories());
 //   }, [dispatch]);
 
-//   const eventCategories = useSelector(
-//     (state: RootState) => state.eventProduct.event_categories
-//   );
-//   const rentHireCategories = useSelector(
-//     (state: RootState) => state.rentHireProduct.rent_hire_categories
-//   );
+//   const eventCategories =
+//     useSelector((state: RootState) => state.eventProduct.event_categories) ??
+//     [];
 
-//   const [selectedEvents, setSelectedEvents] = useState<string[]>(
-//     selectedEventCategories || []
-//   );
-//   const [selectedRentals, setSelectedRentals] = useState<string[]>(
-//     selectedRentHireCategories || []
-//   );
+//   const rentHireCategories =
+//     useSelector(
+//       (state: RootState) => state.rentHireProduct.rent_hire_categories
+//     ) ?? [];
 
-//   // Update selected values when props change
+//   const [selectedEvents, setSelectedEvents] = useState<number[]>([]);
+//   const [selectedRentals, setSelectedRentals] = useState<number[]>([]);
+
+//   // Function to extract IDs from mixed string/number array
+//   const extractIds = (categories: any[], categoryList: any[]): number[] => {
+//     return categories
+//       .map((cat) => {
+//         // If it's already a number or can be converted to a number
+//         if (!isNaN(Number(cat))) {
+//           return Number(cat);
+//         }
+//         // If it's a string (title/slug), find matching category ID
+//         const matchingCategory = categoryList.find(
+//           (listCat) =>
+//             listCat.title.toLowerCase() === cat.toLowerCase() ||
+//             listCat.slug === cat
+//         );
+//         return matchingCategory ? matchingCategory.id : null;
+//       })
+//       .filter((id): id is number => id !== null);
+//   };
+
+//   // Initialize selected categories from props
 //   useEffect(() => {
-//     setSelectedEvents(selectedEventCategories || []);
-//     setSelectedRentals(selectedRentHireCategories || []);
-//   }, [selectedEventCategories, selectedRentHireCategories]);
+//     if (Array.isArray(selectedEventCategories)) {
+//       const eventIds = extractIds(selectedEventCategories, eventCategories);
+//       setSelectedEvents(eventIds);
+//     }
+//     if (Array.isArray(selectedRentHireCategories)) {
+//       const rentalIds = extractIds(
+//         selectedRentHireCategories,
+//         rentHireCategories
+//       );
+//       setSelectedRentals(rentalIds);
+//     }
+//   }, [
+//     selectedEventCategories,
+//     selectedRentHireCategories,
+//     eventCategories,
+//     rentHireCategories,
+//   ]);
 
 //   const filteredEventCategories = useMemo(() => {
+//     if (!Array.isArray(selectedCategories) || !Array.isArray(eventCategories))
+//       return [];
+
 //     return eventCategories.filter((eventCategory) =>
-//       eventCategory.categories.some((categoryId: number) =>
-//         selectedCategories.includes(categoryId)
+//       eventCategory.categories?.some((categoryId: number) =>
+//         selectedCategories.includes(Number(categoryId))
 //       )
 //     );
 //   }, [eventCategories, selectedCategories]);
 
 //   const filteredRentHireCategories = useMemo(() => {
+//     if (
+//       !Array.isArray(selectedCategories) ||
+//       !Array.isArray(rentHireCategories)
+//     )
+//       return [];
+
 //     return rentHireCategories.filter((rentCategory) =>
 //       rentCategory.categories?.some((categoryId: number) =>
-//         selectedCategories.includes(categoryId)
+//         selectedCategories.includes(Number(categoryId))
 //       )
 //     );
 //   }, [rentHireCategories, selectedCategories]);
 
-//   const toggleEventCategory = (categoryId: string) => {
+//   const toggleEventCategory = (categoryId: number) => {
 //     setSelectedEvents((prev) =>
 //       prev.includes(categoryId)
 //         ? prev.filter((id) => id !== categoryId)
@@ -297,7 +357,7 @@ export default EditStep2SubCategories;
 //     );
 //   };
 
-//   const toggleRentHireCategory = (categoryId: string) => {
+//   const toggleRentHireCategory = (categoryId: number) => {
 //     setSelectedRentals((prev) =>
 //       prev.includes(categoryId)
 //         ? prev.filter((id) => id !== categoryId)
@@ -311,7 +371,7 @@ export default EditStep2SubCategories;
 //       return;
 //     }
 
-//     const payload = {
+//     const payload: Step2Payload = {
 //       event_planning_categories: selectedEvents,
 //       rent_hire_categories: selectedRentals,
 //     };
@@ -404,5 +464,3 @@ export default EditStep2SubCategories;
 // };
 
 // export default EditStep2SubCategories;
-
-// Rest of the components remain the same...

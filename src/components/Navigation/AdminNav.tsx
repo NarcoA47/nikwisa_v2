@@ -8,6 +8,7 @@ import { useSelector, useDispatch } from "react-redux"; // Import Redux hooks
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode"; // Fixed import issue
 import { logout } from "@/reducers/authSlice";
+import { RootState } from "@/reducers/store";
 
 interface AdminNavProps {
   toggleSidebar: () => void;
@@ -17,7 +18,9 @@ const AdminNav: React.FC<AdminNavProps> = ({ toggleSidebar }) => {
   const router = useRouter();
   const dispatch = useDispatch(); // Initialize Redux dispatch
   const [showLogout, setShowLogout] = useState(false);
-  const user = useSelector((state: any) => state.auth.user); // Access user from Redux store
+  // const user = useSelector((state: any) => state.auth.user); // Access user from Redux store
+  const user = useSelector((state: RootState) => state.auth.user);
+  console.log("user", user);
 
   useEffect(() => {
     const accessToken = Cookies.get("access_token");

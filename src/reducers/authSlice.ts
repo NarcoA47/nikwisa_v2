@@ -24,10 +24,6 @@ const initialState: AuthState = {
   users: [],
 };
 
-const isTokenExpired = (token: string) => {
-  const decoded: any = jwtDecode(token);
-  return decoded.exp * 1000 < Date.now();
-};
 // Inside the loginUser async thunk:
 export const loginUser = createAsyncThunk(
   "auth/login",
@@ -144,8 +140,11 @@ export const fetchUser = createAsyncThunk(
       }
 
       return await response.json();
-    } catch (error: any) {
-      return rejectWithValue(error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
     }
   }
 );
@@ -177,8 +176,11 @@ export const refreshToken = createAsyncThunk(
       const data = await response.json();
       Cookies.set("access_token", data.access);
       return data.access;
-    } catch (error: any) {
-      return rejectWithValue(error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
     }
   }
 );
@@ -204,8 +206,11 @@ export const fetchAllUsers = createAsyncThunk(
       }
 
       return await response.json();
-    } catch (error: any) {
-      return rejectWithValue(error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
     }
   }
 );
@@ -215,7 +220,7 @@ export const fetchUserById = createAsyncThunk(
   "auth/fetchUserById",
   async (userId: number, thunkAPI) => {
     try {
-      let accessToken = Cookies.get("access_token");
+      const accessToken = Cookies.get("access_token");
 
       if (!accessToken) {
         return thunkAPI.rejectWithValue("User not authenticated");
@@ -252,7 +257,10 @@ export const fetchUserById = createAsyncThunk(
 
 export const updateProfile = createAsyncThunk(
   "auth/updateProfile",
-  async ({ userId, userData }: { userData: User }, thunkAPI) => {
+  async (
+    { userId, userData }: { userId: number; userData: FormData },
+    thunkAPI
+  ) => {
     try {
       const accessToken = Cookies.get("access_token");
       if (!accessToken) {
@@ -261,7 +269,7 @@ export const updateProfile = createAsyncThunk(
       }
       const response = await axios.patch(
         `${process.env.NEXT_PUBLIC_API_ENDPOINT}/users/${userId}/`,
-        userData,
+        userData, // No need to cast to 'any'
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -278,6 +286,38 @@ export const updateProfile = createAsyncThunk(
     }
   }
 );
+
+// export const updateProfile = createAsyncThunk(
+//   "auth/updateProfile",
+//   async (
+//     { userId, userData }: { userId: number; userData: Partial<User> },
+//     thunkAPI
+//   ) => {
+//     try {
+//       const accessToken = Cookies.get("access_token");
+//       if (!accessToken) {
+//         console.error("Access token is missing");
+//         return thunkAPI.rejectWithValue("User not authenticated");
+//       }
+//       const response = await axios.patch(
+//         `${process.env.NEXT_PUBLIC_API_ENDPOINT}/users/${userId}/`,
+//         userData,
+//         {
+//           headers: {
+//             Authorization: `Bearer ${accessToken}`,
+//             "Content-Type": "multipart/form-data",
+//           },
+//         }
+//       );
+//       return response.data as User;
+//     } catch (error) {
+//       if (axios.isAxiosError(error) && error.response) {
+//         return thunkAPI.rejectWithValue(error.response.data.message);
+//       }
+//       return thunkAPI.rejectWithValue("An unknown error occurred");
+//     }
+//   }
+// );
 // Slice definition
 const authSlice = createSlice({
   name: "auth",

@@ -36,7 +36,7 @@ const PreEvent = () => {
   }
 
   if (filteredSubcategories.length === 0) {
-    return <div>No subcategories found containing "prevent".</div>;
+    return <div>No subcategories found containing &quot;prevent&quot;.</div>;
   }
 
   return (

@@ -213,7 +213,6 @@ export interface User {
   state: string | null;
   country: string | null;
   pincode: string | null;
-  notification_preferences: Record<string, any>;
   facebook_profile: string | null;
   instagram_handle: string | null;
   twitter_handle: string | null;
@@ -441,15 +440,35 @@ export interface RentHireSubcategory {
 }
 
 export interface StoreData {
+  categories: string[]; // Store IDs as strings for consistency
+  event_planning_categories: string[];
+  rent_hire_categories: string[];
   name: string;
-  overview: string;
-  location: string;
   phone_number: string;
   whats_app: string;
+  image: File | null; // Use File | null for the form
+  overview: string;
+  location: string;
   working_hours: string;
-  image: File | null; // Assuming image is a file (e.g., an image upload)
-  owner: string;
-  categories: Category[]; // Categories being passed
-  event_planning_categories: Category[]; // Event planning categories
-  rent_hire_categories: Category[]; // Rent/hire categories
+  owner: null | string;
+}
+
+// export interface StoreData {
+//   name: string;
+//   overview: string;
+//   location: string;
+//   phone_number: string;
+//   whats_app: string;
+//   working_hours: string;
+//   image: File | null; // Assuming image is a file (e.g., an image upload)
+//   owner: string;
+//   categories: Category[]; // Categories being passed
+//   event_planning_categories: Category[]; // Event planning categories
+//   rent_hire_categories: Category[]; // Rent/hire categories
+// }
+
+export interface DecodedToken {
+  user_id: number;
+  username?: string;
+  email?: string;
 }

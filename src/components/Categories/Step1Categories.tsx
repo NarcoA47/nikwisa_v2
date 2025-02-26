@@ -3,8 +3,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchCategories } from "@/reducers/categorySlice";
 import { RootState, AppDispatch } from "@/reducers/store";
 import Image from "next/image";
+interface Step1CategoriesProps {
+  selectedCategories: string[];
+  onNext: (data: { categories: string[] }) => void;
+}
 
-const Step1Categories = ({ selectedCategories, onNext }: any) => {
+const Step1Categories: React.FC<Step1CategoriesProps> = ({
+  selectedCategories,
+  onNext,
+}) => {
   const dispatch: AppDispatch = useDispatch();
   const categories = useSelector(
     (state: RootState) => state.categories.categories

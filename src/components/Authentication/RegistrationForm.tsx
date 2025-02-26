@@ -69,7 +69,7 @@ const RegistrationForm = () => {
 
     try {
       // Create a new object without confirmPassword
-      const { confirmPassword, ...registrationData } = formData;
+      const { ...registrationData } = formData;
 
       const resultAction = await dispatch(registerUser(registrationData));
       if (registerUser.fulfilled.match(resultAction)) {
@@ -77,7 +77,7 @@ const RegistrationForm = () => {
         setAlertType("success");
         router.push("/signin");
       }
-    } catch (err) {
+    } catch {
       setAlertMessage("Registration failed: An unknown error occurred.");
       setAlertType("error");
     }
