@@ -7,10 +7,6 @@ import { AddReviewProps } from '../../../types/types';
 
 const AddReview: React.FC<AddReviewProps> = ({ storeId }) => {
   const dispatch: AppDispatch = useDispatch();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleSubmit = async (data: { rating: number; comment: string }) => {
-    setIsSubmitting(true);
     try {
       await dispatch(addReview({ storeId, reviewData: data }));
     } finally {

@@ -2,7 +2,7 @@
 
 import StoreDetailsHeader from "@/components/event-planning/StoreDetailsHeader";
 import AddReview from "@/components/event-planning/tabs/AddReview";
-// import Offerings from "@/components/event-planning/tabs/Offerings";
+
 import Overview from "@/components/event-planning/tabs/Overview";
 import Reviews from "@/components/event-planning/tabs/Reviews";
 import { AppDispatch, RootState } from "@/reducers/store";

@@ -7,6 +7,7 @@ import { RootState, AppDispatch } from "@/reducers/store";
 import { uploadMultipleImages } from "@/reducers/imageSlice";
 import Alert from "@/components/forms/Alert";
 import Image from "next/image";
+import Image from "next/image";
 
 const Page = () => {
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
@@ -19,7 +20,6 @@ const Page = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null); // Reference for the file input
 
   const loading = useSelector((state: RootState) => state.images.loading);
-  // const error = useSelector((state: RootState) => state.images.error);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -106,6 +106,7 @@ const Page = () => {
         setAlertType(null);
       }, 3000);
     } catch {
+    } catch {
       setAlertMessage("Failed to upload images: An unknown error occurred");
       setAlertType("error");
 
@@ -146,8 +147,11 @@ const Page = () => {
               {imagePreviews.map((preview, idx) => (
                 <div key={idx} className="relative">
                   <Image
+                  <Image
                     src={preview}
                     alt={`Selected Image ${idx}`}
+                    width={150} // Set appropriate width
+                    height={150} // Set appropriate height
                     className="w-full h-32 object-cover rounded-lg"
                     width={128}
                     height={128}

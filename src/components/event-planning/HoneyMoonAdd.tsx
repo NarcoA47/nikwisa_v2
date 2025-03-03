@@ -10,8 +10,8 @@ const HoneymoonAdd = () => {
           src="/assets/home/honeymoon.png"
           alt="Honeymoon Beach"
           className="w-full h-full object-cover"
-          width={100}
-          height={100}
+          width={150} // Set appropriate width
+          height={150} // Set appropriate height
         />
       </div>
 

@@ -13,7 +13,6 @@ const OfferingsAdmin = ({ storeId }: { storeId: number }) => {
   );
 
   const router = useRouter();
-  // const { id } = useParams();
   // Fetch offerings when component mounts or storeId changes
   useEffect(() => {
     dispatch(fetchOfferingsByStoreId(storeId));
@@ -30,12 +29,6 @@ const OfferingsAdmin = ({ storeId }: { storeId: number }) => {
     return <div>Error: {error}</div>;
   }
 
-  // Edit service handler
-
-  // Delete service handler
-  // const handleDelete = (id: string) => {
-  //   console.log("deleting offering with is:", id);
-  // };
   return (
     <div>
       <div className="flex justify-between items-center mb-4">

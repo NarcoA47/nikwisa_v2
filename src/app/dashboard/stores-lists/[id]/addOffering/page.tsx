@@ -144,6 +144,8 @@ const AddOfferingPage = () => {
             <div className="mt-2">
               <Image                src={imagePreview}
                 alt="Preview"
+                width={150} // Set appropriate width
+                height={150} // Set appropriate height
                 className="max-w-xs rounded-lg"
                 width={128}
                 height={128}

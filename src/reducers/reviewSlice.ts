@@ -49,11 +49,6 @@ export const addReview = createAsyncThunk(
         return thunkAPI.rejectWithValue("User not authenticated");
       }
 
-      // Debug token
-
-      // const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
-     // const tokenPayload = JSON.parse(atob(accessToken.split(".")[1]));
-
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_ENDPOINT}/reviews/`,
         {

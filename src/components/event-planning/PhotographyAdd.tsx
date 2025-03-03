@@ -23,8 +23,8 @@ const PhotographyAd = () => {
           src="/assets/home/weddingPhoto.png"
           alt="Couple"
           className="rounded-lg w-full h-auto max-h-[150px] sm:max-h-[300px] object-cover"
-          width={128}
-          height={128}
+          width={150} // Set appropriate width
+          height={150} // Set appropriate height
         />
       </div>
     </div>
