@@ -94,6 +94,8 @@ const Reviews: React.FC<ReviewsProps> = ({ storeId }) => {
               width={64}
               height={64}
               className="w-16 h-16 rounded-full object-cover"
+              width={128}
+              height={128}
             />
 
             {/* <Image

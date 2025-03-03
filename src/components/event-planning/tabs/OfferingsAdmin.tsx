@@ -13,7 +13,6 @@ const OfferingsAdmin = ({ storeId }: { storeId: number }) => {
   );
 
   const router = useRouter();
-
   // Fetch offerings when component mounts or storeId changes
   useEffect(() => {
     dispatch(fetchOfferingsByStoreId(storeId));

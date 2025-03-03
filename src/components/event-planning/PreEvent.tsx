@@ -76,6 +76,7 @@ const PreEvent = () => {
                     width={100} // Specify the width of the image
                     height={100} // Specify the height of the image
                     className="w-full h-full object-contain rounded p-2"
+                    
                   />
                 </div>
                 {/* Name Section */}

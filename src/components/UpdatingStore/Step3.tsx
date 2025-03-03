@@ -183,7 +183,7 @@ const EditStep3StoreDetails = ({
       <FormRow
         type="text"
         name="name"
-        value={data.name}
+        value={data.name || ""}
         handleChange={(e) => handleInputChange("name", e.target.value)}
         labelText="Store Name"
         placeholder="Enter store name"
@@ -193,7 +193,7 @@ const EditStep3StoreDetails = ({
       <FormRow
         type="textarea"
         name="overview"
-        value={data.overview}
+        value={data.overview || ""}
         handleChange={(e) => handleInputChange("overview", e.target.value)}
         labelText="Store Overview"
         placeholder="Enter a brief description"
@@ -203,7 +203,7 @@ const EditStep3StoreDetails = ({
       <FormRow
         type="text"
         name="location"
-        value={data.location}
+        value={data.location || ""}
         handleChange={(e) => handleInputChange("location", e.target.value)}
         labelText="Location"
         placeholder="Enter location"
@@ -213,7 +213,7 @@ const EditStep3StoreDetails = ({
       <FormRow
         type="text"
         name="phone_number"
-        value={data.phone_number}
+        value={data.phone_number || ""}
         handleChange={(e) => handleInputChange("phone_number", e.target.value)}
         labelText="Phone Number"
         placeholder="Enter phone number (e.g., +1234567890)"
@@ -223,7 +223,7 @@ const EditStep3StoreDetails = ({
       <FormRow
         type="text"
         name="whats_app"
-        value={data.whats_app}
+        value={data.whats_app || ""}
         handleChange={(e) => handleInputChange("whats_app", e.target.value)}
         labelText="WhatsApp Number"
         placeholder="Enter WhatsApp number (e.g., +1234567890)"
@@ -233,7 +233,7 @@ const EditStep3StoreDetails = ({
       <FormRow
         type="text"
         name="working_hours"
-        value={data.working_hours}
+        value={data.working_hours || ""}
         handleChange={(e) => handleInputChange("working_hours", e.target.value)}
         labelText="Working Hours"
         placeholder="e.g., Mon-Fri: 9AM-6PM, Sat: 10AM-4PM"

@@ -1,17 +1,12 @@
 import React, { useState } from "react";
-
 import { AppDispatch } from "@/reducers/store";
 import { useDispatch } from "react-redux";
 import { addReview } from "@/reducers/reviewSlice";
 import ReviewForm from "@/components/forms/ReviewForm";
+import { AddReviewProps } from '../../../types/types';
 
-const AddReview: React.FC<{ storeId: number }> = ({ storeId }) => {
+const AddReview: React.FC<AddReviewProps> = ({ storeId }) => {
   const dispatch: AppDispatch = useDispatch();
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleSubmit = async (data: { rating: number; comment: string }) => {
-    setIsSubmitting(true);
     try {
       await dispatch(addReview({ storeId, reviewData: data }));
     } finally {
@@ -20,11 +15,21 @@ const AddReview: React.FC<{ storeId: number }> = ({ storeId }) => {
   };
 
   return (
-    <ReviewForm
-      initialData={{ rating: 0, comment: "" }}
-      onSubmit={handleSubmit}
-      isSubmitting={isSubmitting}
-    />
+    <div>
+      <ReviewForm
+        initialData={{ rating: 0, comment: "" }}
+        onSubmit={handleSubmit}
+        isSubmitting={isSubmitting}
+      />
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmit({ rating: 0, comment: "" });
+        }}
+      >
+        <button type="submit">Submit Review</button>
+      </form>
+    </div>
   );
 };
 

@@ -66,6 +66,7 @@ const ForBride = () => {
                   width={100} // Specify the width of the image
                   height={100} // Specify the height of the image
                   className="w-full h-full object-contain rounded p-2"
+                  
                 />
               </div>
               <p className="mt-2 text-sm sm:text-base lg:text-lg text-gray-700">

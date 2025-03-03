@@ -47,6 +47,7 @@ const PopularSearches = () => {
                 fill
                 priority
                 className="rounded-t-lg"
+                sizes="(max-width: 640px) 100vw, 640px"
               />
             </div>
             <div className="p-4 flex-1 flex flex-col justify-between items-center">

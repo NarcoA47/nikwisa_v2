@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchCategories } from "@/reducers/categorySlice";
 import { RootState, AppDispatch } from "@/reducers/store";
 import Image from "next/image";
+import { Store } from "@/types/types";
 
 interface EditStep1CategoriesProps {
   selectedCategories: string[];

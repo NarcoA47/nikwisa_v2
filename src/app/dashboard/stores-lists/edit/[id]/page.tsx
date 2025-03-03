@@ -4,61 +4,53 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { fetchStoreById } from "@/reducers/storeSlice";
-import EditStep1Categories from "@/components/UpdatingStore/Step1";
-import EditStep2SubCategories from "@/components/UpdatingStore/Step2";
-import EditStep3StoreDetails from "@/components/UpdatingStore/Step3";
+import { Store } from "@/types/types";
+import { useParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
-interface StoreData {
-  categories: string[];
-  event_planning_categories: string[];
-  rent_hire_categories: string[];
-  name: string;
-  phone_number: string;
-  whats_app: string;
-  image: File | null;
-  overview: string;
-  location: string;
-  working_hours: string;
-  owner: string | null;
-}
+const defaultStoreData: Store = {
+  name: "",
+  categories: [],
+  event_planning_categories: [],
+  overview: "",
+  phone_number: "",
+  whats_app: "",
+  location: "",
+  image: null,
+  working_hours: null,
+  is_verified: false,
+  is_responsive: false,
+  id: 0,
+  rating: 0,
+  reviews_count: 0,
+  photos: [],
+  createdAt: "",
+  updatedAt: "",
+  offerings: [],
+  reviews: [],
+  rent_hire_categories: [],
+  owner: ""
+};
 
 const EditStore = () => {
   const { id } = useParams();
-  const dispatch = useDispatch();
+  const { store } = useSelector((state: RootState) => state.stores);
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [storeData, setStoreData] = useState<StoreData | null>(null);
 
   useEffect(() => {
-    const loadStoreData = async () => {
-      try {
-        const response = await dispatch(fetchStoreById(id)).unwrap();
-        setStoreData({
-          ...response,
-          image: null, // Reset image to null for new uploads
-          current_image: response.image, // Store the current image URL
-        });
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error loading store:", error);
-        setIsLoading(false);
-        // Optionally, show a user-friendly error message
-      }
-    };
+    if (id) dispatch(fetchStoreById(Number(id)));
+  }, [dispatch, id]);
 
     if (id) {
       loadStoreData();
     }
   }, [id, dispatch]);
 
-  const handleNext = (newData: Partial<StoreData>) => {
-    setStoreData((prev) => {
-      if (!prev) return null;
-      return {
-        ...prev,
-        ...newData,
-      };
-    });
+  const handleNext = (data: Partial<typeof defaultStoreData>) => {
+    setStoreData((prev: typeof defaultStoreData) => ({ ...prev, ...data }));
     setStep((prev) => prev + 1);
   };
 

@@ -3,12 +3,13 @@ import React from "react";
 interface FormRowProps {
   type: string;
   name: string;
-  value: string | number;
+  value: string;
   handleChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => void;
-  labelText?: string;
-  placeholder?: string;
+  labelText: string;
+  placeholder: string;
+  error?: string;
 }
 
 const FormRow: React.FC<FormRowProps> = ({

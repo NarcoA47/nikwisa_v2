@@ -48,7 +48,7 @@ export default function SharedLayout({
 
     if (accessToken && refreshToken && !isAuthenticated) {
       try {
-        const decodedToken: DecodedToken = jwtDecode(accessToken);
+        const decodedToken: any = jwtDecode(accessToken);
 
         dispatch(
           setAuth({

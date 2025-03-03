@@ -20,7 +20,7 @@ const defaultProfileData: ProfileData = {
   date_of_birth: "",
   gender: "",
   address: "",
-  profile_picture: null,
+  profile_picture: null as File | null,
 };
 
 const EditProfilePage: React.FC = () => {

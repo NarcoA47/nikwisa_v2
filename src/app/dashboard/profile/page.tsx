@@ -39,23 +39,25 @@ const ProfilePage = () => {
     }
   }, [fetchUserData]);
 
-  const handleEditProfileClick = () => {
-    router.push(`/dashboard/profile/${user?.id}`);
-  };
+  // const handleEditProfileClick = () => {
+  //   router.push(`/dashboard/profile/${user?.id}`);
+  // };
 
   return (
     <div className="container mx-auto p-4 md:p-8 ">
-      <div className="flex flex-col md:flex-row gap-6">
-        {/* Left Profile Card */}
+      {/* <div className="flex flex-col md:flex-row gap-6">
         <div className="w-full md:w-1/3 min-h-full">
           <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="flex flex-col items-center">
+              <Image
               <Image
                 src={user?.profile_image || "/default-avatar.jpg"}
                 alt={user?.username || "User Profile"}
                 width={128}
                 height={128}
                 className="w-32 h-32 object-cover rounded-full mb-4"
+                width={128}
+                height={128}
               />
               <h3 className="text-xl font-semibold mb-2">
                 {user?.first_name || "N/A"} {user?.last_name || "N/A"}
@@ -74,9 +76,7 @@ const ProfilePage = () => {
           </div>
         </div>
 
-        {/* Right Column - Stacked Cards */}
         <div className="w-full md:w-2/3 flex flex-col gap-6 min-h-full">
-          {/* Top Card - Account Information */}
           <div className="bg-white rounded-xl shadow-lg p-6 flex-1">
             <h2 className="text-xl font-semibold mb-4">Account Information</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -108,7 +108,7 @@ const ProfilePage = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

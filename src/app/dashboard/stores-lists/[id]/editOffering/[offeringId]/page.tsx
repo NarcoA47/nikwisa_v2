@@ -30,7 +30,7 @@ const Page = () => {
   // Fetch offering by ID on component mount
   useEffect(() => {
     if (offeringId) {
-      dispatch(fetchOfferingById(offeringId));
+      dispatch(fetchOfferingById(Number(offeringId)));
     }
   }, [offeringId, dispatch]);
 
@@ -41,12 +41,12 @@ const Page = () => {
       setOfferingData({
         name: currentOffering.name || "",
         description: currentOffering.description || "",
-        price: currentOffering.price || 0,
+        price: typeof currentOffering.price === 'number' ? currentOffering.price : parseFloat(currentOffering.price) || 0,
         phone_number: currentOffering.phone_number || "",
         whatsapp_number: currentOffering.whatsapp_number || "",
         image: null, // Reset the image state
       });
-      setImagePreview(currentOffering.image || null);
+      setImagePreview(typeof currentOffering.image === 'string' ? currentOffering.image : null);
     }
   }, [offerings]);
 
@@ -75,7 +75,7 @@ const Page = () => {
         : { ...offeringData, image: undefined };
 
       await dispatch(
-        updateOffering({ offeringId, offeringData: offeringPayload })
+        updateOffering({ offeringId: Number(offeringId), offeringData: offeringPayload })
       );
 
       router.push(`/dashboard/stores-lists/${id}`);

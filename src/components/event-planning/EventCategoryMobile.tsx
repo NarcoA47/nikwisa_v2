@@ -69,6 +69,8 @@ const EventCategoryMobile = () => {
                     alt={category.title}
                     fill
                     className="object-cover"
+                    width={128}
+                    height={128}
                   />
                 ) : (
                   <div className="bg-gray-200 w-full h-full flex items-center justify-center">

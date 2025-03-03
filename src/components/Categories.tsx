@@ -61,6 +61,7 @@ const Categories = () => {
                 className="object-cover"
                 width={80}
                 height={80}
+                
               />
             </div>
 

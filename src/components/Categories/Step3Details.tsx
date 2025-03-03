@@ -8,6 +8,7 @@ import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import { addStore } from "@/reducers/storeSlice";
 import { Category } from "@/types/types";
+import { Step2Payload } from "./Step2SubCategories";
 
 // interface StoreData {
 //   name: string;
